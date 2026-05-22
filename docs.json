@@ -1,0 +1,72 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "palm",
+  "name": "Billions",
+  "colors": {
+    "primary": "#16A34A",
+    "light": "#07C983",
+    "dark": "#15803D"
+  },
+  "favicon": "/Billions_logo.svg",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Billions",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "billions/what-is-billions",
+              "billions/web-wallet",
+              "billions/mobile-wallet"
+            ]
+          },
+          {
+            "group": "Integration",
+            "pages": [
+              "billions/login-with-billions"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "x402",
+        "groups": [
+          {
+            "group": "x402",
+            "pages": [
+              "x402/overview",
+              "x402/client",
+              "x402/server",
+              "x402/identity-skill"
+            ]
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": []
+    }
+  },
+  "logo": "/logo/billions-logomark.svg",
+  "navbar": {
+    "links": [
+      {
+        "label": "Support",
+        "href": "mailto:hi@mintlify.com"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Dashboard",
+      "href": "https://dashboard.mintlify.com"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/0xPolygonID",
+      "x": "https://x.com/billions_ntwk",
+      "linkedin": "https://www.linkedin.com/company/billions-ntwk"
+    }
+  }
+}

@@ -1,0 +1,59 @@
+---
+title: "Overview"
+description: "x402 Human Proof — differentiated pricing and spam protection for APIs serving humans and AI agents."
+icon: "book-open"
+---
+
+## What is x402?
+
+The x402 protocol lets any API accept per-request payments from humans and agents alike — but by itself it can't tell the two apart.
+
+## x402 Human Proof
+
+The **x402 Human Proof** extension solves that: it adds a human identity verification layer on top of x402, giving providers the signal they need to apply differentiated pricing and protect against bots, scalpers, and spam.
+
+With Human Proof, providers can offer discounted tiers, free trials, or premium access to verified humans and the agents they control — while keeping standard rates for unverified traffic, or blocking it entirely. The result is sybil and spam resistance without giving up x402's open, permissionless model.
+
+<Info>
+  For agents consuming Human Proof–protected APIs, the [**Verified Agent Identity skill**](https://billions.network/verified-agent-identity-skill-openclaw) handles the human-proof flow automatically — no SDK integration needed.
+</Info>
+
+---
+
+## Server SDK
+
+`@billionsnetwork/x402-human-proof-server` is built on top of x402 and lets service providers add human-proof verification to any API service. Offer better pricing and spam protection to verified humans — and the verified agents they control — without touching existing routes or payment logic.
+
+**Features:**
+
+- **Drop-in setup.** One function call is all it takes; your existing routes and payment logic stay exactly as they are, nothing else needs to change.
+- **Tiered pricing for humans and their agents.** Set a lower price for verified humans and their agents, and a standard rate for everyone else; the server won't let anyone claim the discount without valid proof.
+- **Per-identity usage caps.** Set a hard limit on how many times each verified human and their agent can claim the discount, enforced atomically so concurrent requests can never race past it.
+- **Shared quotas across routes.** Multiple routes can share one usage pool, so a verified human's quota — and their agent's — is counted across your whole API, not just one endpoint.
+- **Automatic rollback on failure.** If a payment falls through after verification, the usage count restores itself; a failed transaction never costs the usage.
+- **Credential gating.** Go beyond just "is this a human" and require any combination of credentials or skills per route.
+
+<Card title="Server SDK Reference" icon="server" href="/x402/server">
+  Full reference for `@billionsnetwork/x402-human-proof-server`
+</Card>
+
+---
+
+## Client SDK
+
+`@billionsnetwork/x402-human-proof-client` enables any HTTP client or custom agent to authenticate against APIs protected by the x402 Human Proof Server SDK.
+
+Most agents won't need this SDK directly. The [**Verified Agent Identity skill**](https://billions.network/verified-agent-identity-skill-openclaw) is a general-purpose identity skill that pairs a verified human to their agent and supports the x402 human-proof flow out of the box — install it and the agent can transact on human-proof protected APIs without any code changes.
+
+Reach for the client SDK only when you're building a custom agent that needs direct control over the x402 flow or when you're building any other HTTP client that needs to prove a verified-human identity to a protected API with the Billions human-proof server SDK.
+
+**Features:**
+
+- **Automatic signing.** Every verification challenge is handled and signed in the background; nothing to wire up per request.
+- **Smart tier selection.** Picks the best tier the agent qualifies for based on its human-backed status and falls back to standard pricing if the discount isn't available.
+- **Usage cap recovery.** Detects when a human or their agent hits the usage limit and retries at standard pricing automatically.
+- **Works with any EVM wallet.**
+
+<Card title="Client SDK Reference" icon="browser" href="/x402/client">
+  Full reference for `@billionsnetwork/x402-human-proof-client`
+</Card>
