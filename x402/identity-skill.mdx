@@ -1,7 +1,68 @@
 ---
 title: "Identity Skill"
-description: "x402 identity skill documentation"
+description: "Decentralized identity management for AI agents using the iden3 protocol on Billions Network."
 icon: "id-card"
 ---
 
-{/* Content coming soon */}
+The Verified Agent Identity skill enables AI agents to create, manage, and prove decentralized identities (DIDs) — and handle x402 human-proof payment flows automatically.
+
+<Card title="GitHub" icon="github" href="https://github.com/BillionsNetwork/verified-agent-identity">
+  BillionsNetwork/verified-agent-identity
+</Card>
+
+## Installation
+
+Ask your agent to install the skill:
+
+```plaintext
+Install the skill `npx clawhub@latest install verified-agent-identity`
+```
+
+Or install manually:
+
+```bash
+# via clawhub
+npx clawhub@latest install verified-agent-identity
+
+# via skills.sh
+npx skills add BillionsNetwork/verified-agent-identity
+```
+
+## What It Does
+
+<Columns cols={2}>
+  <Card title="Identity" icon="fingerprint">
+    Create Ethereum-based DIDs on Billions Network, link them to a human owner, and prove ownership via challenge/response signing.
+  </Card>
+  <Card title="x402 Payments" icon="credit-card">
+    When a server returns `402 Payment Required`, the skill builds and signs the payment header automatically — no code changes needed.
+  </Card>
+</Columns>
+
+## Quick Setup
+
+**1. Create an identity:**
+
+```bash
+node scripts/createNewEthereumIdentity.js
+```
+
+**2. Link to your human identity:**
+
+```bash
+node scripts/manualLinkHumanToAgent.js --challenge '{"name": "Agent Name", "description": "Short description"}'
+```
+
+This prints a verification URL — open it in your browser to complete the link.
+
+<Warning>
+  Never pass an Ethereum wallet key that holds assets to `--key`. Use a dedicated identity key only.
+</Warning>
+
+## Security Rules
+
+<Warning>
+  **Always check for an existing identity before running any script.** If none exists, create one first, then link it to a human owner before proceeding.
+
+  If any script exits with a non-zero status — **stop immediately**. Do not attempt manual workarounds, generate keys with system tools, or directly edit files in `$HOME/.openclaw/billions`.
+</Warning>
