@@ -7,7 +7,7 @@
     "light": "#07C983",
     "dark": "#15803D"
   },
-  "favicon": "/Billions_logo.svg",
+  "favicon": "/logo/Billions_logo.svg",
   "navigation": {
     "tabs": [
       {
@@ -48,7 +48,10 @@
       "anchors": []
     }
   },
-  "logo": "/logo/billions-logomark.svg",
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
   "navbar": {
     "links": [
       {
