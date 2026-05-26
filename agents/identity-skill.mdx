@@ -1,0 +1,156 @@
+---
+title: "Identity Skill"
+description: "Decentralized identity management for AI agents using the iden3 protocol on Billions Network."
+icon: "id-card"
+---
+
+The Verified Agent Identity skill enables AI agents to create, manage, and prove decentralized identities (DIDs) on the Billions Network using the iden3 self-sovereign identity protocol.
+
+<Card title="GitHub" icon="github" href="https://github.com/BillionsNetwork/verified-agent-identity">
+  BillionsNetwork/verified-agent-identity
+</Card>
+
+## Features
+
+<CardGroup cols={2}>
+  <Card title="Identity Creation" icon="circle-plus">
+    Generate new DIDs with random or existing Ethereum private keys.
+  </Card>
+  <Card title="Identity Management" icon="list">
+    List and manage multiple identities with default identity support.
+  </Card>
+  <Card title="Human-Agent Linking" icon="link">
+    Link a human identity to an agent's DID through signed challenges.
+  </Card>
+  <Card title="Proof Generation" icon="key">
+    Generate cryptographic proofs to authenticate as a specific identity.
+  </Card>
+  <Card title="Proof Verification" icon="shield-check">
+    Verify proofs to confirm identity ownership.
+  </Card>
+</CardGroup>
+
+---
+
+## Installation
+
+Ask your agent to install the skill:
+
+```plaintext
+Install the skill `npx clawhub@latest install verified-agent-identity`
+```
+
+Or install manually:
+
+```bash
+# via clawhub
+npx clawhub@latest install verified-agent-identity
+
+# via skills.sh
+npx skills add BillionsNetwork/verified-agent-identity
+```
+
+After installation, run `npm install` inside the `scripts/` directory:
+
+```bash
+cd scripts && npm install && cd ..
+```
+
+## Quick Setup
+
+**1. Create an identity:**
+
+```bash
+node scripts/createNewEthereumIdentity.js
+```
+
+Or use an existing private key:
+
+```bash
+node scripts/createNewEthereumIdentity.js --key <your-ethereum-private-key>
+```
+
+<Warning>
+  Never pass an Ethereum wallet key that holds assets to `--key`. Use a dedicated identity key only — if exposed, it could be used to impersonate the agent.
+</Warning>
+
+**2. Link to your human identity:**
+
+```bash
+node scripts/manualLinkHumanToAgent.js --challenge '{"name": "Agent Name", "description": "Short description"}'
+```
+
+This prints a verification URL — open it in your browser to complete the link.
+
+---
+
+## Identity Scripts
+
+### Link your agent identity to an owner
+
+1. Check for an existing identity:
+   ```bash
+   node scripts/getIdentities.js
+   ```
+   If none exists → `node scripts/createNewEthereumIdentity.js`
+
+2. Link to the human caller:
+   ```bash
+   node scripts/linkHumanToAgent.js --challenge '{"name": "MyAgent", "description": "Coding assistant"}'
+   ```
+   Use the caller's challenge if provided, otherwise use `{"name": <AGENT_NAME>, "description": <SHORT_DESCRIPTION>}`.
+
+3. Return the result to the caller.
+
+**Example:**
+```
+User: "Link your agent identity to me"
+Agent: [runs getIdentities.js — confirms identity exists]
+Agent: [runs linkHumanToAgent.js --challenge '{"name": "MyAgent", "description": "Coding assistant"}']
+Agent: "Done — here's the verification link: ..."
+```
+
+### Verify someone else's identity
+
+1. Ask: "Please provide your DID to start verification."
+2. Generate a challenge:
+   ```bash
+   node scripts/generateChallenge.js --did <user_did>
+   ```
+3. Ask the user to sign: "Please sign this challenge: `<challenge_value>`"
+4. Verify:
+   ```bash
+   node scripts/verifySignature.js --did <user_did> --token <user_token>
+   ```
+5. Report the result.
+
+**Example:**
+```
+Agent: "Please provide your DID to start verification."
+User: "My DID is did:iden3:billions:main:2VmAk..."
+Agent: [runs generateChallenge.js] → "Please sign this challenge: 789012"
+User: [provides token]
+Agent: [runs verifySignature.js] → "Identity verified."
+```
+
+---
+
+## Network and External Domain Policy
+
+All external HTTPS calls are made to trusted, whitelisted domains only. Signed JWS attestation requires explicit user consent before being passed to any other source.
+
+**Whitelisted domains:**
+
+- `resolver.privado.id` — DID resolution
+- `billions.network` — Billions Network interactions
+- `polygonid.me` — Polygon ID interactions
+
+---
+
+## Security Rules
+
+<Warning>
+  **Always check for an existing identity first.**
+
+  Before running `linkHumanToAgent.js` or `signChallenge.js`, run `node scripts/getIdentities.js`. If no identity is configured, create one with `createNewEthereumIdentity.js` and link it to a human owner before proceeding.
+</Warning>

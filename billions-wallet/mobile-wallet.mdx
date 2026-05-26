@@ -1,0 +1,61 @@
+---
+title: "Mobile Wallet"
+description: "A privacy-first identity wallet for iOS and Android — manage credentials, generate zero-knowledge proofs, and verify your identity on the go."
+icon: "mobile"
+---
+
+## Overview
+
+The Billions Wallet App is a privacy-first, self-sovereign identity wallet for iOS and Android. It enables users to manage verified credentials, authenticate with issuers and verifiers, and generate zero-knowledge proofs — all from their mobile device, with no intermediaries and no centralized authority.
+
+## Features
+
+<CardGroup cols={2}>
+  <Card title="Privacy by Design" icon="shield-halved">
+    Users retain full control of their identity data. Credentials are exchanged directly between parties without relying on any intermediary or centralized authority.
+  </Card>
+  <Card title="Seamless Authentication" icon="key">
+    Sign in with a crypto wallet or create a local account. An identity wallet is automatically derived and credentials are encrypted and stored in end-to-end encrypted cloud storage for multi-device access.
+  </Card>
+  <Card title="Zero-Knowledge Proofs" icon="lock">
+    Generate cost-optimized zero-knowledge proofs for credential verification, enabling privacy-preserving authentication without exposing personal data.
+  </Card>
+  <Card title="Credential Hub" icon="store">
+    Proactively claim credentials in advance through the marketplace, making future verifications quicker.
+  </Card>
+</CardGroup>
+
+## Credential Storage
+
+<Info>
+  **End-to-End Encrypted Cloud Storage**
+
+  When signing in with a crypto wallet, an identity is derived and storage keys are generated from the signed message. All credentials are encrypted and stored in cloud storage — accessible across multiple devices and serving as a reliable backup.
+
+  - **Signature scheme:** ed25519
+  - **Encryption:** AES256-GCM
+  - **Access:** Only the user holding the storage keys can decrypt their credentials
+</Info>
+
+## How Billions Wallet Differs from Crypto Wallets
+
+The Billions Wallet App is fundamentally different from general-purpose crypto wallets such as MetaMask, Trust Wallet, or Coinbase Wallet:
+
+| | Crypto Wallets | Billions Wallet App |
+|---|---|---|
+| **Purpose** | Send and receive crypto transactions | Store and verify identity credentials |
+| **Network interaction** | Ethereum and other chains via RPC | Issues and verifies credentials via ZK proofs |
+| **What is stored** | Cryptographic keys | Verifiable identity credentials |
+| **Key curve** | secp256k1 → Ethereum Address | Baby Jubjub Elliptic Curve → Billions Identifier |
+| **Identifier** | Ethereum wallet address | Billions Identity Identifier (DID) |
+
+## Download
+
+<CardGroup cols={2}>
+  <Card title="iOS" icon="apple" href="#">
+    Download on the App Store
+  </Card>
+  <Card title="Android" icon="android" href="#">
+    Get it on Google Play
+  </Card>
+</CardGroup>

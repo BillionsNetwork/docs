@@ -11,34 +11,53 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Billions",
+        "tab": "Home",
         "groups": [
           {
-            "group": "Overview",
+            "group": "Get Started",
+            "pages": ["index"]
+          }
+        ]
+      },
+      {
+        "tab": "Billions Wallet",
+        "groups": [
+          {
+            "group": "Wallet",
             "pages": [
-              "billions/what-is-billions",
-              "billions/web-wallet",
-              "billions/mobile-wallet"
+              "billions-wallet/web-wallet",
+              "billions-wallet/mobile-wallet",
+              "billions-wallet/official-profile"
             ]
           },
           {
             "group": "Integration",
             "pages": [
-              "billions/login-with-billions"
+              "billions-wallet/login-with-billions"
             ]
           }
         ]
       },
       {
-        "tab": "x402",
+        "tab": "Agents",
         "groups": [
           {
-            "group": "x402",
+            "group": "Overview",
             "pages": [
-              "x402/overview",
-              "x402/client",
-              "x402/server",
-              "x402/identity-skill"
+              "agents/overview"
+            ]
+          },
+          {
+            "group": "Identity Skill",
+            "pages": [
+              "agents/identity-skill"
+            ]
+          },
+          {
+            "group": "SDKs",
+            "pages": [
+              "agents/client",
+              "agents/server"
             ]
           }
         ]

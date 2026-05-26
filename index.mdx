@@ -1,0 +1,154 @@
+---
+title: "Billions Developer Docs"
+sidebarTitle: "Home"
+mode: "custom"
+description: "Build with Billions — the first Human and AI network powered by privacy-preserving identity and zero-knowledge technology."
+---
+
+<div
+  id="b-intro-overlay"
+  style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "#ffffff", pointerEvents: "none" }}
+  ref={(node) => {
+    if (!node || node.dataset.init) return;
+    node.dataset.init = '1';
+    const pageEl = document.getElementById('b-page-content');
+    if (window.__bAnimPlayed) {
+      node.style.display = 'none';
+      if (pageEl) pageEl.style.opacity = '1';
+      return;
+    }
+    if (document.getElementById('b-anim-style')) return;
+    const s = document.createElement('style');
+    s.id = 'b-anim-style';
+    s.textContent = `
+      #b-intro-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #ffffff;
+        pointer-events: none;
+        animation: bOverlayOut 0.3s ease 1.9s forwards;
+      }
+      @media (prefers-color-scheme: dark) {
+        #b-intro-overlay { background: #0a0a0a; }
+      }
+      #b-logo-anim {
+        animation: bLogoIntro 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        transform-origin: center;
+      }
+      #b-eye-right {
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: bWink 2s ease forwards;
+      }
+      #b-page-content {
+        animation: bPageReveal 0.4s ease 1.8s both;
+      }
+      @keyframes bLogoIntro {
+        0%   { transform: translateX(280px) scale(0.8); opacity: 0; }
+        28%  { transform: translateX(0) scale(1);       opacity: 1; }
+        60%  { transform: translateX(0) scale(1);       opacity: 1; }
+        92%  { transform: translateX(0) scale(4);       opacity: 0; }
+        100% { transform: translateX(0) scale(4);       opacity: 0; }
+      }
+      @keyframes bWink {
+        0%,  30% { transform: scaleY(1);    }
+        41%      { transform: scaleY(0.04); }
+        54%      { transform: scaleY(1);    }
+        100%     { transform: scaleY(1);    }
+      }
+      @keyframes bOverlayOut {
+        to { opacity: 0; visibility: hidden; }
+      }
+      @keyframes bPageReveal {
+        from { opacity: 0; transform: translateY(14px); }
+        to   { opacity: 1; transform: translateY(0);    }
+      }
+    `;
+    document.head.appendChild(s);
+    setTimeout(() => { window.__bAnimPlayed = true; }, 2300);
+  }}
+>
+  <div id="b-logo-anim" style={{ opacity: 0 }}>
+    <svg width="120" height="120" viewBox="0 0 247 247" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M156.312 61C182.619 61 203.945 82.3259 203.945 108.633V114H213.5C218.747 114 223 118.253 223 123.5C223 128.747 218.747 133 213.5 133H203.945V150.218C203.945 169.927 187.968 185.904 168.259 185.904H78.7412C59.0322 185.904 43.0549 169.927 43.0547 150.218V133H33.5C28.2533 133 24 128.747 24 123.5C24 118.253 28.2533 114 33.5 114H43.0547V108.633C43.0548 82.326 64.3807 61.0001 90.6875 61C103.405 61 114.957 65.9846 123.5 74.1055C132.043 65.9845 143.595 61 156.312 61Z" fill="#0046FF"/>
+      <path d="M72.6914 108.633C72.6914 98.6952 80.7479 90.6387 90.6861 90.6387C100.624 90.6387 108.681 98.6952 108.681 108.633V144.266C108.681 150.894 103.308 156.266 96.6808 156.266H84.6914C78.064 156.266 72.6914 150.894 72.6914 144.266V108.633Z" fill="black"/>
+      <path d="M96.6807 148.267V156.267H84.6914V148.267H96.6807ZM100.681 144.267V108.634C100.681 103.114 96.2062 98.6389 90.6865 98.6387C85.1666 98.6387 80.6914 103.114 80.6914 108.634V144.267C80.6916 146.476 82.4824 148.267 84.6914 148.267V156.267L84.3818 156.263C78.0004 156.101 72.857 150.958 72.6953 144.576L72.6914 144.267V108.634C72.6914 98.6956 80.7483 90.6387 90.6865 90.6387L91.1504 90.6445C100.874 90.8908 108.681 98.8508 108.681 108.634V144.267L108.677 144.576C108.515 150.958 103.372 156.101 96.9902 156.263L96.6807 156.267V148.267C98.8897 148.267 100.681 146.476 100.681 144.267Z" fill="white"/>
+      <g id="b-eye-right">
+        <path d="M138.32 108.633C138.32 98.6952 146.377 90.6387 156.315 90.6387C166.253 90.6387 174.31 98.6952 174.31 108.633V144.266C174.31 150.894 168.937 156.266 162.31 156.266H150.32C143.693 156.266 138.32 150.894 138.32 144.266V108.633Z" fill="black"/>
+        <path d="M162.31 148.267V156.267H150.32V148.267H162.31ZM166.31 144.267V108.634C166.31 103.114 161.835 98.6389 156.315 98.6387C150.796 98.6387 146.32 103.114 146.32 108.634V144.267C146.32 146.476 148.111 148.267 150.32 148.267V156.267L150.011 156.263C143.629 156.101 138.486 150.958 138.324 144.576L138.32 144.267V108.634C138.32 98.6956 146.377 90.6387 156.315 90.6387L156.779 90.6445C166.503 90.8908 174.31 98.8508 174.31 108.634V144.267L174.306 144.576C174.144 150.958 169.001 156.101 162.619 156.263L162.31 156.267V148.267C164.519 148.267 166.309 146.476 166.31 144.267Z" fill="white"/>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<div id="b-page-content" style={{ maxWidth: "860px", margin: "0 auto", padding: "48px 24px 80px", opacity: 0 }}>
+
+<div style={{ fontSize: "40px", lineHeight: 1.3, letterSpacing: "-0.8px", fontWeight: 300, marginBottom: "16px" }}>
+  Billions Developer Docs
+</div>
+
+<div style={{ fontSize: "18px", lineHeight: 1.6, fontWeight: 300, marginBottom: "48px", maxWidth: "620px", opacity: 0.7 }}>
+  The first Human and AI network. Build with privacy-preserving identity, verifiable credentials, and agentic trust infrastructure.
+</div>
+
+<CardGroup cols={3}>
+  <Card
+    title="Billions Wallet"
+    icon="wallet"
+    href="/billions-wallet/web-wallet"
+  >
+    Web and mobile wallet for managing your verifiable identity credentials.
+  </Card>
+
+  <Card
+    title="Login with Billions"
+    icon="key"
+    href="/billions-wallet/login-with-billions"
+  >
+    Enable secure and decentralized authentication by leveraging the Billions Network.
+  </Card>
+
+  <Card
+    title="Agents"
+    icon="robot"
+    href="/agents/overview"
+  >
+    Give AI agents verifiable identities and build trust in the agentic economy.
+  </Card>
+</CardGroup>
+
+<div style={{ marginTop: "64px", display: "flex", flexDirection: "column", gap: "12px" }}>
+  <a
+    href="https://github.com/0xPolygonID"
+    style={{ display: "inline-flex", alignItems: "center", gap: "10px", fontSize: "16px", textDecoration: "underline", textUnderlineOffset: "4px", width: "fit-content" }}
+  >
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+    </svg>
+    GitHub
+  </a>
+  <a
+    href="https://x.com/billions_ntwk"
+    style={{ display: "inline-flex", alignItems: "center", gap: "10px", fontSize: "16px", textDecoration: "underline", textUnderlineOffset: "4px", width: "fit-content" }}
+  >
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.259 5.631 5.905-5.631zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+    </svg>
+    Follow on X
+  </a>
+  <a
+    href="https://www.linkedin.com/company/billions-ntwk"
+    style={{ display: "inline-flex", alignItems: "center", gap: "10px", fontSize: "16px", textDecoration: "underline", textUnderlineOffset: "4px", width: "fit-content" }}
+  >
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+    </svg>
+    LinkedIn
+  </a>
+</div>
+
+</div>
