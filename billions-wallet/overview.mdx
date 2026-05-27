@@ -1,0 +1,52 @@
+---
+title: "Overview"
+description: "Self-sovereign identity wallets for managing and verifying credentials on the Billions Network."
+icon: "book-open"
+---
+
+A digital wallet is an application that holds and manages a user's credentials. Based on the principles of Self-Sovereign Identity (SSI) and cryptography, a wallet helps its holder share data with others without exposing any other sensitive private information. Only the wallet holder has the right to decide which information to share and what needs to remain private.
+
+Billions offers two ways to interact with a credential-focused wallet: the **Billions Web Wallet** and the **Billions Wallet App**.
+
+<Info>
+  When the Web Wallet and the Billions Wallet App are signed in with the same crypto wallet, credentials are synced — enabling effortless access across multiple devices.
+</Info>
+
+<CardGroup cols={2}>
+  <Card title="Web Wallet" icon="globe" href="/billions-wallet/web-wallet">
+    Browser-based identity wallet for credential issuance, management, and verification.
+  </Card>
+  <Card title="Mobile Wallet" icon="mobile" href="/billions-wallet/mobile-wallet">
+    iOS and Android wallet for managing credentials and generating zero-knowledge proofs on the go.
+  </Card>
+</CardGroup>
+
+---
+
+## Credential Storage
+
+All credentials are encrypted and stored in cloud storage — accessible across multiple devices and serving as a reliable backup. Upon sign-in, an identity is derived and storage keys are generated from the authenticated account.
+
+<Info>
+  **End-to-End Encrypted Cloud Storage**
+
+  - **Signature scheme:** ed25519
+  - **Encryption:** AES256-GCM
+  - **Access:** Only the user holding the storage keys can decrypt and access their credentials
+
+  No credentials are stored in plaintext at any point. The cloud storage acts solely as a secure, encrypted repository — the decryption keys never leave the user's control.
+</Info>
+
+---
+
+## How Billions Wallet Differs from Crypto Wallets
+
+The Billions Wallet is fundamentally different from general-purpose crypto wallets such as MetaMask, Trust Wallet, or Coinbase Wallet:
+
+| | Crypto Wallets | Billions Wallet |
+|---|---|---|
+| **Purpose** | Send and receive crypto transactions | Store and verify identity credentials |
+| **Network interaction** | Ethereum and other chains via RPC | Issues and verifies credentials via ZK proofs |
+| **What is stored** | Cryptographic keys | Verifiable identity credentials |
+| **Key curve** | secp256k1 → Ethereum Address | Baby Jubjub Elliptic Curve → Billions Identifier |
+| **Identifier** | Ethereum wallet address | Billions Identity Identifier (DID) |

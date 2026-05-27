@@ -25,9 +25,9 @@
           {
             "group": "Wallet",
             "pages": [
+              "billions-wallet/overview",
               "billions-wallet/web-wallet",
-              "billions-wallet/mobile-wallet",
-              "billions-wallet/official-profile"
+              "billions-wallet/mobile-wallet"
             ]
           },
           {
@@ -42,20 +42,16 @@
         "tab": "Agents",
         "groups": [
           {
-            "group": "Overview",
+            "group": "Verified Agent Identity Skill",
             "pages": [
-              "agents/overview"
-            ]
-          },
-          {
-            "group": "Identity Skill",
-            "pages": [
+              "agents/identity-overview",
               "agents/identity-skill"
             ]
           },
           {
-            "group": "SDKs",
+            "group": "x402",
             "pages": [
+              "agents/overview",
               "agents/client",
               "agents/server"
             ]

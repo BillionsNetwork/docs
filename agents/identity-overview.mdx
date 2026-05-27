@@ -1,0 +1,84 @@
+---
+title: "Overview"
+description: "Know Your Agent — decentralized identity for AI agents on the Billions Network."
+icon: "book-open"
+---
+
+The **Verified Agent Identity** skill gives any AI agent a decentralized, cryptographic identity (DID) on the Billions Network — and lets a human owner link themselves to that agent permanently and verifiably on-chain.
+
+Once linked, the agent can prove it is operated by a real, unique human. This unlocks discounted pricing tiers on APIs protected by x402 Human Proof, spam protection for service providers, and a public, tamper-proof record of agent ownership that anyone can verify.
+
+<Info>
+  **What is x402 Human Proof?** x402 is an open payment protocol that lets APIs accept per-request payments. x402 Human Proof extends it with a human identity verification layer — so providers can offer better pricing to verified humans and the agents they control, while keeping standard rates for unverified traffic. [Learn more](/agents/overview)
+</Info>
+
+<Card title="GitHub" icon="github" href="https://github.com/BillionsNetwork/verified-agent-identity">
+  BillionsNetwork/verified-agent-identity
+</Card>
+
+## Features
+
+<CardGroup cols={2}>
+  <Card title="Identity Creation" icon="circle-plus">
+    Generate new DIDs with random or existing Ethereum private keys.
+  </Card>
+  <Card title="Identity Management" icon="list">
+    List and manage multiple identities with default identity support.
+  </Card>
+  <Card title="Human-Agent Linking" icon="link">
+    Link a human identity to an agent's DID through signed challenges.
+  </Card>
+  <Card title="Proof Generation" icon="key">
+    Generate cryptographic proofs to authenticate as a specific identity.
+  </Card>
+  <Card title="Proof Verification" icon="shield-check">
+    Verify proofs to confirm identity ownership.
+  </Card>
+</CardGroup>
+
+---
+
+## Demo
+
+<iframe
+  width="100%"
+  height="400"
+  src="https://www.youtube.com/embed/0K3HPKBLEak"
+  title="Verified Agent Identity — Live Demo"
+  frameBorder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+></iframe>
+
+The demo walks through the full identity linking flow live — from a fresh agent with nothing installed to a permanent, on-chain human-agent pairing — using a Telegram bot called Billy running on OpenClaw.
+
+### What happens in the demo
+
+<Steps>
+  <Step title="Install the skill">
+    An agent called Billy was built using OpenClaw and deployed on Telegram. With the agent running, a single install command is pasted directly into the chat:
+
+    ```plaintext
+    Install the skill `npx clawhub@latest install verified-agent-identity`
+    ```
+
+    Billy installs the skill and sets everything up automatically — no manual configuration needed.
+  </Step>
+  <Step title="Agent generates its DID">
+    The user asks Billy to show his identity. Billy responds with his DID — a decentralized identifier derived from his cryptographic key via the iden3 protocol. No one assigned it; the math created it.
+  </Step>
+  <Step title="Generate a pairing link">
+    The user asks Billy to link their DID with his. Billy generates a verification URL scoped specifically to this human-agent pair and shares it in the chat.
+  </Step>
+  <Step title="Complete pairing in the Billions Web Wallet">
+    The user opens the link in the Billions Web Wallet and signs in with Google. The wallet loads the user's identity and existing credentials.
+
+    New users complete a one-time face scan here to claim a Proof of Uniqueness credential. Once claimed, it is stored in the wallet and never needs to be repeated.
+  </Step>
+  <Step title="On-chain attestation is created">
+    The user hits **Verify**. The wallet generates a zero-knowledge proof and submits it to the Relay Attestation Service, which calls the Identity Verifier Contract to verify the proof on-chain, then calls the Attestation Registry Contract to create a permanent attestation linking the user to Billy.
+  </Step>
+  <Step title="Ownership is public and verifiable">
+    The pairing is now on-chain, permanent, and verifiable by anyone. The user can view Billy listed under **Verified Agents** in their profile — the last four characters of Billy's DID (`V9HT`) match exactly what was shared in the Telegram chat.
+  </Step>
+</Steps>

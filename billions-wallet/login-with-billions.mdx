@@ -6,8 +6,8 @@ icon: "key"
 
 ## Overview
 
-Enables Applications to have their users to sign in seamlessly using their profile Decentralized Identifiers (DIDs).
-Think of it as “Login with Google” — but **trustless, privacy-preserving, and self-sovereign**.
+Enables applications to let users sign in seamlessly using their Decentralized Identifiers (DIDs).
+Think of it as "Login with Google" — but **trustless, privacy-preserving, and self-sovereign**.
 
 ## Key Capabilities
 
@@ -15,25 +15,33 @@ Think of it as “Login with Google” — but **trustless, privacy-preserving, 
 - **Enables Trustless Authentication**: Removes reliance on centralized identity providers.
 - **Delivers a Familiar Web2 Experience**
 
-## Authentication Flow 
+## Authentication Flow
 
-The **Login with Billions** process verifies user identity through DID ownership. Below is the step-by-step authentication sequence:
+The **Login with Billions** process verifies user identity through DID ownership.
 
-1. The user selects **“Login with Billions”** on application.
-   This triggers a backend (`/api/sign-in`) to create a new authentication request session.
-
-2. The frontend takes that authentication request, encodes it in Base64, and embeds it into a [Universal Link](https://hackmd.io/@0xpulkit/billions-universal-link).
-This link opens the **Billions Wallet**, prompting the user to authenticate.
-
-3. Once the user approves the sign-in, the Billions Wallet generates a `signed JWZ` (JSON Web Zero-knowledge) token — a verifiable proof of DID ownership.
-
-4. The wallet sends a POST request to your backend `/api/callback` endpoint containing the `sessionId` and the `signed JWZ`.
-
-5. Your backend verifies this JWZ token using the **Billions Verifier**, confirming the authenticity of the user’s DID.
-
-6. Upon successful verification, the user’s DID is considered verified. You can then create or update their session in your database.
-
-7. From this point, your application can recognize the user, grant access, or use the verified DID for personalized or gated experiences.
+<Steps>
+  <Step title="Initiate Sign-In">
+    The user selects **Login with Billions** in the application. This triggers a backend call to `/api/sign-in`, which creates a new authentication request session.
+  </Step>
+  <Step title="Open Billions Wallet">
+    The frontend takes the authentication request, encodes it in Base64, and embeds it into a [Universal Link](https://hackmd.io/@0xpulkit/billions-universal-link). This link opens the **Billions Wallet**, prompting the user to authenticate.
+  </Step>
+  <Step title="User Approves">
+    The user approves the sign-in in the Billions Wallet. The wallet generates a `signed JWZ` (JSON Web Zero-knowledge) token — a verifiable proof of DID ownership.
+  </Step>
+  <Step title="Wallet Posts to Callback">
+    The wallet sends a POST request to your backend `/api/callback` endpoint containing the `sessionId` and the signed JWZ token.
+  </Step>
+  <Step title="Backend Verifies the JWZ">
+    Your backend verifies the JWZ token using the **Billions Verifier**, confirming the authenticity of the user’s DID.
+  </Step>
+  <Step title="Session Created">
+    Upon successful verification, the user’s DID is confirmed. Create or update their session in your database — the DID acts as a persistent identity for all future sign-ins.
+  </Step>
+  <Step title="Access Granted">
+    Your application recognizes the user, grants access, and can use the verified DID for personalized or gated experiences.
+  </Step>
+</Steps>
 
 ---
 
@@ -44,7 +52,6 @@ Before you begin, ensure the following environment requirements are met:
 ### Prerequisites
 
 - Public URL for callbacks (use [ngrok](https://ngrok.com/) for local development)
-- Key and circuit files for verification stored under`/keys` directory. Refer [this](https://github.com/0xPolygonID/tutorial-examples/tree/main/login-with-billions).
 
 ### Example Repository
 - [Reference implementation](https://github.com/0xPolygonID/tutorial-examples/tree/main/login-with-billions)

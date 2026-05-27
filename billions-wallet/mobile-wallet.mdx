@@ -25,37 +25,38 @@ The Billions Wallet App is a privacy-first, self-sovereign identity wallet for i
   </Card>
 </CardGroup>
 
-## Credential Storage
+## Verification Journey
 
-<Info>
-  **End-to-End Encrypted Cloud Storage**
+The following walkthrough describes the end-to-end experience for claiming a credential on the mobile app.
 
-  When signing in with a crypto wallet, an identity is derived and storage keys are generated from the signed message. All credentials are encrypted and stored in cloud storage — accessible across multiple devices and serving as a reliable backup.
-
-  - **Signature scheme:** ed25519
-  - **Encryption:** AES256-GCM
-  - **Access:** Only the user holding the storage keys can decrypt their credentials
-</Info>
-
-## How Billions Wallet Differs from Crypto Wallets
-
-The Billions Wallet App is fundamentally different from general-purpose crypto wallets such as MetaMask, Trust Wallet, or Coinbase Wallet:
-
-| | Crypto Wallets | Billions Wallet App |
-|---|---|---|
-| **Purpose** | Send and receive crypto transactions | Store and verify identity credentials |
-| **Network interaction** | Ethereum and other chains via RPC | Issues and verifies credentials via ZK proofs |
-| **What is stored** | Cryptographic keys | Verifiable identity credentials |
-| **Key curve** | secp256k1 → Ethereum Address | Baby Jubjub Elliptic Curve → Billions Identifier |
-| **Identifier** | Ethereum wallet address | Billions Identity Identifier (DID) |
+<Steps>
+  <Step title="Install the App">
+    Download the Billions Wallet App from the App Store or Google Play and open it.
+  </Step>
+  <Step title="Sign In">
+    Sign in with a crypto wallet. An identity is automatically derived from the authenticated account and storage keys are generated.
+  </Step>
+  <Step title="Identity Loads">
+    The app loads the user's identity wallet and retrieves any existing credentials from encrypted cloud storage.
+  </Step>
+  <Step title="View Available Credentials">
+    The user sees the credentials available to claim in the wallet. Each credential shows its type, issuer, and status.
+  </Step>
+  <Step title="Claim a Credential">
+    The user selects a credential and initiates the claiming flow — for example, completing a uniqueness check for Proof of Uniqueness. The issuer verifies the user and issues the signed credential directly to the wallet.
+  </Step>
+  <Step title="Credential Stored">
+    The issued credential is encrypted and stored in cloud storage. It is now available for use in any verification flow — on-chain or off-chain — without needing to be claimed again.
+  </Step>
+</Steps>
 
 ## Download
 
 <CardGroup cols={2}>
-  <Card title="iOS" icon="apple" href="#">
+  <Card title="iOS" icon="apple" href="https://apps.apple.com/in/app/billions/id6742451067">
     Download on the App Store
   </Card>
-  <Card title="Android" icon="android" href="#">
+  <Card title="Android" icon="android" href="https://play.google.com/store/apps/details?id=com.billions.app.mobile">
     Get it on Google Play
   </Card>
 </CardGroup>

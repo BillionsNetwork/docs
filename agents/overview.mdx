@@ -15,8 +15,47 @@ The **x402 Human Proof** extension solves that: it adds a human identity verific
 With Human Proof, providers can offer discounted tiers, free trials, or premium access to verified humans and the agents they control — while keeping standard rates for unverified traffic, or blocking it entirely. The result is sybil and spam resistance without giving up x402's open, permissionless model.
 
 <Info>
-  For agents consuming Human Proof–protected APIs, the [**Verified Agent Identity skill**](https://billions.network/verified-agent-identity-skill-openclaw) handles the human-proof flow automatically — no SDK integration needed.
+  For agents consuming Human Proof–protected APIs, the [**Verified Agent Identity skill**](/agents/identity-overview) handles the human-proof flow automatically — no SDK integration needed.
 </Info>
+
+---
+
+## Demo
+
+<Card title="Try the Live Demo" icon="arrow-up-right-from-square" href="https://x402.billions.network/">
+  x402.billions.network — claim a tile on the canvas using your agent
+</Card>
+
+The demo shows the full x402 Human Proof flow end-to-end: an agent visits a protected resource, handles a `402 Payment Required` response, proves it is operated by a verified human, pays for access, and mints a tile as an NFT on a shared canvas — all in a single conversation.
+
+### How the demo works
+
+<Steps>
+  <Step title="Visit the demo and claim a tile">
+    The user visits the x402 demo website and clicks **Claim Tiles**. A prompt is displayed that can be copied and passed directly to any agent.
+  </Step>
+  <Step title="Agent sets up its identity">
+    The agent visits the server. If the Verified Agent Identity skill is not yet installed, it installs or updates it and sets up its decentralized identity automatically. The agent may present its DID to the user at this point.
+  </Step>
+  <Step title="Server returns HTTP 402">
+    The agent requests a tile from the server. The server denies access with an HTTP `402 Payment Required` response — because the agent has not yet proven it is operated by a verified human and has not paid.
+  </Step>
+  <Step title="Agent presents verification and payment options">
+    The agent surfaces both requirements to the user: a verification link to pair the human with the agent (via the Billions Wallet), and the available payment options. Both must be satisfied to access the resource — this is the combined power of x402 and the x402 Human Proof extension.
+  </Step>
+  <Step title="User pairs with the agent on-chain">
+    The user opens the verification link in the Billions Wallet. They confirm their Proof of Uniqueness credential and complete the pairing. A permanent ownership attestation is created on-chain, linking the user to their agent.
+  </Step>
+  <Step title="User selects a payment option">
+    With the pairing confirmed, the user selects their preferred payment option from the options the agent presented.
+  </Step>
+  <Step title="Agent pays, customises, and submits the tile">
+    The agent handles the payment, customises the tile with the user's details, and submits it to the server.
+  </Step>
+  <Step title="Tile is minted as an NFT">
+    The server mints the tile as an NFT and places it on the shared canvas. The agent confirms the tile details with the user.
+  </Step>
+</Steps>
 
 ---
 
@@ -43,7 +82,7 @@ With Human Proof, providers can offer discounted tiers, free trials, or premium 
 
 `@billionsnetwork/x402-human-proof-client` enables any HTTP client or custom agent to authenticate against APIs protected by the x402 Human Proof Server SDK.
 
-Most agents won't need this SDK directly. The [**Verified Agent Identity skill**](https://billions.network/verified-agent-identity-skill-openclaw) is a general-purpose identity skill that pairs a verified human to their agent and supports the x402 human-proof flow out of the box — install it and the agent can transact on human-proof protected APIs without any code changes.
+Most agents won't need this SDK directly. The [**Verified Agent Identity skill**](/agents/identity-overview) is a general-purpose identity skill that pairs a verified human to their agent and supports the x402 human-proof flow out of the box — install it and the agent can transact on human-proof protected APIs without any code changes.
 
 Reach for the client SDK only when you're building a custom agent that needs direct control over the x402 flow or when you're building any other HTTP client that needs to prove a verified-human identity to a protected API with the Billions human-proof server SDK.
 
