@@ -21,6 +21,31 @@ Billions offers two ways to interact with a credential-focused wallet: the **Bil
   </Card>
 </CardGroup>
 
+Your wallet also powers your **Official Profile** — a verifiable identity badge available at [official.app](https://official.app). Earn a Basic, Verified, or Premium badge that signals authenticity across the Billions network, without revealing any personal data.
+
+---
+
+## Credential Management
+
+Credential management is the systematic process of creating, storing, protecting, rotating, and revoking digital credentials. The Billions Wallet handles this end-to-end — letting you claim, store, and present verifiable credentials that are privacy-preserving proofs about who you are, issued by trusted parties and verified on-chain or off-chain without exposing your underlying data.
+
+### Available Credentials
+
+<CardGroup cols={2}>
+  <Card title="Proof of Uniqueness" icon="fingerprint">
+    Proves you are a real, unique human using a one-time face scan. The foundation for human verification across the Billions network.
+  </Card>
+  <Card title="Verified Human" icon="user-check">
+    Combines uniqueness with identity document verification for a higher level of trust.
+  </Card>
+  <Card title="Email" icon="envelope">
+    Verifies ownership of an email address and links it to your decentralized identity.
+  </Card>
+  <Card title="Social Accounts" icon="share-nodes">
+    Verify and link your Discord, Twitter (X), and Telegram accounts to your identity — provable without revealing account credentials.
+  </Card>
+</CardGroup>
+
 ---
 
 ## Credential Storage
@@ -37,16 +62,3 @@ All credentials are encrypted and stored in cloud storage — accessible across 
   No credentials are stored in plaintext at any point. The cloud storage acts solely as a secure, encrypted repository — the decryption keys never leave the user's control.
 </Info>
 
----
-
-## How Billions Wallet Differs from Crypto Wallets
-
-The Billions Wallet is fundamentally different from general-purpose crypto wallets such as MetaMask, Trust Wallet, or Coinbase Wallet:
-
-| | Crypto Wallets | Billions Wallet |
-|---|---|---|
-| **Purpose** | Send and receive crypto transactions | Store and verify identity credentials |
-| **Network interaction** | Ethereum and other chains via RPC | Issues and verifies credentials via ZK proofs |
-| **What is stored** | Cryptographic keys | Verifiable identity credentials |
-| **Key curve** | secp256k1 → Ethereum Address | Baby Jubjub Elliptic Curve → Billions Identifier |
-| **Identifier** | Ethereum wallet address | Billions Identity Identifier (DID) |
