@@ -21,7 +21,30 @@ Billions offers two ways to interact with a credential-focused wallet: the **Bil
   </Card>
 </CardGroup>
 
-Your wallet also powers your **Official Profile** — a verifiable identity badge available at [official.app](https://official.app). Earn a Basic, Verified, or Premium badge that signals authenticity across the Billions network, without revealing any personal data.
+---
+
+## Features
+
+<CardGroup cols={2}>
+  <Card title="Seamless Authentication" icon="shield-halved">
+    Sign in with Google, Apple ID, or a crypto wallet. An identity wallet is automatically derived and credentials are encrypted and stored for effortless multi-device access.
+  </Card>
+  <Card title="Privacy by Design" icon="lock">
+    Users retain full control of their identity data. Credentials are exchanged directly between parties with no intermediaries and no centralized authority.
+  </Card>
+  <Card title="Credential Dashboard" icon="table-columns">
+    View and manage all credentials from a unified dashboard — with full visibility into active, revoked, and expired credentials.
+  </Card>
+  <Card title="Zero-Knowledge Proofs" icon="shield-check">
+    Generate cost-optimized ZK proofs for credential verification, enabling privacy-preserving authentication without exposing personal data.
+  </Card>
+  <Card title="Query Verification" icon="circle-check">
+    Approve verification requests instantly by validating them against credentials stored in your wallet — on-chain or off-chain.
+  </Card>
+  <Card title="Credential Marketplace" icon="store">
+    Proactively claim credentials in advance through the marketplace, making future verifications quicker.
+  </Card>
+</CardGroup>
 
 ---
 
@@ -48,6 +71,34 @@ Credential management is the systematic process of creating, storing, protecting
 
 ---
 
+## How to Claim Credentials
+
+<Steps>
+  <Step title="Open the Wallet">
+    Visit [wallet.billions.network](https://wallet.billions.network) or open the Billions Wallet App. Sign in with Google, Apple ID, or a crypto wallet.
+  </Step>
+  <Step title="Identity Loads">
+    An identity wallet is derived from your account and any existing credentials are retrieved from encrypted cloud storage.
+  </Step>
+  <Step title="Browse Available Credentials">
+    View the credentials available to claim.
+  </Step>
+  <Step title="Initiate Claiming">
+    Select a credential and start the issuance flow. Depending on the credential type, this may involve a face scan (Proof of Uniqueness), document upload (Verified Human), or an OAuth connection (Email, Social Accounts).
+  </Step>
+  <Step title="Credential Issued and Stored">
+    The issuer verifies the information and issues a signed credential directly to your wallet. It is encrypted and stored in cloud storage — ready to use in any verification flow without needing to be claimed again.
+  </Step>
+</Steps>
+
+---
+
+## Demo Application
+
+Experience the full verification flow through the live demo at [demo.billions.network](https://demo.billions.network), which showcases **Human**, **Verified Human**, and **Uniqueness** verification flows end-to-end.
+
+---
+
 ## Credential Storage
 
 All credentials are encrypted and stored in cloud storage — accessible across multiple devices and serving as a reliable backup. Upon sign-in, an identity is derived and storage keys are generated from the authenticated account.
@@ -62,3 +113,22 @@ All credentials are encrypted and stored in cloud storage — accessible across 
   No credentials are stored in plaintext at any point. The cloud storage acts solely as a secure, encrypted repository — the decryption keys never leave the user's control.
 </Info>
 
+---
+
+## Official Profile
+
+Official Profiles by Billions are the standard for proving authenticity in a world of scams and AI-generated content. Available at [wallet.billions.network](https://wallet.billions.network/official-profile), each profile carries a badge that signals who is real and trustworthy — while keeping personal data private.
+
+> "Official Profiles proves who's real. Official Profiles keeps your privacy intact. The solution against scams."
+
+Every Billions Wallet holder has a public profile page that shows the credentials and badges they have earned, without exposing any underlying personal data.
+
+### Profile Badges
+
+Badges are earned by completing credential claims and signal different levels of trust:
+
+| Badge | Requirements |
+|---|---|
+| **Basic** | Email verification + Proof of Uniqueness |
+| **Verified** | Basic Badge + Government-issued ID document |
+| **Premium** | Basic Badge + Premium Voucher + Affiliate enrollment |

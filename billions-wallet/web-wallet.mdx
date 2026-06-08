@@ -14,45 +14,6 @@ The wallet supports multi-device access, embedded credential issuance, and both 
 
 The Web Wallet is accessible at [wallet.billions.network](https://wallet.billions.network). To get started, sign in with Google, Apple ID, or a crypto wallet, and create your identity.
 
-<Tip>
-  Experience the Web Wallet through the [demo application](https://demo.billions.network), which showcases **Human**, **Verified Human**, and **Uniqueness** verification flows.
-</Tip>
-
-## Features
-
-<CardGroup cols={2}>
-  <Card title="Seamless Authentication" icon="shield-halved">
-    Sign in with Google, Apple ID, or a crypto wallet. A derived identity wallet is automatically created, with credentials encrypted and stored in end-to-end encrypted cloud storage for effortless multi-device access.
-  </Card>
-  <Card title="Credential Dashboard" icon="table-columns">
-    View and manage all credentials stored in your Identity Wallet from a unified dashboard — with full visibility into active, revoked, and expired credentials.
-  </Card>
-  <Card title="Query Verification" icon="circle-check">
-    Approve verification requests instantly by validating them against the credentials stored in your wallet, supporting both on-chain and off-chain verification flows.
-  </Card>
-</CardGroup>
-
-## Verification Journey
-
-The following walkthrough describes the end-to-end user experience for verification.
-
-<Steps>
-  <Step title="Initiate">
-    The user clicks the designated action in the application, which triggers a redirect to the Web Wallet.
-  </Step>
-  <Step title="Sign In">
-    The user selects **Sign In** and authenticates using Google, Apple ID, or a crypto wallet.
-  </Step>
-  <Step title="Load Identity">
-    An identity wallet is derived from the user's account and the associated encrypted credentials are retrieved from cloud storage.
-  </Step>
-  <Step title="Claim Credential">
-    If the required credential has not yet been issued, the user selects **Claim Credential** and completes the issuance flow (e.g. a uniqueness check for Proof of Uniqueness).
-  </Step>
-  <Step title="Generate Proof">
-    Once the credential is available, the user selects **Verify**. A zero-knowledge proof is generated and submitted to the verifier — either off-chain or to a smart contract for on-chain verification.
-  </Step>
-  <Step title="Complete Verification">
-    The user is redirected back to the application, where the verification result is confirmed and the application flow continues.
-  </Step>
-</Steps>
+<Info>
+  Zero-knowledge proof generation runs entirely in the browser using a WebAssembly-compiled circuit client. No personal data or cryptographic material leaves the user's device at any point during proof generation.
+</Info>
