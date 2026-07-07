@@ -50,13 +50,13 @@ Once linked, the agent can prove it is operated by a real, unique human. This un
   allowFullScreen
 ></iframe>
 
-The demo walks through the full identity linking flow live — from a fresh agent with nothing installed to a permanent, on-chain human-agent pairing — using a Telegram bot called Billy running on OpenClaw.
+The demo walks through the full identity linking flow live — from a fresh agent with nothing installed to a permanent, on-chain human-agent pairing — using a Telegram bot called Billy running on [OpenClaw](https://openclaw.ai), an agent framework for building and deploying AI agents.
 
 ### What happens in the demo
 
 <Steps>
   <Step title="Install the skill">
-    An agent called Billy was built using OpenClaw and deployed on Telegram. With the agent running, a single install command is pasted directly into the chat:
+    An agent called Billy was built using OpenClaw and deployed on Telegram. [Clawhub](https://clawhub.ai) — the skill manager for OpenClaw-compatible agents — handles the install. With the agent running, a single install command is pasted directly into the chat:
 
     ```plaintext
     Install the skill `npx clawhub@latest install verified-agent-identity`
@@ -65,10 +65,10 @@ The demo walks through the full identity linking flow live — from a fresh agen
     Billy installs the skill and sets everything up automatically — no manual configuration needed.
   </Step>
   <Step title="Agent generates its DID">
-    The user asks Billy to show his identity. Billy responds with his DID — a decentralized identifier derived from his cryptographic key via the iden3 protocol. No one assigned it; the math created it.
+    The user asks Billy to show his identity. Billy responds with his DID — a decentralized identifier derived from his cryptographic key via the [iden3 protocol](https://docs.iden3.io), an open-source ZK identity framework. No one assigned it; the math created it.
   </Step>
   <Step title="Generate a pairing link">
-    The user asks Billy to link their DID with his. Billy generates a verification URL scoped specifically to this human-agent pair and shares it in the chat.
+    The user sends: "Link my DID with yours." Billy generates a verification URL scoped specifically to this human-agent pair and shares it in the chat.
   </Step>
   <Step title="Complete pairing in the Billions Web Wallet">
     The user opens the link in the Billions Web Wallet and signs in with Google. The wallet loads the user's identity and existing credentials.

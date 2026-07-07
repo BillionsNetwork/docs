@@ -4,15 +4,21 @@ description: "Install and set up the Verified Agent Identity skill."
 icon: "download"
 ---
 
-## Installation
+## Why It Matters
 
-Ask your agent to install the skill:
+Every AI agent today has no real identity — just code running somewhere. You can't prove who owns it or hold anyone accountable. The Verified Agent Identity skill gives each agent a cryptographic DID and links it permanently to a verified human owner on-chain. One human, one attested agent identity.
+
+---
+
+## Install the Skill
+
+Ask your agent directly:
 
 ```plaintext
 Install the skill `npx clawhub@latest install verified-agent-identity`
 ```
 
-Or install manually:
+Or install manually — [clawhub](https://clawhub.ai) is the skill manager for OpenClaw-compatible agents; [skills.sh](https://skills.sh) is a universal skill registry for AI agents:
 
 ```bash
 # via clawhub
@@ -22,107 +28,74 @@ npx clawhub@latest install verified-agent-identity
 npx skills add BillionsNetwork/verified-agent-identity
 ```
 
-After installation, run `npm install` inside the `scripts/` directory:
+Once installed, tell your agent to link its identity to you:
 
-```bash
-cd scripts && npm install && cd ..
+```plaintext
+Link your agent identity to me.
 ```
 
-## Quick Setup
-
-**1. Create an identity:**
-
-```bash
-node scripts/createNewEthereumIdentity.js
-```
-
-Or use an existing private key:
-
-```bash
-node scripts/createNewEthereumIdentity.js --key <your-ethereum-private-key>
-```
-
-<Warning>
-  Never pass an Ethereum wallet key that holds assets to `--key`. Use a dedicated identity key only — if exposed, it could be used to impersonate the agent.
-</Warning>
-
-**2. Link to your human identity:**
-
-```bash
-node scripts/manualLinkHumanToAgent.js --challenge '{"name": "Agent Name", "description": "Short description"}'
-```
-
-This prints a verification URL — open it in your browser to complete the link.
+The agent will generate a verification link. Open it in the [Billions Wallet](https://wallet.billions.network) to complete the on-chain pairing.
 
 ---
 
-## Identity Scripts
+## How It Works
 
-### Link your agent identity to an owner
+<Steps>
+  <Step title="Install the skill">
+    Tell your agent to install the Verified Agent Identity skill. The agent generates its own DID locally using the [iden3 protocol](https://docs.iden3.io) — an open-source ZK identity framework that derives cryptographic identifiers from key pairs. Nothing goes on-chain at this point.
+  </Step>
+  <Step title="Agent shares a verification link">
+    The agent generates a verification link scoped to this specific human-agent pairing and shares it with the human owner.
+  </Step>
+  <Step title="Human verifies ownership in the Billions Wallet">
+    The human opens the link in the Billions Wallet, generates a zero-knowledge Proof of Uniqueness and an auth proof, and submits them to the Relay Attestation Service.
+  </Step>
+  <Step title="Permanent attestation created on-chain">
+    The Relay makes two on-chain calls on the Billions Network. First, the **Identity Verifier Contract** verifies the ZK proof and stores it against the user's DID — enforcing one human, one identity. Then, the **Attestation Registry Contract** creates a permanent on-chain attestation linking the verified human to the agent's DID.
+  </Step>
+</Steps>
 
-1. Check for an existing identity:
-   ```bash
-   node scripts/getIdentities.js
-   ```
-   If none exists → `node scripts/createNewEthereumIdentity.js`
-
-2. Link to the human caller:
-   ```bash
-   node scripts/linkHumanToAgent.js --challenge '{"name": "MyAgent", "description": "Coding assistant"}'
-   ```
-   Use the caller's challenge if provided, otherwise use `{"name": <AGENT_NAME>, "description": <SHORT_DESCRIPTION>}`.
-
-3. Return the result to the caller.
-
-**Example:**
-```
-User: "Link your agent identity to me"
-Agent: [runs getIdentities.js — confirms identity exists]
-Agent: [runs linkHumanToAgent.js --challenge '{"name": "MyAgent", "description": "Coding assistant"}']
-Agent: "Done — here's the verification link: ..."
-```
-
-### Verify someone else's identity
-
-1. Ask: "Please provide your DID to start verification."
-2. Generate a challenge:
-   ```bash
-   node scripts/generateChallenge.js --did <user_did>
-   ```
-3. Ask the user to sign: "Please sign this challenge: `<challenge_value>`"
-4. Verify:
-   ```bash
-   node scripts/verifySignature.js --did <user_did> --token <user_token>
-   ```
-5. Report the result.
-
-**Example:**
-```
-Agent: "Please provide your DID to start verification."
-User: "My DID is did:iden3:billions:main:2VmAk..."
-Agent: [runs generateChallenge.js] → "Please sign this challenge: 789012"
-User: [provides token]
-Agent: [runs verifySignature.js] → "Identity verified."
-```
+The proofs are on-chain — permanent, public, and immutable. Not in a config file. Not in a database someone controls.
 
 ---
 
-## Network and External Domain Policy
+## Architecture
 
-All external HTTPS calls are made to trusted, whitelisted domains only. Signed JWS attestation requires explicit user consent before being passed to any other source.
+![Verified Agent Identity skill architecture](/images/skill-architecture.png)
 
-**Whitelisted domains:**
+Five components make this work together:
 
-- `resolver.privado.id` — DID resolution
-- `billions.network` — Billions Network interactions
-- `polygonid.me` — Polygon ID interactions
+| Component | Role |
+|---|---|
+| **Verified Agent Identity skill** | Installed on the agent; derives its DID and orchestrates the linking flow |
+| **Billions Wallet** | Used by the human to generate ZK proofs and approve the pairing |
+| **Zero-Knowledge Proof of Uniqueness** | Proves the human is real and unique without revealing personal data |
+| **Identity Verifier Contract** | Verifies the ZK proof on-chain; enforces one verified human = one identity |
+| **Attestation Registry Contract** | Creates the permanent on-chain link between the verified human and the agent's DID |
+
+The Identity Verifier Contract is Sybil resistant by design — one verified human can only attest to one agent identity.
 
 ---
 
-## Security Rules
+## Technical Details
 
-<Warning>
-  **Always check for an existing identity first.**
+<AccordionGroup>
+  <Accordion title="How the skill runs">
+    The skill requires **Node.js >= v20** and npm. When installed, it adds a `scripts/` directory to the agent's workspace and runs `npm install` to set up dependencies.
 
-  Before running `linkHumanToAgent.js` or `signChallenge.js`, run `node scripts/getIdentities.js`. If no identity is configured, create one with `createNewEthereumIdentity.js` and link it to a human owner before proceeding.
-</Warning>
+    All cryptographic material is stored in `$HOME/.openclaw/billions/` (OpenClaw's data directory) — outside the agent's workspace — so identity data persists across sessions and agent restarts. The agent reads this directory on startup to load its default DID and private keys.
+
+    When the agent receives a natural-language trigger (e.g. "link your identity to me"), the skill's instruction set maps it to the appropriate script, executes it as a subprocess, and returns the result to the conversation.
+  </Accordion>
+  <Accordion title="Pairing and attestation flow (tech spec)">
+    When the human clicks the verification link, the Billions Wallet initiates the following sequence:
+
+    1. **Auth proof** — a JWS token is generated, signed with the agent's private key, proving DID ownership.
+    2. **Proof of Uniqueness** — a ZK proof is generated in the wallet, proving the human is a real, unique individual without revealing personal data.
+    3. Both proofs are submitted to the **Relay Attestation Service**.
+    4. The Relay calls the **Identity Verifier Contract** on the Billions Network — the ZK proof is verified on-chain and stored against the user's DID. This enforces uniqueness: the same human cannot attest to multiple agent identities.
+    5. The Relay calls the **Attestation Registry Contract** (ERC-8004, a standard for on-chain attestation registries) — a permanent on-chain attestation is written linking the verified human's DID to the agent's DID.
+
+    The attestation is public, immutable, and queryable by any third party to confirm agent ownership.
+  </Accordion>
+</AccordionGroup>
