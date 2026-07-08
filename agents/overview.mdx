@@ -1,5 +1,6 @@
 ---
-title: "Overview"
+title: "x402 Human Proof"
+sidebarTitle: "Overview"
 description: "x402 Human Proof — differentiated pricing and spam protection for APIs serving humans and AI agents."
 icon: "book-open"
 ---
@@ -41,10 +42,10 @@ The demo shows the full x402 Human Proof flow end-to-end: an agent visits a prot
     The agent requests a tile from the server. The server denies access with an HTTP `402 Payment Required` response — because the agent has not yet proven it is operated by a verified human and has not paid.
   </Step>
   <Step title="Agent presents verification and payment options">
-    The agent surfaces both requirements to the user: a verification link to pair the human with the agent (via the Billions Wallet), and the available payment options. Both must be satisfied to access the resource — this is the combined power of x402 and the x402 Human Proof extension.
+    The agent surfaces both requirements to the user: a verification link to pair the human with the agent (via the Billions Web Wallet), and the available payment options. Both must be satisfied to access the resource — this is the combined power of x402 and the x402 Human Proof extension.
   </Step>
   <Step title="User pairs with the agent on-chain">
-    The user opens the verification link in the Billions Wallet. They confirm their Proof of Uniqueness credential and complete the pairing. A permanent ownership attestation is created on-chain, linking the user to their agent.
+    The user opens the verification link in the Billions Web Wallet. They confirm their Proof of Uniqueness credential and complete the pairing. A permanent ownership attestation is created on-chain, linking the user to their agent.
   </Step>
   <Step title="User selects a payment option">
     With the pairing confirmed, the user selects their preferred payment option from the options the agent presented.
@@ -65,14 +66,12 @@ The demo shows the full x402 Human Proof flow end-to-end: an agent visits a prot
 
 **Features:**
 
-- **Drop-in setup.** One function call is all it takes; your existing routes and payment logic stay exactly as they are, nothing else needs to change.
-- **Tiered pricing for humans and their agents.** Set a lower price for verified humans and their agents, and a standard rate for everyone else; the server won't let anyone claim the discount without valid proof.
-- **Per-identity usage caps.** Set a hard limit on how many times each verified human and their agent can claim the discount, enforced atomically so concurrent requests can never race past it.
-- **Shared quotas across routes.** Multiple routes can share one usage pool, so a verified human's quota — and their agent's — is counted across your whole API, not just one endpoint.
-- **Automatic rollback on failure.** If a payment falls through after verification, the usage count restores itself; a failed transaction never costs the usage.
-- **Credential gating.** Go beyond just "is this a human" and require any combination of credentials or skills per route.
+- **Drop-in setup.** One function call; existing routes and payment logic stay unchanged.
+- **Tiered pricing.** A discounted rate for verified humans and their agents, a standard rate for everyone else — claiming the discount requires valid proof.
+- **Usage caps and shared quotas.** Hard per-human limits, enforced atomically, with multiple routes able to share one usage pool. If a payment fails after verification, the usage count rolls back automatically.
+- **Credential gating.** Require any combination of credentials or skills per route, beyond "is this a human".
 
-<Card title="Server SDK Reference" icon="server" href="/x402/server">
+<Card title="Server SDK Reference" icon="server" href="/agents/server">
   Full reference for `@billionsnetwork/x402-human-proof-server`
 </Card>
 
@@ -88,11 +87,11 @@ Reach for the client SDK only when you're building a custom agent that needs dir
 
 **Features:**
 
-- **Automatic signing.** Every verification challenge is handled and signed in the background; nothing to wire up per request.
-- **Smart tier selection.** Picks the best tier the agent qualifies for based on its human-backed status and falls back to standard pricing if the discount isn't available.
-- **Usage cap recovery.** Detects when a human or their agent hits the usage limit and retries at standard pricing automatically.
+- **Automatic signing.** Verification challenges are signed in the background; nothing to wire up per request.
+- **Smart tier selection.** Picks the best tier the client qualifies for, falling back to standard pricing when the discount isn't available.
+- **Usage cap recovery.** Detects when the usage limit is hit and retries at standard pricing.
 - **Works with any EVM wallet.**
 
-<Card title="Client SDK Reference" icon="browser" href="/x402/client">
+<Card title="Client SDK Reference" icon="browser" href="/agents/client">
   Full reference for `@billionsnetwork/x402-human-proof-client`
 </Card>

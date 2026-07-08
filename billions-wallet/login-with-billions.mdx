@@ -13,7 +13,7 @@ Think of it as "Login with Google" — but **trustless, privacy-preserving, and 
 
 - **Authenticates DID Ownership**: Authenticates users by cryptographically proving ownership of their DID
 - **Enables Trustless Authentication**: Removes reliance on centralized identity providers.
-- **Delivers a Familiar Web2 Experience**
+- **Delivers a Familiar Web2 Experience**: Sign-in feels like any social login — the user clicks a button and approves in their wallet, with no passwords or seed phrases to manage.
 
 ## Authentication Flow
 
@@ -54,7 +54,8 @@ Before you begin, ensure the following environment requirements are met:
 - Public URL for callbacks (use [ngrok](https://ngrok.com/) for local development)
 
 ### Example Repository
-- [Reference implementation](https://github.com/0xPolygonID/tutorial-examples/tree/main/login-with-billions)
+
+The steps below walk through the [reference implementation](https://github.com/0xPolygonID/tutorial-examples/tree/main/login-with-billions) — clone it to follow along. The code snippets on this page are its `index.js`, and the repo includes the `./static` frontend used in the testing steps.
 
 ### 1. Server Configuration
 Sets up Express server with required middleware and routes for handling authentication requests and callbacks.
@@ -131,19 +132,18 @@ async function getAuthRequest(req, res) {
   **Get Your Verifier DID:** Sign in to your [Billions Wallet](https://wallet.billions.network/) and copy your profile DID to use during setup.
 </Info>
 
-## How Does `getAuthRequest` Connect to Billions Wallet?
+<Accordion title="How does getAuthRequest connect to the Billions Wallet?">
+  This is where [**Universal Links**](https://hackmd.io/@0xpulkit/billions-universal-link) come into play. Your frontend takes the auth request returned by `getAuthRequest()`, encodes it in Base64, and embeds it into a Universal Link, which redirects the user to the Billions Wallet. The wallet processes the request, prompts the user to sign, and then posts a signed JWZ (JSON Web Zero-knowledge) token to your callback endpoint. That JWZ is what your backend verifies to confirm DID ownership — delivering a seamless login flow across web and mobile.
 
-This is where [**Universal Links**](https://hackmd.io/@0xpulkit/billions-universal-link) come into play! Your frontend takes the auth request returned by `getAuthRequest()`, encodes it in Base64, and embeds it into a Universal Link which in turn redirects the user to  Billions wallet. The wallet processes the request, prompts the user to sign, and then posts a signed JWZ (JSON Web Zero-knowledge) token to your callback endpoint. That JWZ is what your backend verifies to confirm DID ownership, and thus delivers a seamless login flow across web and mobile.
+  **Example link format:**
 
-### Example Link Format
+  ```text
+  https://wallet.billions.network/#i_m=<base64_encoded_auth_request>
+  ```
 
-```javascript
-https://wallet.billions.network/#i_m=<base64_encoded_auth_request>
-```
-
-**Components:**
-- **Base URL**: `https://wallet.billions.network/` - Billions wallet endpoint
-- **Fragment**: `#i_m=` - Parameter for auth request
+  - **Base URL**: `https://wallet.billions.network/` — Billions Wallet endpoint
+  - **Fragment**: `#i_m=` — parameter carrying the Base64-encoded auth request
+</Accordion>
 
 ### 3. Verification Callback Handler
 Receives JWZ token as a callback, validates them against stored authentication requests, and confirms user DID ownership.
@@ -229,11 +229,23 @@ When a user logs in again with the same Billions Wallet, they’ll present the s
 1. **Visit your app:** `http://localhost:8080`
 2. **Test universal link:** Click "Login with Billions" button
 
-You can test the full authentication loop — from generating the auth request to verifying the DID — ensuring your app correctly recognizes verified users
+You can test the full authentication loop — from generating the auth request to verifying the DID — ensuring your app correctly recognizes verified users.
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="The callback endpoint never fires">
+    The wallet POSTs the JWZ token to your `/api/callback` endpoint from outside your machine — so `hostUrl` must be a **publicly reachable URL**, not `localhost`. For local development, run [ngrok](https://ngrok.com/) and use the ngrok HTTPS URL as `hostUrl`. If the callback still doesn't arrive, confirm the auth request's callback URI includes the `sessionId` query parameter.
+  </Accordion>
+  <Accordion title='"Invalid session ID or session expired"'>
+    Auth requests are stored in an in-memory `Map`, so **restarting the server clears all pending sessions** — any link generated before the restart will fail. Each session is also deleted after its first callback (`requestMap.delete`), so a verification link can't be replayed. In both cases, start a fresh sign-in to generate a new auth request.
+  </Accordion>
+</AccordionGroup>
 
 ---
 
 ## Going Further: Beyond Basic Login
 
-With **Login with Billions**, you’re not just authenticating users — you’re building the foundation for a unified Web3 identity layer.
-Once DID-based login is in place, it can power any authentication experience — from crypto wallet sign-ins to Billions credentials, or even enabling 2FA — all anchored to a single decentralized identity.
+Once DID-based login is in place, the same identity can power other authentication experiences — crypto wallet sign-ins, verification against Billions credentials, or 2FA — all anchored to a single decentralized identity.
