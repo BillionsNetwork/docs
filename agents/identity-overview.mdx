@@ -1,16 +1,13 @@
 ---
-title: "Overview"
-description: "Know Your Agent — decentralized identity for AI agents on the Billions Network."
+title: "Verified Agent Identity"
+sidebarTitle: "Overview"
+description: "Give your AI agent a cryptographic identity with a verified human owner on the Billions Network."
 icon: "book-open"
 ---
 
-The **Verified Agent Identity** skill gives any AI agent a decentralized, cryptographic identity (DID) on the Billions Network — and lets a human owner link themselves to that agent permanently and verifiably on-chain.
+Every AI agent today runs without a real identity — just code executing somewhere, with no way to prove who owns it or hold anyone accountable. The **Verified Agent Identity** skill fixes that: it gives any AI agent a decentralized identifier (DID) on the Billions Network and links it permanently and verifiably, on-chain — to a real human owner.
 
-Once linked, the agent can prove it is operated by a real, unique human. This unlocks discounted pricing tiers on APIs protected by x402 Human Proof, spam protection for service providers, and a public, tamper-proof record of agent ownership that anyone can verify.
-
-<Info>
-  **What is x402 Human Proof?** x402 is an open payment protocol that lets APIs accept per-request payments. x402 Human Proof extends it with a human identity verification layer — so providers can offer better pricing to verified humans and the agents they control, while keeping standard rates for unverified traffic. [Learn more](/agents/overview)
-</Info>
+Once linked, the agent can prove it is operated by a real, unique human. Service providers get spam protection, and anyone can look up a public, tamper-proof record of who stands behind the agent.
 
 <Card title="GitHub" icon="github" href="https://github.com/BillionsNetwork/verified-agent-identity">
   BillionsNetwork/verified-agent-identity
@@ -20,7 +17,7 @@ Once linked, the agent can prove it is operated by a real, unique human. This un
 
 <CardGroup cols={2}>
   <Card title="Identity Creation" icon="circle-plus">
-    Generate new DIDs with random or existing Ethereum private keys.
+    Give your agent its own DID — derived locally from a cryptographic key pair, no registry or sign-up required.
   </Card>
   <Card title="Identity Management" icon="list">
     List and manage multiple identities with default identity support.
@@ -28,17 +25,68 @@ Once linked, the agent can prove it is operated by a real, unique human. This un
   <Card title="Human-Agent Linking" icon="link">
     Link a human identity to an agent's DID through signed challenges.
   </Card>
-  <Card title="Proof Generation" icon="key">
-    Generate cryptographic proofs to authenticate as a specific identity.
-  </Card>
-  <Card title="Proof Verification" icon="shield-check">
-    Verify proofs to confirm identity ownership.
+  <Card title="x402 Discounted Pricing" icon="tag" href="/agents/overview">
+    Human-owned agents unlock discounted pricing tiers on APIs protected by x402 Human Proof.
   </Card>
 </CardGroup>
 
 ---
 
+## How It Works
+
+<Steps>
+  <Step title="Agent creates its DID">
+    The agent generates its own DID locally using the [iden3 protocol](https://docs.iden3.io) — an open-source ZK identity framework that derives cryptographic identifiers from key pairs. Nothing goes on-chain at this point.
+  </Step>
+  <Step title="Agent shares a verification link">
+    When asked to link its identity, the agent generates a verification link scoped to this specific human-agent pairing and shares it with the human owner.
+  </Step>
+  <Step title="Human verifies ownership in the Billions Web Wallet">
+    The human opens the link in the Billions Web Wallet, generates a zero-knowledge Proof of Uniqueness and an auth proof, and submits them to the Relay Attestation Service.
+  </Step>
+  <Step title="Permanent attestation created on-chain">
+    The Relay makes two on-chain calls on the Billions Network. First, the **Identity Verifier Contract** verifies the ZK proof and stores it against the user's DID — enforcing that one verified human maps to exactly one on-chain identity. Then, the **Attestation Registry Contract** creates a permanent on-chain attestation linking the verified human to the agent's DID.
+  </Step>
+</Steps>
+
+The resulting attestation is permanent, public, and queryable by any third party to confirm agent ownership.
+
+---
+
+## Architecture
+
+Five components carry the flow from a locally generated key pair to a public on-chain attestation:
+
+```mermaid
+flowchart TB
+    Agent["<b>AI Agent</b><br/>verified-agent-identity skill<br/>DID derived locally via iden3"]
+    Human["<b>Human Owner</b><br/>Billions Web Wallet<br/>generates ZK Proof of Uniqueness + auth proof"]
+    Relay["<b>Relay Attestation Service</b><br/>off-chain relay"]
+
+    subgraph chain["Billions Network — on-chain"]
+        Verifier["<b>Identity Verifier Contract</b><br/>verifies Proof of Uniqueness<br/>one human = one identity"]
+        Registry["<b>Attestation Registry Contract</b><br/>permanent human-to-agent link"]
+    end
+
+    Agent -- "1 · sends verification link" --> Human
+    Human -- "2 · submits proofs" --> Relay
+    Relay -- "3 · verify Proof of Uniqueness" --> Verifier
+    Relay -- "4 · create attestation" --> Registry
+```
+
+Reading the diagram in flow order:
+
+1. **Verified Agent Identity skill** — runs on the agent. It derives the agent's DID from a local key pair and orchestrates the linking flow, starting by sending the human owner a verification link.
+2. **Billions Web Wallet** — where the human proves who they are. It generates a zero-knowledge **Proof of Uniqueness** (proving the human is real and unique without revealing personal data) plus an auth proof, and submits both.
+3. **Relay Attestation Service** — the off-chain bridge. It receives the proofs and turns them into two on-chain transactions.
+4. **Identity Verifier Contract** — verifies the ZK proof on-chain and stores it against the human's DID. It is Sybil-resistant by design: one verified human maps to exactly one on-chain identity.
+5. **Attestation Registry Contract** — writes the permanent, public attestation linking the verified human's identity to the agent's DID.
+
+---
+
 ## Demo
+
+Watch the whole flow happen live: in a few minutes, an agent goes from having no identity at all to a permanent, publicly verifiable on-chain pairing with its human owner.
 
 <iframe
   width="100%"
@@ -50,35 +98,16 @@ Once linked, the agent can prove it is operated by a real, unique human. This un
   allowFullScreen
 ></iframe>
 
-The demo walks through the full identity linking flow live — from a fresh agent with nothing installed to a permanent, on-chain human-agent pairing — using a Telegram bot called Billy running on [OpenClaw](https://openclaw.ai), an agent framework for building and deploying AI agents.
+The demo uses **Billy**, an agentic bot on Telegram, built with the [OpenClaw](https://openclaw.ai) framework for building and deploying AI agents. The demo follows Billy through exactly the flow described in [How It Works](#how-it-works) above. A few details worth watching for:
 
-### What happens in the demo
+- **Installation is a single chat message.** Pasting `` Install the skill `npx clawhub@latest install verified-agent-identity` `` into the conversation is all it takes — [Clawhub](https://clawhub.ai), the skill manager for OpenClaw-compatible agents, handles the setup with no manual configuration.
+- **The face scan happens once.** First-time users claim a Proof of Uniqueness credential in the Billions Web Wallet with a one-time face scan. The credential is stored in the wallet and reused for every future verification.
+- **The result is checkable end to end.** After verification, Billy appears under **Verified Agents** in the user's wallet profile — and the last four characters of his DID (`V9HT`) match exactly what he shared in the Telegram chat.
 
-<Steps>
-  <Step title="Install the skill">
-    An agent called Billy was built using OpenClaw and deployed on Telegram. [Clawhub](https://clawhub.ai) — the skill manager for OpenClaw-compatible agents — handles the install. With the agent running, a single install command is pasted directly into the chat:
+---
 
-    ```plaintext
-    Install the skill `npx clawhub@latest install verified-agent-identity`
-    ```
+## Next Steps
 
-    Billy installs the skill and sets everything up automatically — no manual configuration needed.
-  </Step>
-  <Step title="Agent generates its DID">
-    The user asks Billy to show his identity. Billy responds with his DID — a decentralized identifier derived from his cryptographic key via the [iden3 protocol](https://docs.iden3.io), an open-source ZK identity framework. No one assigned it; the math created it.
-  </Step>
-  <Step title="Generate a pairing link">
-    The user sends: "Link my DID with yours." Billy generates a verification URL scoped specifically to this human-agent pair and shares it in the chat.
-  </Step>
-  <Step title="Complete pairing in the Billions Web Wallet">
-    The user opens the link in the Billions Web Wallet and signs in with Google. The wallet loads the user's identity and existing credentials.
-
-    New users complete a one-time face scan here to claim a Proof of Uniqueness credential. Once claimed, it is stored in the wallet and never needs to be repeated.
-  </Step>
-  <Step title="On-chain attestation is created">
-    The user hits **Verify**. The wallet generates a zero-knowledge proof and submits it to the Relay Attestation Service, which calls the Identity Verifier Contract to verify the proof on-chain, then calls the Attestation Registry Contract to create a permanent attestation linking the user to Billy.
-  </Step>
-  <Step title="Ownership is public and verifiable">
-    The pairing is now on-chain, permanent, and verifiable by anyone. The user can view Billy listed under **Verified Agents** in their profile — the last four characters of Billy's DID (`V9HT`) match exactly what was shared in the Telegram chat.
-  </Step>
-</Steps>
+<Card title="Installation" icon="download" href="/agents/identity-skill">
+  Install the skill and link your agent's identity to you in two chat messages.
+</Card>

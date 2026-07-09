@@ -42,7 +42,7 @@ npm install @billionsnetwork/x402-human-proof-client @x402/axios @x402/evm viem
 
 ## Quick Start
 
-```javascript
+```typescript
 import { config } from "dotenv";
 import { x402Client, wrapAxiosWithPayment } from "@x402/axios";
 import { ExactEvmScheme } from "@x402/evm/exact/client";
@@ -96,10 +96,10 @@ try {
 ```
 
 ## Core Concepts
- 
+
 ### The Human-Proof Challenge
 
-When the server is configured with @billionsnetwork/x402-human-proof-server, its 402 responses include an extensions["human-proof"] object:
+When the server is configured with `@billionsnetwork/x402-human-proof-server`, its `402` responses include an `extensions["human-proof"]` object:
 
 ```json
 {
@@ -162,7 +162,7 @@ If no challenge is present in the `402` body the payload is returned unchanged. 
 <Note>
   **Compatibility:** the `EVMSigner` interface is intentionally minimal. It is compatible with viem `WalletClient`, viem `LocalAccount` (`privateKeyToAccount`), and ethers v6 `Signer`.
 
-  ```javascript
+  ```typescript
   // viem WalletClient
   const signer: EVMSigner = {
     address: walletClient.account.address,
@@ -351,6 +351,8 @@ Returns `boolean`. Compatible with axios, fetch, node-fetch, and similar.
 ---
 
 ## Environment Variables
+
+The SDK itself reads no environment variables. The variables below are used by the example scripts (including the Quick Start above):
 
 | Variable | Description |
 |---|---|

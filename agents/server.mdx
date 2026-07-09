@@ -59,7 +59,7 @@ Human-proof sits on top of x402 — it adds identity verification to an API that
 [**x402**](https://docs.x402.org/introduction) is an open payment protocol built on the `402 Payment Required` HTTP status code. When a client hits a protected route without payment, the server returns a `402` with the accepted payment terms. The client pays and retries; the server settles on-chain and returns `200`.
 
 Setting up x402 takes three things: a [**facilitator**](https://docs.x402.org/core-concepts/facilitator) (handles on-chain settlement), a **resource server** (coordinates x402 logic), and a **payment middleware** (gates your routes).
-```javascript
+```typescript
 import express from "express";
 import { x402ResourceServer, paymentMiddleware } from "@x402/express";
 import { ExactEvmScheme } from "@x402/evm/exact/server";
@@ -111,7 +111,7 @@ With x402 in place, adding human-proof is a single function call plus two additi
 - **A discounted `accepts` entry** — the second pricing tier, gated behind a PoU attestation.
 - **`declareHumanProofExtension`** — tells the challenge generator what to embed in each `402` response for this route.
 
-```javascript
+```typescript
 import {
   configureHumanProofServer,
   declareHumanProofExtension,
@@ -186,7 +186,7 @@ That's it. Unverified callers pay `$0.01`; verified human-backed agents pay `$0.
 
 Here is the full server in one file, combining both steps:
 
-```javascript
+```typescript
 import { config } from "dotenv";
 import express from "express";
 import { x402ResourceServer, paymentMiddleware } from "@x402/express";
@@ -488,7 +488,7 @@ extra: {
 1. `storage.incrementIfBelow(humanId, maxUse, scope)` returns `null`.
 2. The hook returns `{ abort: true, reason: "max_use_exceeded" }`.
 3. The server sends `402` with `error: "max_use_exceeded"` in the payment-required header.
-4. On the client, `isMaxUseExceededError(err)` returns `true` and `disqualify()` forces the selector to skip discounted options on the next retry. Both helpers are part of the client SDK — see the [Client SDK](/x402/client) for details.
+4. On the client, `isMaxUseExceededError(err)` returns `true` and `disqualify()` forces the selector to skip discounted options on the next retry. Both helpers are part of the client SDK — see the [Client SDK](/agents/client) for details.
 
 **Shared quota across routes:** two routes can share a single usage pool by using the same `scope` key. A human's uses are counted across both routes combined.
 
@@ -511,7 +511,7 @@ With `maxUse: 2` and `scope: "forecast_pool"`, a human who calls `/weather` once
 
 Register an `onEvent` callback to observe verification lifecycle events:
 
-```javascript
+```typescript
 onEvent: (event: HumanProofEvent) => {
   switch (event.type) {
     case "human_verified":
