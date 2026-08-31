@@ -6,11 +6,6 @@ icon: "download"
 
 Setup takes two chat messages: one to install the skill, one to link the agent's identity to you. If you haven't yet, read the [overview](/agents/identity-overview) for what the skill does and how the linking flow works.
 
-## Prerequisites
-
-- An agent compatible with [clawhub](https://clawhub.ai) (e.g. built on [OpenClaw](https://openclaw.ai)) or with [skills.sh](https://skills.sh)
-- **Node.js `>= 20.11.0`** and npm available in the agent's environment
-
 ---
 
 ## Install the Skill
@@ -21,15 +16,19 @@ Ask your agent directly:
 Install the skill `npx clawhub@latest install verified-agent-identity`
 ```
 
-Or install manually — [clawhub](https://clawhub.ai) is the skill manager for OpenClaw-compatible agents; [skills.sh](https://skills.sh) is a universal skill registry for AI agents:
+<div style={{ textAlign: "center" }}>OR</div>
 
-```bash
-# via clawhub
-npx clawhub@latest install verified-agent-identity
-
-# via skills.sh
-npx skills add BillionsNetwork/verified-agent-identity
+```plaintext
+Install the skill `npx skills add BillionsNetwork/verified-agent-identity`
 ```
+
+<div style={{ textAlign: "center" }}>OR</div>
+
+```plaintext
+Install the skill https://github.com/BillionsNetwork/verified-agent-identity
+```
+
+[clawhub](https://clawhub.ai) is the skill manager for OpenClaw-compatible agents, [skills.sh](https://skills.sh) is a universal skill registry for AI agents.
 
 The agent installs the skill and sets everything up automatically — no manual configuration needed.
 
@@ -45,7 +44,7 @@ Link your agent identity to me.
 
 The agent will generate a verification link scoped to this specific human-agent pairing. Open it in the [Billions Web Wallet](https://wallet.billions.network), sign in, and hit **Verify** to complete the on-chain pairing. First-time users claim a Proof of Uniqueness credential with a one-time face scan; after that, the credential is reused for every future verification.
 
-For a step-by-step explanation of what happens during the pairing, see [How It Works](/agents/identity-overview#how-it-works).
+For a step-by-step explanation of what happens during the pairing, see [How It Works](/agents/identity-architecture#how-it-works).
 
 ---
 
@@ -58,27 +57,8 @@ The attestation is now on-chain — permanent, public, and verifiable by anyone.
 
 ---
 
-## Under the Hood
+## Learn More
 
-Everything above happens automatically. The sections below document exactly what the skill does on disk and on-chain, for when you need the details.
-
-<AccordionGroup>
-  <Accordion title="How the skill runs">
-    When installed, the skill adds a `scripts/` directory to the agent's workspace and runs `npm install` to set up dependencies.
-
-    All cryptographic material is stored in `$HOME/.openclaw/billions/` (OpenClaw's data directory) — outside the agent's workspace — so identity data persists across sessions and agent restarts. The agent reads this directory on startup to load its default DID and private keys.
-
-    When the agent receives a natural-language trigger (e.g. "link your identity to me"), the skill's instruction set maps it to the appropriate script, executes it as a subprocess, and returns the result to the conversation.
-  </Accordion>
-  <Accordion title="Pairing and attestation flow (tech spec)">
-    When the human clicks the verification link, the Billions Web Wallet initiates the following sequence:
-
-    1. **Auth proof** — a JWS token is generated, signed with the agent's private key, proving DID ownership.
-    2. **Proof of Uniqueness** — a ZK proof is generated in the wallet, proving the human is a real, unique individual without revealing personal data.
-    3. Both proofs are submitted to the **Relay Attestation Service**.
-    4. The Relay calls the **Identity Verifier Contract** on the Billions Network — the ZK proof is verified on-chain and stored against the user's DID. This enforces uniqueness: one verified human maps to exactly one on-chain identity.
-    5. The Relay calls the **Attestation Registry Contract** (ERC-8004, a standard for on-chain attestation registries) — a permanent on-chain attestation is written linking the verified human's DID to the agent's DID.
-
-    The attestation is public, immutable, and queryable by any third party to confirm agent ownership.
-  </Accordion>
-</AccordionGroup>
+<Card title="How It Works" icon="diagram-project" href="/agents/identity-architecture">
+  See the full linking flow, architecture diagram, demo, and what the skill does under the hood.
+</Card>

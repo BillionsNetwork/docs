@@ -45,11 +45,12 @@
             "group": "Verified Agent Identity Skill",
             "pages": [
               "agents/identity-overview",
+              "agents/identity-architecture",
               "agents/identity-skill"
             ]
           },
           {
-            "group": "x402",
+            "group": "x402 Human Proof",
             "pages": [
               "agents/overview",
               "agents/client",

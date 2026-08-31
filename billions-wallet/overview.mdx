@@ -5,7 +5,7 @@ description: "Self-sovereign identity wallets for managing and verifying credent
 icon: "book-open"
 ---
 
-A digital wallet is an application that holds and manages a user's credentials. Based on the principles of Self-Sovereign Identity (SSI) and cryptography, a wallet helps its holder share data with others without exposing any other sensitive private information. Only the wallet holder has the right to decide which information to share and what needs to remain private.
+The Billions Wallet is a self-sovereign identity wallet for the Billions Network. Signing in derives a decentralized identifier (DID) from a cryptographic key pair, and every credential you claim is encrypted and stored under keys only you control. When a service asks you to prove something about yourself, the wallet generates a zero-knowledge proof on the spot: you decide what to share, and the proof confirms it without exposing the underlying data.
 
 You can access the Billions Wallet from the **web** at [wallet.billions.network](https://wallet.billions.network) or through the [**mobile app**](/billions-wallet/mobile-wallet) on iOS and Android.
 
@@ -114,18 +114,3 @@ All credentials are encrypted and stored in cloud storage — accessible across 
   No credentials are stored in plaintext at any point. The cloud storage acts solely as a secure, encrypted repository — the decryption keys never leave the user's control.
 </Info>
 
----
-
-## Official Profile
-
-Every Billions Wallet holder has a public **Official Profile** at [wallet.billions.network](https://wallet.billions.network/official-profile) — a profile page that shows the credentials and badges they have earned, without exposing any underlying personal data. Badges give others a reliable, privacy-preserving way to check who is real and verified.
-
-### Profile Badges
-
-Badges are earned by completing credential claims and signal different levels of trust:
-
-| Badge | Requirements |
-|---|---|
-| **Basic** | Email verification + Proof of Uniqueness |
-| **Verified** | Basic Badge + Government-issued ID document |
-| **Premium** | Basic Badge + Premium Voucher + Affiliate enrollment |
