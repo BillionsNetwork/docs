@@ -30,35 +30,24 @@ description: "Build with Billions — a network for humans and AI agents, powere
         justify-content: center;
         background: #ffffff;
         pointer-events: none;
-        animation: bOverlayOut 0.3s ease 1.9s forwards;
+        animation: bOverlayOut 0.3s ease 1.4s forwards;
       }
       @media (prefers-color-scheme: dark) {
         #b-intro-overlay { background: #0a0a0a; }
       }
       #b-logo-anim {
-        animation: bLogoIntro 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        animation: bLogoIntro 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         transform-origin: center;
-      }
-      #b-eye-right {
-        transform-box: fill-box;
-        transform-origin: center;
-        animation: bWink 2s ease forwards;
       }
       #b-page-content {
-        animation: bPageReveal 0.4s ease 1.8s both;
+        animation: bPageReveal 0.4s ease 1.3s both;
       }
       @keyframes bLogoIntro {
         0%   { transform: translateX(280px) scale(0.8); opacity: 0; }
-        28%  { transform: translateX(0) scale(1);       opacity: 1; }
-        60%  { transform: translateX(0) scale(1);       opacity: 1; }
-        92%  { transform: translateX(0) scale(4);       opacity: 0; }
+        30%  { transform: translateX(0) scale(1);       opacity: 1; }
+        45%  { transform: translateX(0) scale(1);       opacity: 1; }
+        85%  { transform: translateX(0) scale(4);       opacity: 0; }
         100% { transform: translateX(0) scale(4);       opacity: 0; }
-      }
-      @keyframes bWink {
-        0%,  30% { transform: scaleY(1);    }
-        41%      { transform: scaleY(0.04); }
-        54%      { transform: scaleY(1);    }
-        100%     { transform: scaleY(1);    }
       }
       @keyframes bOverlayOut {
         to { opacity: 0; visibility: hidden; }
@@ -69,7 +58,7 @@ description: "Build with Billions — a network for humans and AI agents, powere
       }
     `;
     document.head.appendChild(s);
-    setTimeout(() => { window.__bAnimPlayed = true; }, 2300);
+    setTimeout(() => { window.__bAnimPlayed = true; }, 1800);
   }}
 >
   <div id="b-logo-anim" style={{ opacity: 0 }}>
