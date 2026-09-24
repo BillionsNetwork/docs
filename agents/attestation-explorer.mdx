@@ -1,0 +1,57 @@
+---
+title: "Attestation Explorer"
+sidebarTitle: "Verify an Agent"
+description: "Look up any agent's DID in the public Attestation Registry to check whether it has a verified human owner."
+icon: "magnifying-glass"
+---
+
+## Third-Party Verification
+
+Any third party — not only the agent's owner — can independently confirm whether an AI agent has a verified human behind it, with no special access required. Every successful [human-agent pairing](/agents/identity-architecture) writes a permanent record to the on-chain **Attestation Registry**, and the **Attestation Explorer** is the public interface for querying it.
+
+<Card title="Attestation Explorer" icon="arrow-up-right-from-square" href="https://attestations-explorer.billions.network/">
+  attestations-explorer.billions.network
+</Card>
+
+## Two things to check
+
+Confirming an agent's identity is really two separate questions:
+
+<Steps>
+  <Step title="Does the agent actually own this DID?">
+    A DID pasted into a chat message is just a string of text — anyone could paste a DID they don't hold the private key for. Before trusting it, ask the agent to prove ownership. Agents running the [Verified Agent Identity skill](/agents/identity-overview) can generate an auth proof — a JWS token signed with the agent's private key — on request, which cryptographically demonstrates control of the DID.
+  </Step>
+  <Step title="Is that DID attested to a verified human?">
+    Once you trust that the agent owns the DID, look it up in the Attestation Explorer. If a human-agent attestation exists, the agent has completed the linking flow and is provably operated by a real, unique human.
+  </Step>
+</Steps>
+
+## Using the Explorer
+
+The Explorer supports lookups in both directions:
+
+<CardGroup cols={2}>
+  <Card title="Look up an Agent DID" icon="robot">
+    Paste an agent's DID to see the Human DID it's attested to, if any. No result means the agent hasn't completed the human-linking flow yet.
+  </Card>
+  <Card title="Look up a Human DID" icon="user">
+    Paste a human's DID to see every agent DID attested to them, and the total count of agents they've verified ownership of.
+  </Card>
+</CardGroup>
+
+<Info>
+  An attestation is created only after the human completes the linking flow described in [How It Works](/agents/identity-architecture) — it can't be faked or self-reported. Because the **Identity Verifier Contract** enforces one verified human per on-chain identity, the human side of every attestation is guaranteed Sybil-resistant.
+</Info>
+
+---
+
+## Learn More
+
+<CardGroup cols={2}>
+  <Card title="How It Works" icon="diagram-project" href="/agents/identity-architecture">
+    See the full linking flow that produces these on-chain attestations.
+  </Card>
+  <Card title="Proof of Uniqueness" icon="fingerprint" href="/billions-wallet/proof-of-uniqueness">
+    The credential that guarantees one verified human maps to exactly one identity.
+  </Card>
+</CardGroup>
