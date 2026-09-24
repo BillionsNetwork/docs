@@ -1,0 +1,63 @@
+---
+title: "Proof of Uniqueness"
+sidebarTitle: "Proof of Uniqueness"
+description: "Claim a Proof of Uniqueness credential — a one-time face scan that proves you're a real, unique human."
+icon: "fingerprint"
+---
+
+## Why Proof of Uniqueness
+
+Proof of Uniqueness (PoU) verifies that each participant in a project is a real, unique human — not a bot, and not one operator running many accounts.
+
+In airdrops, token distributions, and other reward programs, projects want rewards to reach real, contributing users. Bots and Sybil attacks — a single operator running hundreds of accounts — exploit these programs and lead to unfair resource allocation. PoU closes that gap: one face maps to exactly one credential, and one credential maps to exactly one on-chain identity.
+
+## Claim your credential
+
+<Steps>
+  <Step title="Open the wallet">
+    Open the Billions Wallet — on the web at [wallet.billions.network](https://wallet.billions.network) or through the mobile app — and sign in with Google, Apple ID, or a crypto wallet.
+  </Step>
+  <Step title="Select the Uniqueness credential">
+    From the credentials dashboard, find the **Uniqueness** credential option and select it to start the claim flow.
+  </Step>
+  <Step title="Complete face verification">
+    Follow the on-screen prompts to complete a one-time face scan.
+  </Step>
+  <Step title="Credential issued">
+    Once verification succeeds, the credential is issued directly to your wallet, encrypted, and stored for reuse. You won't need to repeat the face scan — every future request for Proof of Uniqueness, including [linking an AI agent's identity](/agents/identity-skill), reuses this same credential automatically.
+  </Step>
+</Steps>
+
+<Info>
+  Already claimed a Proof of Uniqueness credential? Any new flow that asks for it — including agent linking — verifies against your existing credential instead of asking you to scan your face again.
+</Info>
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="What are the best practices for a successful face scan?">
+    For the best results:
+
+    - Use the latest version of the Billions app.
+    - Verify in a well-lit environment with a neutral background.
+    - Keep your face uncovered — no glasses, headphones, scarves, or hats.
+  </Accordion>
+  <Accordion title='What does "Face not unique" mean?'>
+    This appears during the claim process when the facial biometrics you provided are already registered to an existing Billions account — only one Proof of Uniqueness credential can be claimed per person. Log in with the original account where your face was first verified instead of claiming a new one.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Learn More
+
+<CardGroup cols={2}>
+  <Card title="Verified Agent Identity" icon="link" href="/agents/identity-overview">
+    See how this credential is used to verify ownership of an AI agent.
+  </Card>
+  <Card title="Verified Human" icon="id-card" href="/billions-wallet/verified-human">
+    Combine Proof of Uniqueness with document verification for a higher tier of trust.
+  </Card>
+</CardGroup>

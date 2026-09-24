@@ -1,0 +1,114 @@
+---
+title: "Verified Human"
+sidebarTitle: "Verified Human"
+description: "A KYC-style credential issued after self-verification with a government-issued document — NFC passport, Aadhaar, driving license, or national ID."
+icon: "id-card"
+---
+
+## What is Verified Human
+
+**Verified Human** is a basic KYC-style credential — a higher-level credential issued after self-verification with a government-issued document, on top of your [Proof of Uniqueness](/billions-wallet/proof-of-uniqueness). Where PoU proves you're a real, unique individual with a face scan, Verified Human ties that uniqueness to a government-issued document, giving services a higher tier of trust for cases that need document-verified identity.
+
+## Supported documents
+
+<CardGroup cols={2}>
+  <Card title="NFC-enabled Passport" icon="passport">
+    A biometric passport with an embedded NFC chip. The primary option, accepted worldwide.
+  </Card>
+  <Card title="Aadhaar Card" icon="id-card">
+    India-specific — verified via the official digital QR code.
+  </Card>
+  <Card title="Driving License" icon="id-card-clip">
+    Accepted where an NFC-enabled passport isn't available.
+  </Card>
+  <Card title="National ID Card" icon="address-card">
+    Accepted where an NFC-enabled passport isn't available.
+  </Card>
+</CardGroup>
+
+## Claim your credential
+
+The claim flow is the same for every document — only the document you present differs:
+
+<Steps>
+  <Step title="Open the wallet">
+    Open the Billions Wallet — on the web at [wallet.billions.network](https://wallet.billions.network) or through the mobile app — and sign in.
+  </Step>
+  <Step title="Select the Verified Human credential">
+    From the credentials dashboard, find **Verified Human** and select it to start the claim flow.
+  </Step>
+  <Step title="Choose your document">
+    - **NFC-enabled passport** — the primary document, accepted for any country.
+    - **Aadhaar QR flow** — the primary document for India.
+    - **Driving license or national ID card** — accepted when neither of the above is available.
+  </Step>
+  <Step title="Verify your document">
+    For an NFC-enabled passport, driving license, or national ID, follow the prompts to scan the document. For Aadhaar, scan the official digital QR code.
+  </Step>
+  <Step title="Credential issued">
+    Once verification succeeds, the credential is issued directly to your wallet, encrypted, and stored for reuse across every future request.
+  </Step>
+</Steps>
+
+## Troubleshooting
+
+### Passport & NFC
+
+<AccordionGroup>
+  <Accordion title="How do I know if my passport is NFC-enabled?">
+    Look for the official biometric passport symbol — a small rectangle with a circle in the middle — on the front cover of your passport. Only passports with this symbol contain an NFC chip and are supported.
+  </Accordion>
+  <Accordion title="What are the best practices for a successful scan?">
+    For the best results:
+
+    - Use the latest version of the Billions app.
+    - Remove any phone case, wallet sleeve, or passport cover.
+    - Verify in a well-lit environment with a neutral background.
+    - Hold your phone and passport completely still during the scan.
+    - Disable Airplane Mode — it can interfere with NFC.
+  </Accordion>
+  <Accordion title="I'm getting an 'NFC scan already running' message. What should I do?">
+    This means a previous scan hasn't finished. Hold your phone completely still on the passport to allow it to complete. If it persists, wait a few moments before trying again.
+  </Accordion>
+  <Accordion title="It says 'NFC chip not enabled.' How do I fix this?">
+    Your phone has NFC, but it's turned off. Go to your phone's **Settings → Connections → NFC** and turn it on. Then restart the app and try again.
+  </Accordion>
+  <Accordion title="What if my phone says 'NFC not supported'?">
+    This means your phone does not have a built-in NFC chip. You'll need to use a different device with NFC capability to complete verification.
+  </Accordion>
+  <Accordion title="The app says my 'Passport is already used.' What should I do?">
+    Each passport can only be registered to one Billions account. This message means you've already verified with this passport — log in with your original account instead.
+  </Accordion>
+</AccordionGroup>
+
+### Aadhaar (India)
+
+<AccordionGroup>
+  <Accordion title="Which Aadhaar QR code should I use?">
+    Use only the official digital QR code downloaded directly from the mAadhaar app or the official UIDAI website. QR codes from physical Aadhaar cards or third-party apps such as DigiLocker are not supported.
+  </Accordion>
+  <Accordion title="What are the best practices for a successful scan?">
+    For the best results:
+
+    - Use the latest version of the Billions app.
+    - Verify in a well-lit environment with a neutral background.
+    - Make sure you're scanning the correct Aadhaar QR code.
+  </Accordion>
+  <Accordion title="It says 'Wrong Aadhaar QR code scanned' or 'No iden3 message found.'">
+    This happens when you scan an incorrect or unsupported QR code. Make sure you're using the correct digital QR code, and that you start the process from within the Billions app's verification flow rather than scanning the QR code directly.
+  </Accordion>
+  <Accordion title="I'm getting an 'Aadhaar circuits not found' error.">
+    This means the necessary verification files didn't download correctly. Connect to a strong, stable internet connection and try reinstalling or updating the Billions app.
+  </Accordion>
+  <Accordion title="The app says my 'Aadhaar QR is already used.' What should I do?">
+    Each Aadhaar QR code can only be registered to one Billions account. This message means you've already verified with this Aadhaar — log in with your original account instead.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Learn More
+
+<Card title="Proof of Uniqueness" icon="fingerprint" href="/billions-wallet/proof-of-uniqueness">
+  The prerequisite credential — a one-time face scan proving you're a real, unique human.
+</Card>

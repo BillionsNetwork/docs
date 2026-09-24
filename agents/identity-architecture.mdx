@@ -5,6 +5,8 @@ description: "The linking flow, architecture, and demo behind the Verified Agent
 icon: "diagram-project"
 ---
 
+## The Linking Flow
+
 <Steps>
   <Step title="Agent creates its DID">
     The agent generates its own DID locally using the [iden3 protocol](https://docs.iden3.io) — an open-source ZK identity framework that derives cryptographic identifiers from key pairs. Nothing goes on-chain at this point.
@@ -13,7 +15,7 @@ icon: "diagram-project"
     When asked to link its identity, the agent generates a verification link scoped to this specific human-agent pairing and shares it with the human owner.
   </Step>
   <Step title="Human verifies ownership in the Billions Web Wallet">
-    The human opens the link in the Billions Web Wallet, generates a zero-knowledge Proof of Uniqueness and an auth proof, and submits them to the Relay Attestation Service.
+    The human opens the link in the Billions Web Wallet. If they haven't already claimed a [Proof of Uniqueness credential](/billions-wallet/proof-of-uniqueness), the claim process — a one-time face scan — starts automatically; if they have, it's reused. Either way, the wallet generates a zero-knowledge Proof of Uniqueness and an auth proof, and submits them to the Relay Attestation Service.
   </Step>
   <Step title="Permanent attestation created on-chain">
     The Relay makes two on-chain calls on the Billions Network. First, the **Identity Verifier Contract** verifies the ZK proof and stores it against the user's DID — enforcing that one verified human maps to exactly one on-chain identity. Then, the **Attestation Registry Contract** creates a permanent on-chain attestation linking the verified human to the agent's DID.
@@ -79,7 +81,7 @@ Watch the whole flow happen live: in a few minutes, an agent goes from having no
   allowFullScreen
 ></iframe>
 
-The demo uses **Billy**, an agentic bot on Telegram, built with the [OpenClaw](https://openclaw.ai) framework for building and deploying AI agents. The demo follows Billy through exactly the flow described in [How It Works](#how-it-works) above. A few details worth watching for:
+The demo uses **Billy**, an agentic bot on Telegram, built with the [OpenClaw](https://openclaw.ai) framework for building and deploying AI agents. The demo follows Billy through exactly the flow described in [The Linking Flow](#the-linking-flow) above. A few details worth watching for:
 
 - **Installation is a single chat message.**
 - **The face scan happens once.** First-time users claim a Proof of Uniqueness credential in the Billions Web Wallet with a one-time face scan. The credential is stored in the wallet and reused for every future verification.
@@ -116,6 +118,11 @@ Everything above happens automatically. The sections below document exactly what
 
 ## Next Steps
 
-<Card title="Installation" icon="download" href="/agents/identity-skill">
-  Install the skill and link your agent's identity to you in two chat messages.
-</Card>
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/agents/identity-skill">
+    Install the skill and link your agent's identity to you in two chat messages.
+  </Card>
+  <Card title="Verify an Agent" icon="magnifying-glass" href="/agents/attestation-explorer">
+    Look up any agent's DID to check whether it has a verified human owner.
+  </Card>
+</CardGroup>
