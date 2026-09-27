@@ -9,20 +9,20 @@ icon: "diagram-project"
 
 <Steps>
   <Step title="Agent creates its DID">
-    The agent generates its own DID locally using the [iden3 protocol](https://docs.iden3.io) — an open-source ZK identity framework that derives cryptographic identifiers from key pairs. Nothing goes on-chain at this point.
+    The agent generates its own DID locally using the [iden3 protocol](https://docs.iden3.io), an open-source ZK identity framework that derives cryptographic identifiers from key pairs. Nothing goes on-chain at this point.
   </Step>
   <Step title="Agent shares a verification link">
     When asked to link its identity, the agent generates a verification link scoped to this specific human-agent pairing and shares it with the human owner.
   </Step>
   <Step title="Human verifies ownership in the Billions Web Wallet">
-    The human opens the link in the Billions Web Wallet. If they haven't already claimed a [Proof of Uniqueness credential](/billions-wallet/proof-of-uniqueness), the claim process — a one-time face scan — starts automatically; if they have, it's reused. Either way, the wallet generates a zero-knowledge Proof of Uniqueness and an auth proof, and submits them to the Relay Attestation Service.
+    The human opens the link in the Billions Web Wallet. If they haven't already claimed a [Proof of Uniqueness credential](/billions-wallet/proof-of-uniqueness), the claim process (a one-time face scan) starts automatically; if they have, it's reused. Either way, the wallet generates a zero-knowledge Proof of Uniqueness and an auth proof, and submits them to the Relay Attestation Service.
   </Step>
   <Step title="Permanent attestation created on-chain">
-    The Relay makes two on-chain calls on the Billions Network. First, the **Identity Verifier Contract** verifies the ZK proof and stores it against the user's DID — enforcing that one verified human maps to exactly one on-chain identity. Then, the **Attestation Registry Contract** creates a permanent on-chain attestation linking the verified human to the agent's DID.
+    The Relay makes two on-chain calls on the Billions Network. First, the **Identity Verifier Contract** verifies the ZK proof and stores it against the user's DID, enforcing PoU's one-human-one-identity guarantee. Then, the **Attestation Registry Contract** creates a permanent on-chain attestation linking the verified human to the agent's DID.
   </Step>
 </Steps>
 
-The resulting attestation is permanent, public, and queryable by any third party to confirm agent ownership.
+The resulting attestation is on-chain and queryable by any third party to confirm agent ownership.
 
 ---
 
@@ -49,11 +49,11 @@ flowchart TB
 
 Reading the diagram in flow order:
 
-1. **Verified Agent Identity skill** — runs on the agent. It derives the agent's DID from a local key pair and orchestrates the linking flow, starting by sending the human owner a verification link.
-2. **Billions Web Wallet** — where the human proves who they are. It generates a zero-knowledge **Proof of Uniqueness** (proving the human is real and unique without revealing personal data) plus an auth proof, and submits both.
-3. **Relay Attestation Service** — the off-chain bridge. It receives the proofs and turns them into two on-chain transactions.
-4. **Identity Verifier Contract** — verifies the ZK proof on-chain and stores it against the human's DID. It is Sybil-resistant by design: one verified human maps to exactly one on-chain identity.
-5. **Attestation Registry Contract** — writes the permanent, public attestation linking the verified human's identity to the agent's DID.
+1. **Verified Agent Identity skill**: runs on the agent. It derives the agent's DID from a local key pair and orchestrates the linking flow, starting by sending the human owner a verification link.
+2. **Billions Web Wallet**: where the human proves who they are. It generates a zero-knowledge **Proof of Uniqueness** (proving the human is real and unique without revealing personal data) plus an auth proof, and submits both.
+3. **Relay Attestation Service**: the off-chain bridge. It receives the proofs and turns them into two on-chain transactions.
+4. **Identity Verifier Contract**: verifies the ZK proof on-chain and stores it against the human's DID. It's Sybil-resistant by design — one verified human maps to exactly one on-chain identity, so a single person can't register more than once.
+5. **Attestation Registry Contract**: writes the permanent, public attestation linking the verified human's identity to the agent's DID.
 
 <iframe
   width="100%"
@@ -69,7 +69,7 @@ Reading the diagram in flow order:
 
 ## Demo
 
-Watch the whole flow happen live: in a few minutes, an agent goes from having no identity at all to a permanent, publicly verifiable on-chain pairing with its human owner.
+This demo shows the full flow end to end: an agent going from no identity to an on-chain pairing with its human owner, in a few minutes.
 
 <iframe
   width="100%"
@@ -83,9 +83,9 @@ Watch the whole flow happen live: in a few minutes, an agent goes from having no
 
 The demo uses **Billy**, an agentic bot on Telegram, built with the [OpenClaw](https://openclaw.ai) framework for building and deploying AI agents. The demo follows Billy through exactly the flow described in [The Linking Flow](#the-linking-flow) above. A few details worth watching for:
 
-- **Installation is a single chat message.**
-- **The face scan happens once.** First-time users claim a Proof of Uniqueness credential in the Billions Web Wallet with a one-time face scan. The credential is stored in the wallet and reused for every future verification.
-- **The result is checkable end to end.** After verification, Billy appears under **Verified Agents** in the user's wallet profile — and the last four characters of his DID (`V9HT`) match exactly what he shared in the Telegram chat.
+- Installation takes a single chat message.
+- The face scan happens only once: first-time users claim a Proof of Uniqueness credential in the Billions Web Wallet with a one-time scan, then the same credential is reused for every future verification.
+- The result is checkable end to end. Billy appears under **Verified Agents** in the user's wallet profile, and the last four characters of his DID (`V9HT`) match what he shared in the Telegram chat.
 
 ---
 
@@ -97,20 +97,20 @@ Everything above happens automatically. The sections below document exactly what
   <Accordion title="How the skill runs">
     When installed, the skill adds a `scripts/` directory to the agent's workspace and runs `npm install` to set up dependencies.
 
-    All cryptographic material is stored in `$HOME/.openclaw/billions/` (OpenClaw's data directory) — outside the agent's workspace — so identity data persists across sessions and agent restarts. The agent reads this directory on startup to load its default DID and private keys.
+    All cryptographic material is stored in `$HOME/.openclaw/billions/` (OpenClaw's data directory), outside the agent's workspace, so identity data persists across sessions and agent restarts. The agent reads this directory on startup to load its default DID and private keys.
 
     When the agent receives a natural-language trigger (e.g. "link your identity to me"), the skill's instruction set maps it to the appropriate script, executes it as a subprocess, and returns the result to the conversation.
   </Accordion>
   <Accordion title="Pairing and attestation flow (tech spec)">
     When the human clicks the verification link, the Billions Web Wallet initiates the following sequence:
 
-    1. **Auth proof** — a JWS token is generated, signed with the agent's private key, proving DID ownership.
-    2. **Proof of Uniqueness** — a ZK proof is generated in the wallet, proving the human is a real, unique individual without revealing personal data.
+    1. **Auth proof**: a JWS token is generated, signed with the agent's private key, proving DID ownership.
+    2. **Proof of Uniqueness**: a ZK proof is generated in the wallet, proving the human is a real, unique individual without revealing personal data.
     3. Both proofs are submitted to the **Relay Attestation Service**.
-    4. The Relay calls the **Identity Verifier Contract** on the Billions Network — the ZK proof is verified on-chain and stored against the user's DID. This enforces uniqueness: one verified human maps to exactly one on-chain identity.
-    5. The Relay calls the **Attestation Registry Contract** (ERC-8004, a standard for on-chain attestation registries) — a permanent on-chain attestation is written linking the verified human's DID to the agent's DID.
+    4. The Relay calls the **Identity Verifier Contract** on the Billions Network, which verifies the ZK proof on-chain and stores it against the user's DID — the same one-human-one-identity guarantee described above.
+    5. The Relay calls the **Attestation Registry Contract** (ERC-8004, a standard for on-chain attestation registries). A permanent on-chain attestation is written linking the verified human's DID to the agent's DID.
 
-    The attestation is public, immutable, and queryable by any third party to confirm agent ownership.
+    The attestation is public and immutable — any third party can query it to confirm agent ownership.
   </Accordion>
 </AccordionGroup>
 
