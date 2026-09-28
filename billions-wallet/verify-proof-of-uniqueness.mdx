@@ -1,0 +1,260 @@
+---
+title: "Proof of Uniqueness Verification"
+sidebarTitle: "PoU Verification"
+description: "Add server-side Proof of Uniqueness verification to your application, confirming a user is a real, unique human before granting access."
+icon: "circle-check"
+---
+
+## Overview
+
+[Proof of Uniqueness](/billions-wallet/proof-of-uniqueness) is the credential the Billions Wallet issues after a user completes their one-time face scan. Any backend can request proof of this credential from a user who holds it, then confirm the proof on its own servers before granting access, distributing a reward, or unlocking a feature.
+
+This guide covers the full verification flow: requesting the credential, the user completing it in the Billions Wallet, and confirming the resulting proof on your backend.
+
+<Info>
+  This is a reference example to get you running locally and to show the shape of the integration. For a production rollout, reach out to the Billions integration team — they'll provide the issuer and schema values your verifier needs, and can walk you through rate limits and the persistent storage your deployment requires.
+</Info>
+
+## Verification Flow
+
+A verification request is a standard DID-authentication request with one addition: a `scope` naming the exact credential and issuer you'll accept as proof.
+
+<Steps>
+  <Step title="User requests verification">
+    Once a user is signed into your app, your frontend asks the backend for a verification request scoped to that user's session.
+  </Step>
+  <Step title="Backend builds a scoped authorization request">
+    The backend generates an authorization request and attaches a proof request to it, naming the Proof of Uniqueness credential it's asking the user to present.
+  </Step>
+  <Step title="User opens the Billions Wallet">
+    The request is encoded into a Universal Link. Opening it in the Billions Wallet shows the user exactly what's being asked: proof that they hold a genuine Proof of Uniqueness credential.
+  </Step>
+  <Step title="Wallet generates the proof">
+    If the user holds the credential, the wallet builds a zero-knowledge proof against it and signs a token, without exposing the underlying credential data.
+  </Step>
+  <Step title="Wallet posts to your callback">
+    The wallet sends the signed token to your backend's callback endpoint, tagged with the session ID from Step 1.
+  </Step>
+  <Step title="Backend verifies and checks for replay">
+    Your backend verifies the token against the request it stored, then checks the proof's nullifier, a privacy-preserving identifier unique to that person, to confirm the same human hasn't already verified through a different session.
+  </Step>
+  <Step title="Session marked verified">
+    Once the nullifier check passes, mark the session verified in your store. From here you can gate access, unlock a reward, or anything else that depends on the user being a real, unique human.
+  </Step>
+</Steps>
+
+## Verification Query Structure
+
+This is the structure of the verification query used to make a verification request, naming the credential you're asking the user to present:
+
+```json
+[
+  {
+    "circuitId": "credentialAtomicQuerySigV2",
+    "id": "<sessionId>",
+    "query": {
+      "allowedIssuers": ["<PoU issuer DID>"],
+      "context": "<PoU schema context>",
+      "type": "UniquenessCredential"
+    }
+  }
+]
+```
+
+- **`id`**: the session ID for this verification request.
+- **`allowedIssuers`**: the DID allowed to have issued the credential.
+- **`context`**: the schema context for the credential type.
+- **`type`**: the credential type being requested, always `UniquenessCredential` for PoU.
+
+<Note>
+  `allowedIssuers` and `context` are specific to your integration. Reach out to the Billions integration team to get these values.
+</Note>
+
+## Setup Instructions
+
+### Prerequisites
+
+- Public URL for callbacks (use [ngrok](https://ngrok.com/) for local development)
+- A Verifier DID
+- The Proof of Uniqueness issuer DID and schema context, from the Billions integration team
+
+### Example Repository
+
+The steps below walk through the [POU verifier example](https://github.com/PrivadoID/Integration-examples/tree/main/POU-integration-for-verifiers%20(For%20Privado%20Wallet)) — clone it to follow along. It contains an Express backend (`js/`), the ZK circuit keys it depends on (`keys/`), and a static demo frontend (`static/`).
+
+### 1. Server and Request Handler
+
+Sets up the server and the endpoint that builds a scoped verification request for each new session. `HOST_URL`, `AUDIENCE_DID`, `ALLOWED_ISSUER`, and the schema context are read from configuration, using the values provided during onboarding.
+
+```javascript
+require('dotenv').config();
+const express = require("express");
+const helmet = require('helmet');
+const cors = require('cors');
+const rateLimit = require('express-rate-limit');
+const { auth, resolver } = require("@iden3/js-iden3-auth");
+const { randomInt } = require('crypto');
+const { v4: uuidv4 } = require('uuid');
+
+const app = express();
+const port = process.env.PORT || 8080;
+
+app.use(helmet());
+app.use(cors({ origin: '*' })); // restrict to your frontend's origin in production
+app.use(rateLimit({ windowMs: 60 * 1000, max: 100 }));
+app.use(express.json());
+
+const requestMap = new Map();   // sessionId -> authRequest
+const statusMap = new Map();    // requestId -> status
+
+app.get("/api/verification-request", async (req, res) => {
+  const sessionId = randomInt(10000);
+  const uri = `${process.env.HOST_URL}/api/callback?sessionId=${sessionId}`;
+  const nullifier = BigInt('0x' + uuidv4().replace(/-/g, '').slice(0, 16));
+
+  const request = auth.createAuthorizationRequest(
+    "Verification of Uniqueness",
+    process.env.AUDIENCE_DID,
+    uri,
+  );
+
+  const proofRequest = {
+    circuitId: "credentialAtomicQueryV3-beta.1",
+    id: sessionId,
+    params: { nullifierSessionId: nullifier.toString() },
+    query: {
+      allowedIssuers: [process.env.ALLOWED_ISSUER],
+      context: process.env.POU_SCHEMA_CONTEXT,
+      type: "UniquenessCredential",
+    },
+  };
+
+  request.body.scope = [proofRequest];
+  requestMap.set(sessionId, request);
+  statusMap.set(sessionId, "pending");
+
+  res.status(200).json(request);
+});
+
+app.get("/api/status/:id", (req, res) => {
+  const status = statusMap.get(parseInt(req.params.id)) || "not_found";
+  res.status(200).json({ requestId: req.params.id, status });
+});
+
+app.listen(port, () => console.log(`Verifier backend running on port ${port}`));
+```
+
+<Info>
+  **Get Your Verifier DID:** Sign in to your [Billions Wallet](https://wallet.billions.network/) and copy your profile DID to use during setup. This is your `AUDIENCE_DID` — it represents the entity doing the verification, which in this case is your application.
+</Info>
+
+<Note>
+  Generate `nullifierSessionId` fresh for every request, as shown here. Computing it once at server startup and reusing it across sessions breaks the anti-replay check every subsequent verification depends on.
+</Note>
+
+### 2. Verification Callback
+
+Verifies the proof the wallet sends back, and enforces that a given nullifier, a given real person, can only complete this verification once.
+
+```javascript
+const getRawBody = require("raw-body");
+const { CircuitId, AtomicQueryV3PubSignals } = require('@0xpolygonid/js-sdk');
+const byteEncoder = new TextEncoder();
+
+const userVerificationMap = new Map(); // nullifier -> { sessionId, verified }
+
+app.post("/api/callback", async (req, res) => {
+  const sessionId = parseInt(req.query.sessionId);
+  const authRequest = requestMap.get(sessionId);
+  if (!authRequest) {
+    return res.status(400).json({ error: "Invalid or expired sessionId" });
+  }
+
+  const tokenStr = (await getRawBody(req)).toString().trim();
+
+  const resolvers = {
+    ["billions:main"]: new resolver.EthStateResolver(
+      process.env.BILLIONS_RPC_URL,
+      process.env.BILLIONS_CONTRACT,
+    ),
+    ["privado:main"]: new resolver.EthStateResolver(
+      process.env.PRIVADO_RPC_URL,
+      process.env.PRIVADO_CONTRACT,
+    ),
+  };
+
+  const verifier = await auth.Verifier.newVerifier({
+    stateResolver: resolvers,
+    ipfsGatewayURL: process.env.IPFS_GATEWAY || "https://ipfs.io",
+  });
+
+  try {
+    const authResponse = await verifier.fullVerify(tokenStr, authRequest, {
+      AcceptedStateTransitionDelay: 5 * 60 * 1000,
+    });
+
+    const proof = authResponse.body.scope.find(
+      (s) => s.circuitId === CircuitId.AtomicQueryV3 && s.id === sessionId,
+    );
+    if (!proof) {
+      return res.status(400).json({ error: "No valid proof found in response." });
+    }
+
+    const pubSignals = new AtomicQueryV3PubSignals().pubSignalsUnmarshal(
+      byteEncoder.encode(JSON.stringify(proof.pub_signals)),
+    );
+    const { nullifier } = pubSignals;
+
+    if (userVerificationMap.get(nullifier)?.verified) {
+      return res.status(400).json({ message: "This person has already verified." });
+    }
+
+    userVerificationMap.set(nullifier, { sessionId, verified: true });
+    statusMap.set(sessionId, "success");
+
+    res.status(200).json(authResponse);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+```
+
+The nullifier is what makes this Sybil-resistant at the application layer: a stable, privacy-preserving identifier for the person behind the credential, not their DID or wallet address. Checking it against `userVerificationMap` before marking a session verified is what stops the same human from claiming a reward twice under two different accounts.
+
+<Warning>
+  `requestMap`, `statusMap`, and `userVerificationMap` are all in-memory here and reset on every restart. Replace them with a persistent store (Postgres, Redis) before going to production, or every in-flight session and past verification is lost the moment the process restarts.
+</Warning>
+
+### Testing Steps
+
+1. Start the server: `node index.js`
+2. Visit `http://localhost:8080`, the example ships a static demo page with a "Verify with Billions" button wired to the flow above.
+3. Open the generated link in the Billions Wallet and complete verification with a Proof of Uniqueness credential.
+4. Poll `GET /api/status/<sessionId>` (or watch the demo page) until the status flips to `success`.
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="The callback endpoint never fires">
+    `HOST_URL` must be a publicly reachable URL, not `localhost`. Use [ngrok](https://ngrok.com/) for local development, and confirm the callback URI includes the `sessionId` query parameter.
+  </Accordion>
+  <Accordion title="'No valid proof found in response'">
+    The wallet returned a proof, but not one matching the `circuitId` and `id` your backend is looking for. This usually means the `id` on the `proofRequest` doesn't match the `sessionId` used to build the callback URI. They must be the same value.
+  </Accordion>
+  <Accordion title="'This person has already verified'">
+    The nullifier from this proof already has a `verified: true` record, meaning this same human has completed verification through a different session already. This is the anti-Sybil check working as intended. If you see this unexpectedly during testing, it likely means you're reusing the same PoU credential across test sessions, which is expected behavior, not a bug.
+  </Accordion>
+  <Accordion title="Verification fails with a state resolution error">
+    The `resolvers` map only knows about the networks it's configured for (`billions:main`, `privado:main`). Confirm your RPC and contract configuration is correct, and that the RPC endpoint is reachable from your server.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Learn More
+
+<Card title="Proof of Uniqueness" icon="fingerprint" href="/billions-wallet/proof-of-uniqueness">
+  What the credential is, and how users claim it.
+</Card>

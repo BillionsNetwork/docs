@@ -40,7 +40,9 @@
           {
             "group": "Integration",
             "pages": [
-              "billions-wallet/login-with-billions"
+              "billions-wallet/login-with-billions",
+              "billions-wallet/verify-proof-of-uniqueness",
+              "billions-wallet/verify-verified-human"
             ]
           }
         ]

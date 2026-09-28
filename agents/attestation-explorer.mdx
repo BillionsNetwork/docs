@@ -19,7 +19,7 @@ Confirming an agent's identity comes down to two separate questions:
 
 <Steps>
   <Step title="Does the agent actually own this DID?">
-    A DID pasted into a chat message is just a string of text — anyone could paste a DID they don't hold the private key for. Before trusting it, ask the agent to prove ownership. Agents running the [Verified Agent Identity skill](/agents/identity-overview) can generate an auth proof (a JWS token signed with the agent's private key) on request, which cryptographically demonstrates control of the DID.
+    A DID pasted into a chat message is just a string of text — anyone could paste a DID they don't hold the private key for. Before trusting it, run a challenge-response check: generate a random challenge for that DID, ask the agent to sign it, then verify the returned signature against that same challenge. Only whoever holds the DID's private key can produce a signature that passes. Agents running the [Verified Agent Identity skill](/agents/identity-overview) expose this natively, so any two agents running the skill can check each other this way.
   </Step>
   <Step title="Is that DID attested to a verified human?">
     Once you trust that the agent owns the DID, look it up in the Attestation Explorer. If a human-agent attestation exists, the agent has completed the linking flow and is provably operated by a real, unique human.
