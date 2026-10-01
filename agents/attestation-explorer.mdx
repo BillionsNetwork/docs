@@ -1,0 +1,91 @@
+---
+title: "Overview"
+sidebarTitle: "Overview"
+description: "What the Attestation Explorer shows, how to search it, and how to read an attestation."
+icon: "magnifying-glass"
+---
+
+The Attestation Registry is a set of smart contracts that stores signed statements about identities. Each statement is an **attestation**: one identity (the attester) says something about another (the recipient), in a format defined by a **schema**. Billions uses it to record which verified human stands behind an agent, but the registry itself is general. Anyone can register a schema and attest against it.
+
+The **Attestation Explorer** is the web interface for reading that registry. You don't need an account or a wallet to look things up.
+
+<CardGroup cols={2}>
+  <Card title="Explorer (production)" icon="arrow-up-right-from-square" href="https://attestations-explorer.billions.network/">
+    attestations-explorer.billions.network
+  </Card>
+  <Card title="Explorer (testnet)" icon="flask" href="https://attestations-explorer-testnet.billions.network">
+    attestations-explorer-testnet.billions.network
+  </Card>
+</CardGroup>
+
+The hands-on guides in this section all use the **testnet** Explorer, so you can create schemas and attestations without touching real records. See [Testnet Explorer](/agents/attestation-testnet-explorer).
+
+## What's in the Explorer
+
+| View | What it shows |
+|---|---|
+| **Agents** | The landing page. Registered agents, each linking to its own detail page. |
+| **Agent detail** | One agent DID and the human DID it is attested to, if any. |
+| **Human detail** | One human DID and every agent attested to it. |
+| **Attestations** | Every attestation in the registry, newest first. Each row opens a detail page. |
+| **Schemas** | Every registered schema and its fields. See [Schemas](/agents/attestation-schemas). |
+| **Identity details** | All attestations where a given identity is the attester or the recipient. |
+
+## Searching
+
+The search box at the top accepts a schema ID or name, an attestation ID, or a DID. Paste any of them and the Explorer takes you to the matching record. Ethereum addresses also resolve, and the lookup finds attestations where that address appears as attester or recipient.
+
+If you only have a DID and don't know what kind it is, search is the quickest way in.
+
+## Checking an agent
+
+You can look up an identity from either end:
+
+<CardGroup cols={2}>
+  <Card title="Start from an agent" icon="robot">
+    Paste the agent's DID. If it has completed [human linking](/agents/identity-architecture), you'll see the human DID it is attested to. No result means it hasn't been linked.
+  </Card>
+  <Card title="Start from a human" icon="user">
+    Paste the human's DID. You'll see every agent attested to that person and how many there are.
+  </Card>
+</CardGroup>
+
+<Note>
+  A lookup only tells you that an attestation exists. It does not tell you that the party you're talking to controls the DID. Anyone can copy a DID from this page. To confirm control, use the signature check in [Verify an Agent](/agents/verify-human-agent-pairing).
+</Note>
+
+## Reading an attestation
+
+Every attestation has the same outer shape, whatever its schema.
+
+| Field | Meaning |
+|---|---|
+| `id` | The attestation's unique ID (a 32-byte hash). |
+| Schema | Which schema it was written against. This decides what the data fields mean. |
+| Attester (`from`) | The DID, iden3 ID and Ethereum address of whoever made the statement. |
+| Recipient (`to`) | The same three values for the identity the statement is about. |
+| Data | The schema's fields, decoded into readable values. |
+| Created | When the transaction was recorded. |
+| Expiration | When the attestation stops being valid. Zero means it never expires. |
+| Revocable / Revoked | Whether the attester may withdraw it, and whether they have. |
+| Transaction | The on-chain transaction that created it. |
+
+A revoked attestation stays in the registry with its revocation time. It is no longer valid, but the history is kept.
+
+## Why human attestations resist Sybil attacks
+
+An agent-ownership attestation is only recorded after a person finishes the linking flow in their Billions wallet. Neither the agent nor its owner can write one by hand. The **Identity Verifier** contract allows one verified human per on-chain identity, so the human side of every ownership attestation is a distinct person. One person can still own several agents, which is why the Explorer shows a count per human.
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="Schemas" icon="table-list" href="/agents/attestation-schemas">
+    What a schema defines, the four that exist today, and how access is controlled.
+  </Card>
+  <Card title="Testnet Explorer" icon="flask" href="/agents/attestation-testnet-explorer">
+    Connect a wallet, create a schema, make and revoke an attestation.
+  </Card>
+  <Card title="Testnet API" icon="code" href="/agents/attestation-testnet-api">
+    Query attestations, schemas and identities over HTTP.
+  </Card>
+</CardGroup>

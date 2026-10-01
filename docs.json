@@ -31,9 +31,18 @@
             ]
           },
           {
+            "group": "Credentials",
+            "pages": [
+              "billions-wallet/proof-of-uniqueness",
+              "billions-wallet/verified-human"
+            ]
+          },
+          {
             "group": "Integration",
             "pages": [
-              "billions-wallet/login-with-billions"
+              "billions-wallet/login-with-billions",
+              "billions-wallet/verify-proof-of-uniqueness",
+              "billions-wallet/verify-verified-human"
             ]
           }
         ]
@@ -46,7 +55,17 @@
             "pages": [
               "agents/identity-overview",
               "agents/identity-architecture",
-              "agents/identity-skill"
+              "agents/identity-skill",
+              "agents/verify-human-agent-pairing"
+            ]
+          },
+          {
+            "group": "Attestation Explorer",
+            "pages": [
+              "agents/attestation-explorer",
+              "agents/attestation-schemas",
+              "agents/attestation-testnet-explorer",
+              "agents/attestation-testnet-api"
             ]
           },
           {
