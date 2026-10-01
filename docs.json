@@ -56,8 +56,16 @@
               "agents/identity-overview",
               "agents/identity-architecture",
               "agents/identity-skill",
-              "agents/verify-human-agent-pairing",
-              "agents/attestation-explorer"
+              "agents/verify-human-agent-pairing"
+            ]
+          },
+          {
+            "group": "Attestation Explorer",
+            "pages": [
+              "agents/attestation-explorer",
+              "agents/attestation-schemas",
+              "agents/attestation-testnet-explorer",
+              "agents/attestation-testnet-api"
             ]
           },
           {

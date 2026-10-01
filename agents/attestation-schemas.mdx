@@ -1,0 +1,74 @@
+---
+title: "Schemas"
+sidebarTitle: "Schemas"
+description: "How schemas define what an attestation records, the schemas that exist today, and who is allowed to attest against them."
+icon: "table-list"
+---
+
+A schema is the template for an attestation. It lists the fields an attestation carries and their types, and it is registered once in the **Schema Registry** contract. Every attestation then points at a schema by ID, which is how readers know how to decode its data.
+
+## Anatomy of a schema
+
+A schema is a comma-separated list of typed fields. For example, the `Review` schema is:
+
+```text
+uint8 stars,string comment
+```
+
+Registering it gives you three things you'll use later:
+
+| Part | What it does |
+|---|---|
+| **Fields** | The ordered, typed list above. Supported types include `string`, `bool`, `address`, `bytes`, `uint8` to `uint256`, `int` types, and arrays of any of them. |
+| **Resolver** | An optional contract that runs when someone creates an attestation against the schema. It can reject the attestation. A zero address means no extra checks. |
+| **Revocable** | A flag set at registration. If false, no attestation of this schema can ever be revoked. |
+
+The Schema Registry returns a **schema ID**, a 32-byte hash. You pass that ID whenever you create or query attestations.
+
+<Warning>
+  Field order matters. Attestation data is ABI-encoded in the schema's field order, so anything that writes or decodes data for a schema must use the same order and types as the schema string.
+</Warning>
+
+## Schemas in the registry
+
+The testnet registry holds four schemas. `AgentOwnership` is the only one that backs real human-agent pairings.
+
+| Name | Fields | Resolver |
+|---|---|---|
+| `AgentOwnership` | `bytes data` | Set |
+| `AgentDIDAuth` | `uint256 agentId`, `string agentDomain`, `address agentAddress`, `uint256 challenge`, `string authToken` | None |
+| `Review` | `uint8 stars`, `string comment` | None |
+| `ERC8004Registration` | `uint256 chainId`, `address agentRegistryAddress`, `uint256 agentId` | None |
+
+The schema IDs you'll need most:
+
+| Schema | ID |
+|---|---|
+| `AgentOwnership` | `0xca354bee6dc5eded165461d15ccb13aceb6f77ebbb1fd3fe45aca686097f2911` |
+| `Review` | `0x3ff27d25d9a49e12c43465525fb4da6fa572edc013d23caa1ce96f3d8b649442` |
+
+`AgentOwnership` carries no data of its own. The attestation itself, from a human DID to an agent DID, is the record.
+
+You can pull the current list at any time from the [API](/agents/attestation-testnet-api#schemas).
+
+## Who can attest against a schema
+
+Creating a schema does not give its creator special rights over it. Whether someone can attest is decided by the schema's resolver.
+
+- **No resolver.** `Review`, `AgentDIDAuth` and `ERC8004Registration` have a zero resolver address, so there is no extra check. Anyone with a connected wallet and a Billions identity can attest against them, the schema's creator included on equal terms with everyone else.
+- **With a resolver.** `AgentOwnership` has one. Its contract can reject attestations that don't meet its rules, and in practice these records come from the pairing flow, not from people attesting by hand.
+
+If you register a schema and want to limit who can attest, deploy a resolver that enforces the rule and pass its address when you register.
+
+## Choosing revocability
+
+Decide this when you register the schema.
+
+- A **review** or **endorsement** should usually be revocable, since the attester may change their mind or have been wrong.
+- A fact that must stay fixed, such as a record of an event, can be non-revocable.
+
+Even on a revocable schema, the person making each attestation chooses whether that attestation can be revoked. The checkbox on the attestation form is disabled for non-revocable schemas.
+
+## Create your own
+
+Registering a schema takes a wallet linked to a Billions identity and a small amount of testnet gas. The [testnet Explorer](/agents/attestation-testnet-explorer#create-a-schema) has a form for it: name, fields, resolver and revocable.
