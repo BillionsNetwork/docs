@@ -1,40 +1,49 @@
 ---
-title: "Installation"
-description: "Install and set up the Verified Agent Identity skill."
-icon: "download"
+title: "Pair an Agent"
+sidebarTitle: "Pair an Agent"
+description: "Give your agent a DID with the Verified Agent Identity skill and pair it with you, then confirm the pairing on-chain."
+icon: "link"
 ---
 
-Setup takes two chat messages: one to install the skill, one to link the agent's identity to you. If you haven't yet, read the [overview](/agents/identity-overview) for what the skill does and how the linking flow works.
+By the end of this guide your agent has its own DID, and an ownership attestation on production links that DID to you. It takes two chat messages and one approval in your wallet. For what the skill does behind the scenes, see [Agent Identity](/agents/identity-overview) and [How Pairing Works](/agents/identity-architecture).
 
----
+## Before you start
 
-## Install the Skill
+- **An agent that can install skills**, on an OpenClaw-compatible runtime. The skill sends you messages through the **`openclaw` CLI**, which must be in the agent's `PATH`.
+- **Node.js 20 or later** and **npm**, on the machine where the agent runs. The skill is a set of Node scripts.
+- **A [Billions Web Wallet](https://wallet.billions.network) account.** If you haven't claimed a [Proof of Uniqueness credential](/billions-wallet/proof-of-uniqueness) yet, the wallet walks you through it during pairing, with a one-time face scan.
 
-Ask your agent directly:
+## 1. Install the skill
+
+Ask your agent directly, with any one of these:
 
 ```plaintext
 Install the skill `npx clawhub@latest install verified-agent-identity`
 ```
 
-<div style={{ textAlign: "center" }}>OR</div>
-
 ```plaintext
 Install the skill `npx skills add BillionsNetwork/verified-agent-identity`
 ```
-
-<div style={{ textAlign: "center" }}>OR</div>
 
 ```plaintext
 Install the skill https://github.com/BillionsNetwork/verified-agent-identity
 ```
 
-[clawhub](https://clawhub.ai) is the skill manager for OpenClaw-compatible agents, [skills.sh](https://skills.sh) is a universal skill registry for AI agents.
+[clawhub](https://clawhub.ai) is the skill manager for OpenClaw-compatible agents, and [skills.sh](https://skills.sh) is a universal skill registry for AI agents. The agent installs the skill and does the basic setup on a supported runtime. If the agent has no identity yet, the skill creates a key pair and a DID before pairing.
 
-The agent installs the skill and sets everything up automatically — no manual configuration needed.
+<Accordion title="Where the key lives" icon="key">
+  The skill stores the agent's private key in `~/.openclaw/billions/kms.json`, outside the agent's workspace.
 
----
+  By default the key is written as **plain hex**, readable only by your OS user. Anyone or any process that can read that file can sign as your agent. Before deploying anywhere that matters:
 
-## Link Your Agent
+  - **Encrypt the key at rest.** Set the `BILLIONS_NETWORK_MASTER_KMS_KEY` environment variable before the skill creates or imports a key, and it stores the key with AES-256-GCM instead.
+  - **Restrict the folder.** Run `chmod 700 ~/.openclaw/billions` after the first run.
+  - **Use a dedicated key.** If you import your own key with `--key`, use one made for this agent. Never import a wallet key that holds funds.
+
+  The full policy, including what the skill does and doesn't defend against, is in the [skill's security policy](https://github.com/BillionsNetwork/verified-agent-identity/blob/main/SECURITY.md#storage-modes).
+</Accordion>
+
+## 2. Link your agent
 
 Once installed, tell your agent to link its identity to you:
 
@@ -42,28 +51,27 @@ Once installed, tell your agent to link its identity to you:
 Link your agent identity to me.
 ```
 
-The agent will generate a verification link scoped to this specific human-agent pairing. Open it in the [Billions Web Wallet](https://wallet.billions.network), sign in, and hit **Verify** to complete the on-chain pairing. If you haven't already claimed a [Proof of Uniqueness credential](/billions-wallet/proof-of-uniqueness), the claim process — a one-time face scan — starts automatically; if you have, it's reused for every future verification.
+The agent will generate a verification link scoped to this specific human-agent pairing. Open it in the [Billions Web Wallet](https://wallet.billions.network), sign in, and hit **Verify** to complete the on-chain pairing. If you haven't already claimed a [Proof of Uniqueness credential](/billions-wallet/proof-of-uniqueness), the claim process, a one-time face scan, starts automatically. If you have, it's reused for every future verification.
 
-For a step-by-step explanation of what happens during the pairing, see [How It Works](/agents/identity-architecture#the-linking-flow).
+For a step-by-step explanation of what happens during the pairing, see [How Pairing Works](/agents/identity-architecture#the-linking-flow).
 
----
+## 3. Verify it worked
 
-## Verify It Worked
+- Ask your agent to show its identity. It responds with its DID.
+- Open your profile in the [Billions Web Wallet](https://wallet.billions.network) and check **Verified Agents**. Your agent is listed there, and the last characters of its DID match what it showed you in chat.
 
-- Ask your agent to show its identity — it responds with its DID.
-- Open your profile in the [Billions Web Wallet](https://wallet.billions.network) and check **Verified Agents** — your agent is listed there, and the last characters of its DID match what it showed you in chat.
-
-The attestation is now on-chain — permanent, public, and verifiable by anyone.
-
----
+The attestation is now on-chain. The pairing record is public. Applications should check its current validity and separately verify control of the agent DID.
 
 ## Learn More
 
-<CardGroup cols={2}>
-  <Card title="How It Works" icon="diagram-project" href="/agents/identity-architecture">
-    See the full linking flow, architecture diagram, demo, and what the skill does under the hood.
+<CardGroup cols={3}>
+  <Card title="Agent Identity" icon="book-open" href="/agents/identity-overview">
+    What agent identity is and why human-agent pairing matters.
   </Card>
-  <Card title="Verify an Agent" icon="user-shield" href="/agents/verify-human-agent-pairing">
-    Look up any agent's DID to check whether it has a verified human owner.
+  <Card title="How Pairing Works" icon="diagram-project" href="/agents/identity-architecture">
+    The full linking flow, architecture diagram, demo, and what the skill does under the hood.
+  </Card>
+  <Card title="Verify an Agent in Your App" icon="user-shield" href="/agents/verify-human-agent-pairing">
+    Check that a caller controls an agent DID, then check whether a verified human is paired with it.
   </Card>
 </CardGroup>

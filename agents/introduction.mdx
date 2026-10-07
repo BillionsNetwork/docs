@@ -1,0 +1,51 @@
+---
+title: "Agents"
+sidebarTitle: "Introduction"
+description: "Pair AI agents with verified humans, check that pairing in your app, and use it to price or gate paid APIs."
+icon: "compass"
+---
+
+Billions links an AI agent to the verified human behind it, and gives services a way to check that link before they trust the agent.
+
+## Pick a task
+
+<CardGroup cols={2}>
+  <Card title="Pair an agent" icon="link" href="/agents/identity-skill">
+    Give your agent a DID and pair it with you. Two chat messages.
+  </Card>
+  <Card title="Verify an agent in my app" icon="user-shield" href="/agents/verify-human-agent-pairing">
+    Check that a caller controls an agent DID and that a verified human is paired with it.
+  </Card>
+  <Card title="Protect an x402 endpoint" icon="server" href="/agents/protect-x402-endpoint">
+    Offer paired agents a different price or limit on a paid API.
+  </Card>
+  <Card title="Inspect attestations" icon="eye" href="/agents/attestation-production-lookup">
+    Read a real pairing in the Explorer and the API, field by field.
+  </Card>
+</CardGroup>
+
+Each guide has its prerequisites, the exact commands, the response you should see, and the page to read next.
+
+## What's involved
+
+Three parts work together. You don't need to know them to start a task above, but the guides refer to them.
+
+| Part | What it does |
+|---|---|
+| **Verified Agent Identity skill** | Runs on the agent. Creates the agent's DID from a key pair the agent holds, then pairs that DID with a person who has a Proof of Uniqueness credential. |
+| **Attestation Registry and Explorer** | Records each pairing on-chain as an ownership attestation. Anyone can look it up in a browser or over an API. |
+| **x402 Human Proof SDKs** | Let a paid API check the pairing on each request and offer paired agents a different price or limit. |
+
+## What a pairing proves
+
+A pairing proves that a person with a Proof of Uniqueness credential paired with a specific agent DID, and the ownership attestation records it on-chain.
+
+It does **not** prove:
+
+- **That the caller is that agent.** DIDs and attestations are public, so anyone can quote one. Your application has to check a signature from the agent, which is called proof of control.
+- **That the agent behaves well.** A paired agent can still send spam. Pairing lets you set limits per person.
+- **Which agent did something**, unless that request was signed with the agent's key.
+
+## Production and testnet
+
+Production holds real pairings and is what a live application should query. Testnet is for practice: creating and revoking your own records. Records never move between them. See [Environments](/agents/environments) for every URL and address.

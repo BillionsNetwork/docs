@@ -50,7 +50,7 @@ This is the structure of the verification query used to make a verification requ
 ```json
 [
   {
-    "circuitId": "credentialAtomicQuerySigV2",
+    "circuitId": "credentialAtomicQueryV3",
     "id": "<sessionId>",
     "query": {
       "allowedIssuers": ["<PoU issuer DID>"],
@@ -119,7 +119,7 @@ app.get("/api/verification-request", async (req, res) => {
   );
 
   const proofRequest = {
-    circuitId: "credentialAtomicQueryV3-beta.1",
+    circuitId: "credentialAtomicQueryV3",
     id: sessionId,
     params: { nullifierSessionId: nullifier.toString() },
     query: {

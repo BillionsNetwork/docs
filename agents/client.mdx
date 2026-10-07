@@ -1,5 +1,6 @@
 ---
-title: "Client"
+title: "Client SDK Reference"
+sidebarTitle: "Client SDK"
 description: "Full reference for the x402 Human Proof Client SDK."
 icon: "browser"
 ---
@@ -36,11 +37,30 @@ The SDK integrates with the x402 client lifecycle as a registered extension. It 
 npm install @billionsnetwork/x402-human-proof-client @x402/axios @x402/evm viem
 ```
 
-<Info>
-  Requires Node.js `>= 20.11.0` and an x402-compatible HTTP client. The agent wallet must hold a Billions Network PoU attestation to access discounted pricing tiers.
-</Info>
+Requires Node.js `>= 20.11.0` and an x402-compatible HTTP client. This reference matches version 0.1.7. The agent's DID must hold an ownership attestation to use discounted pricing tiers.
+
+<Note>
+  Attestation checks use the production Attestations API by default, which is where pairings made with the Verified Agent Identity skill live. To test against testnet pairings, pass `attestationsApiBaseUrl: "https://attestations-api-testnet.billions.network/api/v1/attestations"` to `createAttestationAwareSelector` and `createHumanProofExtension`. See [Environments](/agents/environments).
+</Note>
 
 ## Quick Start
+
+A runnable client for an agent you build yourself. In a new folder:
+
+```bash
+npm init -y
+npm pkg set type=module
+npm install @billionsnetwork/x402-human-proof-client @x402/axios @x402/evm viem axios dotenv
+npm install -D tsx typescript
+```
+
+Add a `.env` with the agent's key. Use a dedicated key, never one that holds funds you care about:
+
+```bash
+EVM_PRIVATE_KEY=0xyour64hexcharacterkey
+```
+
+Save this as `client.ts`. It uses top-level `await`, which is why the project is set to `"type": "module"`:
 
 ```typescript
 import { config } from "dotenv";
@@ -95,9 +115,17 @@ try {
 }
 ```
 
-## Core Concepts
+Run it against a local server, such as the [Server SDK Complete Example](/agents/server#complete-example):
 
-### The Human-Proof Challenge
+```bash
+npx tsx client.ts
+```
+
+With a key whose DID has **no** ownership attestation, you'll see `Missing attestations:` with the required schema ID, followed by `Failed to create payment payload: Missing required attestations`. That confirms the gate works.
+
+With a paired DID, the client signs the human proof and pays at the discounted tier. With a funded Base Sepolia wallet, the request succeeds and the script prints `{ weather: 'sunny', temperature: 70 }`.
+
+## The Human-Proof Challenge
 
 When the server is configured with `@billionsnetwork/x402-human-proof-server`, its `402` responses include an `extensions["human-proof"]` object:
 
@@ -126,9 +154,7 @@ When the server is configured with `@billionsnetwork/x402-human-proof-server`, i
 
 `createHumanProofExtension` handles signing and proof construction automatically when registered with the x402 client.
 
-### CAIP-122 / SIWE Signing
-
-[CAIP-122](https://standards.chainagnostic.org/CAIPs/caip-122) defines chain-agnostic message signing. For EVM chains the SDK uses Sign-In with Ethereum (SIWE / `eip191`). `signHumanProofChallengeEVM` handles message formatting and signing; `createHumanProofExtension` calls it automatically — use it directly only if you need lower-level control.
+[CAIP-122](https://standards.chainagnostic.org/CAIPs/caip-122) defines chain-agnostic sign-in messages. The SDK signs this challenge in its Ethereum form, Sign-In with Ethereum (`eip191`). The fields are listed under [CAIP-122 Signed Messages](/agents/server#caip-122-signed-messages) in the Server SDK. `signHumanProofChallengeEVM` formats and signs it, and `createHumanProofExtension` calls it for you. Use it directly only if you need lower-level control.
 
 ---
 
@@ -157,7 +183,7 @@ x402.registerExtension(createHumanProofExtension(signer, options));
 |---|---|---|---|
 | `attestationsApiBaseUrl` | `string` | `DEFAULT_ATTESTATIONS_API_BASE_URL` | Override the Billions Network attestations API URL used for pre-sign attestation checks. |
 
-If no challenge is present in the `402` body the payload is returned unchanged. Otherwise it checks each required attestation schema (throwing `MissingAttestationsError` if any are missing), signs the SIWE message with the first `eip191`/`eip1271` chain, and returns the payload with `extensions["human-proof"]` set.
+If no challenge is present in the `402` body the payload is returned unchanged. Otherwise it checks each required attestation schema (throwing `MissingAttestationsError` if any are missing), signs the SIWE message with the first `eip191` chain, and returns the payload with `extensions["human-proof"]` set.
 
 <Note>
   **Compatibility:** the `EVMSigner` interface is intentionally minimal. It is compatible with viem `WalletClient`, viem `LocalAccount` (`privateKeyToAccount`), and ethers v6 `Signer`.
@@ -254,7 +280,11 @@ console.log(held); // true or false
 | `schemaId` | `string` | — | The attestation schema ID. |
 | `options.attestationsApiBaseUrl` | `string` | `DEFAULT_ATTESTATIONS_API_BASE_URL` | Override the API base URL. |
 
-Returns: `Promise<boolean>` — `true` if at least one matching attestation record exists.
+Returns: `Promise<boolean>` — `true` if at least one matching attestation record exists. Revoked attestations are not counted.
+
+<Warning>
+  `checkAttestation` is a lookup, not proof of control. It answers whether a DID holds an attestation, not whether the caller controls that DID. On the client that's fine, because you pass your own DID. A server must not call it with a DID an agent reported about itself: see [Verify an Agent](/agents/verify-human-agent-pairing#choose-a-verification-path).
+</Warning>
 
 ---
 
@@ -352,7 +382,7 @@ Returns `boolean`. Compatible with axios, fetch, node-fetch, and similar.
 
 ## Environment Variables
 
-The SDK itself reads no environment variables. The variables below are used by the example scripts (including the Quick Start above):
+The SDK itself reads no environment variables. The variables below are used by example code. The Quick Start above uses `EVM_PRIVATE_KEY`. The example scripts in the SDK repository use all three:
 
 | Variable | Description |
 |---|---|

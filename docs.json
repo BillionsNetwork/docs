@@ -51,29 +51,39 @@
         "tab": "Agents",
         "groups": [
           {
-            "group": "Verified Agent Identity Skill",
+            "group": "Get Started",
+            "pages": [
+              "agents/introduction"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "agents/identity-skill",
+              "agents/verify-human-agent-pairing",
+              "agents/protect-x402-endpoint",
+              "agents/attestation-production-lookup",
+              "agents/attestation-testnet-explorer"
+            ]
+          },
+          {
+            "group": "Concepts",
             "pages": [
               "agents/identity-overview",
               "agents/identity-architecture",
-              "agents/identity-skill",
-              "agents/verify-human-agent-pairing"
-            ]
-          },
-          {
-            "group": "Attestation Explorer",
-            "pages": [
               "agents/attestation-explorer",
-              "agents/attestation-schemas",
-              "agents/attestation-testnet-explorer",
-              "agents/attestation-testnet-api"
+              "agents/overview"
             ]
           },
           {
-            "group": "x402 Human Proof",
+            "group": "Reference",
             "pages": [
-              "agents/overview",
-              "agents/client",
-              "agents/server"
+              "agents/environments",
+              "agents/verification-api",
+              "agents/attestation-testnet-api",
+              "agents/attestation-schemas",
+              "agents/server",
+              "agents/client"
             ]
           }
         ]

@@ -31,7 +31,7 @@ The Schema Registry returns a **schema ID**, a 32-byte hash. You pass that ID wh
 
 ## Schemas in the registry
 
-The testnet registry holds four schemas. `AgentOwnership` is the only one that backs real human-agent pairings.
+Production and testnet hold the same four schemas, with the same IDs. `AgentOwnership` is the only one that backs human-agent pairings.
 
 | Name | Fields | Resolver |
 |---|---|---|
@@ -49,7 +49,7 @@ The schema IDs you'll need most:
 
 `AgentOwnership` carries no data of its own. The attestation itself, from a human DID to an agent DID, is the record.
 
-You can pull the current list at any time from the [API](/agents/attestation-testnet-api#schemas).
+You can pull the current list at any time with `GET /schemas`, on [production](/agents/attestation-explorer#production-and-testnet) or [testnet](/agents/attestation-testnet-api#schemas).
 
 ## Who can attest against a schema
 

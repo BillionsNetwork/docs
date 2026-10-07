@@ -1,7 +1,7 @@
 ---
-title: "Overview"
-sidebarTitle: "Overview"
-description: "What the Attestation Explorer shows, how to search it, and how to read an attestation."
+title: "Attestations and the Explorer"
+sidebarTitle: "Attestations and the Explorer"
+description: "What an attestation is, what the Attestation Explorer shows, and what an ownership attestation does and doesn't tell you."
 icon: "magnifying-glass"
 ---
 
@@ -9,16 +9,20 @@ The Attestation Registry is a set of smart contracts that stores signed statemen
 
 The **Attestation Explorer** is the web interface for reading that registry. You don't need an account or a wallet to look things up.
 
-<CardGroup cols={2}>
-  <Card title="Explorer (production)" icon="arrow-up-right-from-square" href="https://attestations-explorer.billions.network/">
-    attestations-explorer.billions.network
-  </Card>
-  <Card title="Explorer (testnet)" icon="flask" href="https://attestations-explorer-testnet.billions.network">
-    attestations-explorer-testnet.billions.network
-  </Card>
-</CardGroup>
+## Production and testnet
 
-The hands-on guides in this section all use the **testnet** Explorer, so you can create schemas and attestations without touching real records. See [Testnet Explorer](/agents/attestation-testnet-explorer).
+There are two separate registries, each with its own Explorer and API.
+
+| | Production | Testnet |
+|---|---|---|
+| **Explorer** | [attestations-explorer.billions.network](https://attestations-explorer.billions.network/) | [attestations-explorer-testnet.billions.network](https://attestations-explorer-testnet.billions.network) |
+| **API base URL** | `https://attestations-api.billions.network/api/v1` | `https://attestations-api-testnet.billions.network/api/v1` |
+| **Network** | Billions Mainnet, chain ID `45056` | Billions Testnet, chain ID `6913` |
+| **Purpose** | Real pairings. Query this from a live application. | Practice: create schemas and attestations, and revoke them. |
+
+A record created on testnet never appears in production, and the reverse. The DID string doesn't tell you which one you're looking at, because agent DIDs use `billions:main` in both. What decides it is the host you query.
+
+Read a real production pairing first, in [Inspect Attestations](/agents/attestation-production-lookup). Then use [Create Test Attestations](/agents/attestation-testnet-explorer) to create and revoke your own. Every URL and contract address is in [Environments](/agents/environments).
 
 ## What's in the Explorer
 
@@ -72,20 +76,34 @@ Every attestation has the same outer shape, whatever its schema.
 
 A revoked attestation stays in the registry with its revocation time. It is no longer valid, but the history is kept.
 
-## Why human attestations resist Sybil attacks
+## What an ownership attestation tells you
 
-An agent-ownership attestation is only recorded after a person finishes the linking flow in their Billions wallet. Neither the agent nor its owner can write one by hand. The **Identity Verifier** contract allows one verified human per on-chain identity, so the human side of every ownership attestation is a distinct person. One person can still own several agents, which is why the Explorer shows a count per human.
+An agent-ownership attestation is recorded after a person finishes the linking flow in their Billions wallet. The **Identity Verifier** contract allows one verified human per on-chain identity, so each human DID on the human side stands for one distinct person.
+
+That person can still pair several agents, which is why the Explorer shows a count per human. A service can use that to recognize the agents as linked to the same human and set limits per person.
+
+What it does not tell you:
+
+- That the caller is the agent. DIDs and attestations are public, so anyone can copy one. See [Verify an Agent](/agents/verify-human-agent-pairing).
+- That the agent behaves well. A verified person's agent can still spam.
+- Which agent performed a given action, unless that request was signed with the agent's key.
 
 ## Where to go next
 
 <CardGroup cols={2}>
+  <Card title="Inspect Attestations" icon="eye" href="/agents/attestation-production-lookup">
+    Read one real production attestation in the Explorer and the API, field by field.
+  </Card>
   <Card title="Schemas" icon="table-list" href="/agents/attestation-schemas">
     What a schema defines, the four that exist today, and how access is controlled.
   </Card>
-  <Card title="Testnet Explorer" icon="flask" href="/agents/attestation-testnet-explorer">
+  <Card title="Create Test Attestations" icon="flask" href="/agents/attestation-testnet-explorer">
     Connect a wallet, create a schema, make and revoke an attestation.
   </Card>
-  <Card title="Testnet API" icon="code" href="/agents/attestation-testnet-api">
+  <Card title="Attestations API (Testnet)" icon="code" href="/agents/attestation-testnet-api">
     Query attestations, schemas and identities over HTTP.
+  </Card>
+  <Card title="Verify an Agent" icon="user-shield" href="/agents/verify-human-agent-pairing">
+    Check that a caller controls an agent DID, then check its pairing.
   </Card>
 </CardGroup>

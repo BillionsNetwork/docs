@@ -1,18 +1,18 @@
 ---
-title: "Testnet Explorer"
-sidebarTitle: "Testnet Explorer"
+title: "Create Test Attestations"
+sidebarTitle: "Create Test Attestations"
 description: "Hands-on walkthrough of the testnet Attestation Explorer: connect a wallet, create a schema, make an attestation, and revoke it."
 icon: "flask"
 ---
 
-Everything on this page happens on the **Billions testnet**, so you can try it freely. Records you create here are separate from the production registry.
+Everything on this page happens on the **Billions testnet**, so you can try it freely. Records you create here never appear in the production registry. If you haven't yet, read a real production record first in [Inspect Attestations](/agents/attestation-production-lookup).
 
 | | |
 |---|---|
 | Explorer | [attestations-explorer-testnet.billions.network](https://attestations-explorer-testnet.billions.network) |
 | API | `https://attestations-api-testnet.billions.network/api/v1` |
 | Block explorer | [billions-testnet-blockscout.eu-north-2.gateway.fm](https://billions-testnet-blockscout.eu-north-2.gateway.fm) |
-| Chain ID | `6913` |
+| Network | Billions Testnet, chain ID `6913` |
 | Attestation Registry | `0x6dd6Ad465E93bcb345010ECEf3cFC9144e87b6cC` |
 | Schema Registry | `0x3ADee532C2018b3fa66B2B4384d11959830a7E6F` |
 | Identity Verifier | `0x3a05EAe03a85A141BE0F5b5049e85c6616379861` |
@@ -48,6 +48,26 @@ You need two things.
 <Note>
   The linking request is sent to the Billions web wallet, which needs an identity to link. If you don't have one yet, create it in the [Billions Wallet](/billions-wallet/web-wallet) first.
 </Note>
+
+## Repeat the lookup on testnet
+
+Run the same read you did on production, against a testnet pairing. The agent here is named **V**:
+
+| | |
+|---|---|
+| Agent DID | `did:iden3:billions:main:2VmAkXrihYaLNiczcAJUkYUytANoVMR8vsLT6urNmN` |
+| Ownership attestation ID | `0x8e76a5ec0ba5ef5f00c87e90251447a343949f108b4ce3ac7bd5c901e32f3fdf` |
+
+Open it in the [testnet Explorer](https://attestations-explorer-testnet.billions.network/attestation/0x8e76a5ec0ba5ef5f00c87e90251447a343949f108b4ce3ac7bd5c901e32f3fdf), or ask the testnet API:
+
+```bash
+curl "https://attestations-api-testnet.billions.network/api/v1/attestations?schemaId=0xca354bee6dc5eded165461d15ccb13aceb6f77ebbb1fd3fe45aca686097f2911&recipientDid=did:iden3:billions:main:2VmAkXrihYaLNiczcAJUkYUytANoVMR8vsLT6urNmN"
+```
+
+The fields mean the same as in [Inspect Attestations](/agents/attestation-production-lookup#3-read-the-result). Two things to notice:
+
+- The agent DID starts with `billions:main` even though this is testnet.
+- The same request against the production API returns `totalItems: 0`. Jarvis, the production example, returns nothing here. Each pairing exists only in the environment where it was made.
 
 ## Look something up
 
@@ -137,6 +157,6 @@ To test the same operations from code, clone [BillionsNetwork/attestations-examp
 
 ## Next
 
-<Card title="Testnet API" icon="code" href="/agents/attestation-testnet-api">
+<Card title="Attestations API (Testnet)" icon="code" href="/agents/attestation-testnet-api">
   Query what you just created over HTTP.
 </Card>

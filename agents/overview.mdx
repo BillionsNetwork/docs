@@ -1,5 +1,6 @@
 ---
-sidebarTitle: "Overview"
+title: "x402 Human Proof"
+sidebarTitle: "x402 Human Proof"
 description: "x402 Human Proof — differentiated pricing and spam protection for APIs serving humans and AI agents."
 icon: "book-open"
 ---
@@ -10,12 +11,29 @@ The x402 protocol lets any API accept per-request payments from humans and agent
 
 ## x402 Human Proof
 
-The **x402 Human Proof** extension solves that: it adds a human identity verification layer on top of x402, giving providers the signal they need to apply differentiated pricing and protect against bots, scalpers, and spam.
+The **x402 Human Proof** extension solves that: it adds a human identity verification layer on top of x402, giving providers a signal they can use for differentiated pricing and for limiting bots, scalpers, and spam.
 
-With Human Proof, providers can offer discounted tiers, free trials, or premium access to verified humans and the agents they control — while keeping standard rates for unverified traffic, or blocking it entirely. The result is sybil and spam resistance without giving up x402's open, permissionless model.
+With Human Proof, providers can offer discounted tiers, free trials, or premium access to verified humans and the agents they control — while keeping standard rates for unverified traffic, or blocking it entirely. Providers get a per-human signal for sybil and spam limits without giving up x402's open, permissionless model.
+
+## How it fits into x402
+
+An x402 server has three parts: a [facilitator](https://docs.x402.org/core-concepts/facilitator) that settles payments on-chain, a resource server that coordinates the x402 logic, and a payment middleware that gates routes. When a client calls a gated route without paying, the server answers `402 Payment Required` with the accepted payment terms. The client pays and retries, and the server settles and returns `200`.
+
+Human Proof adds to that flow without replacing it:
+
+1. The `402` response also carries a human-proof challenge, a sign-in message for the agent to sign. See [CAIP-122 Signed Messages](/agents/server#caip-122-signed-messages).
+2. A tier can require an ownership attestation, through `requiredAttestations`.
+3. When a client pays for such a tier, it includes the signed challenge in the payment payload, under `extensions["human-proof"]`.
+4. Before the payment is verified, the server checks the signature, derives the agent DID, and looks up its ownership attestation. Tiers without `requiredAttestations` skip this check.
+
+The facilitator still verifies and settles the payment. Human Proof is an extra gate on the tier the client chose.
+
+<Note>
+  **Only need to verify agents, not charge them?** You don't need x402. The verification step works on its own in any app, with no payment involved. See [Verify an Agent in Your App](/agents/verify-human-agent-pairing).
+</Note>
 
 <Info>
-  For agents consuming Human Proof–protected APIs, the [**Verified Agent Identity skill**](/agents/identity-overview) handles the human-proof flow automatically — no SDK integration needed.
+  For agents consuming Human Proof–protected APIs, the [**Verified Agent Identity skill**](/agents/identity-overview) handles the agent-side steps of the human-proof flow, so no SDK integration is needed. The human still opens the wallet link and approves the pairing once.
 </Info>
 
 ---
@@ -26,7 +44,7 @@ With Human Proof, providers can offer discounted tiers, free trials, or premium 
   x402.billions.network — claim a tile on the canvas using your agent
 </Card>
 
-The demo shows the full x402 Human Proof flow end-to-end: an agent visits a protected resource, handles a `402 Payment Required` response, proves it is operated by a verified human, pays for access, and mints a tile as an NFT on a shared canvas — all in a single conversation.
+The demo shows the full x402 Human Proof flow end-to-end: an agent visits a protected resource, handles a `402 Payment Required` response, proves it is paired with a verified human, pays for access, and mints a tile as an NFT on a shared canvas — all in a single conversation.
 
 ### How the demo works
 
@@ -35,16 +53,16 @@ The demo shows the full x402 Human Proof flow end-to-end: an agent visits a prot
     The user visits the x402 demo website and clicks **Claim Tiles**. A prompt is displayed that can be copied and passed directly to any agent.
   </Step>
   <Step title="Agent sets up its identity">
-    The agent visits the server. If the Verified Agent Identity skill is not yet installed, it installs or updates it and sets up its decentralized identity automatically. The agent may present its DID to the user at this point.
+    The agent visits the server. If the Verified Agent Identity skill is not yet installed, it installs or updates it and creates its DID. The agent may present its DID to the user at this point.
   </Step>
   <Step title="Server returns HTTP 402">
-    The agent requests a tile from the server. The server denies access with an HTTP `402 Payment Required` response — because the agent has not yet proven it is operated by a verified human and has not paid.
+    The agent requests a tile from the server. The server denies access with an HTTP `402 Payment Required` response — because the agent has not yet proven it is paired with a verified human and has not paid.
   </Step>
   <Step title="Agent presents verification and payment options">
     The agent surfaces both requirements to the user: a verification link to pair the human with the agent (via the Billions Web Wallet), and the available payment options. Both must be satisfied to access the resource — this is the combined power of x402 and the x402 Human Proof extension.
   </Step>
   <Step title="User pairs with the agent on-chain">
-    The user opens the verification link in the Billions Web Wallet. They confirm their Proof of Uniqueness credential and complete the pairing. A permanent ownership attestation is created on-chain, linking the user to their agent.
+    The user opens the verification link in the Billions Web Wallet. They confirm their Proof of Uniqueness credential and complete the pairing. An ownership attestation is recorded on-chain, linking the user to their agent.
   </Step>
   <Step title="User selects a payment option">
     With the pairing confirmed, the user selects their preferred payment option from the options the agent presented.
@@ -61,18 +79,23 @@ The demo shows the full x402 Human Proof flow end-to-end: an agent visits a prot
 
 ## Server SDK
 
-`@billionsnetwork/x402-human-proof-server` is built on top of x402 and lets service providers add human-proof verification to any API service. Offer better pricing and spam protection to verified humans — and the verified agents they control — without touching existing routes or payment logic.
+`@billionsnetwork/x402-human-proof-server` is built on top of x402 and lets service providers add human-proof verification to any API service. Offer better pricing and per-human limits to verified humans and the agents paired with them. Register the verification hook once, then add the human-proof declaration and gated tier to each protected route.
 
 **Features:**
 
-- **Drop-in setup.** One function call; existing routes and payment logic stay unchanged.
+- **Small setup.** Register the verification hook once, then add the human-proof declaration and gated tier to each protected route.
 - **Tiered pricing.** A discounted rate for verified humans and their agents, a standard rate for everyone else — claiming the discount requires valid proof.
-- **Usage caps and shared quotas.** Hard per-human limits, enforced atomically, with multiple routes able to share one usage pool. If a payment fails after verification, the usage count rolls back automatically.
+- **Usage caps and shared quotas.** Per-human limits, counted in a storage backend you provide (it must update atomically), with multiple routes able to share one usage pool. If a payment fails after verification, the usage count rolls back automatically.
 - **Credential gating.** Require any combination of credentials or skills per route, beyond "is this a human".
 
-<Card title="Server SDK Reference" icon="server" href="/agents/server">
-  Full reference for `@billionsnetwork/x402-human-proof-server`
-</Card>
+<CardGroup cols={2}>
+  <Card title="Protect an x402 Endpoint" icon="server" href="/agents/protect-x402-endpoint">
+    Set up a server with a discounted tier for paired agents.
+  </Card>
+  <Card title="Server SDK Reference" icon="book" href="/agents/server">
+    Full reference for `@billionsnetwork/x402-human-proof-server`
+  </Card>
+</CardGroup>
 
 ---
 
@@ -89,7 +112,7 @@ Reach for the client SDK only when you're building a custom agent that needs dir
 - **Automatic signing.** Verification challenges are signed in the background; nothing to wire up per request.
 - **Smart tier selection.** Picks the best tier the client qualifies for, falling back to standard pricing when the discount isn't available.
 - **Usage cap recovery.** Detects when the usage limit is hit and retries at standard pricing.
-- **Works with any EVM wallet.**
+- **Works with EVM wallets that sign with a standard key.** Smart-contract wallets (EIP-1271) are not supported yet.
 
 <Card title="Client SDK Reference" icon="browser" href="/agents/client">
   Full reference for `@billionsnetwork/x402-human-proof-client`

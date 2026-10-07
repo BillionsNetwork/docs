@@ -1,6 +1,6 @@
 ---
-title: "Testnet API"
-sidebarTitle: "Testnet API"
+title: "Attestations API (Testnet)"
+sidebarTitle: "Attestations API (Testnet)"
 description: "Query testnet attestations, schemas and identities over HTTP. The same API the Explorer uses."
 icon: "code"
 ---
@@ -18,7 +18,7 @@ export API=https://attestations-api-testnet.billions.network/api/v1
 ```
 
 <Warning>
-  This is the testnet API, for development and experiments. For checking whether an agent has a verified human in a real application, use the production endpoints described in [Verify an Agent](/agents/verify-human-agent-pairing#querying-the-attestations-api-directly).
+  This is the testnet API, for development and experiments. Records here never appear in production. A live application should query production: see [Inspect Attestations](/agents/attestation-production-lookup) for a full production response, and the [Verification API](/agents/verification-api#rest-endpoints) for the calls to make.
 </Warning>
 
 ## Pagination
@@ -225,11 +225,13 @@ console.log(`${average.toFixed(2)} stars from ${stars.length} reviews`);
 Run it with an agent DID that has reviews:
 
 ```bash
-node reviews.mjs did:iden3:billions:main:2VmAkXrihYaL5GsMCfGE5ae3f5QDz6XpAhuU9STdaa
+node reviews.mjs did:iden3:billions:test:2VxnoiNqdMPxfJYmZScDoFGLYNYLrKowqFUPHy5X8W
 ```
+
+Against that DID it currently prints `4.00 stars from 1 reviews`. Testnet data changes, so your numbers may differ.
 
 ## Next
 
-<Card title="Testnet Explorer" icon="flask" href="/agents/attestation-testnet-explorer">
+<Card title="Create Test Attestations" icon="flask" href="/agents/attestation-testnet-explorer">
   Create the records you're querying here.
 </Card>
