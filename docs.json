@@ -79,8 +79,7 @@
             "group": "Reference",
             "pages": [
               "agents/environments",
-              "agents/verification-api",
-              "agents/attestation-testnet-api",
+              "agents/attestations-api",
               "agents/attestation-schemas",
               "agents/server",
               "agents/client"
@@ -111,5 +110,15 @@
       "x": "https://x.com/billions_ntwk",
       "linkedin": "https://www.linkedin.com/company/billions-ntwk"
     }
-  }
+  },
+  "redirects": [
+    {
+      "source": "/agents/verification-api",
+      "destination": "/agents/attestations-api"
+    },
+    {
+      "source": "/agents/attestation-testnet-api",
+      "destination": "/agents/attestations-api"
+    }
+  ]
 }

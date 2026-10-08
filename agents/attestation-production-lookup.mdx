@@ -5,7 +5,12 @@ description: "Read one real ownership attestation in the production Explorer and
 icon: "eye"
 ---
 
-This guide reads one real pairing on **production**, read-only, before you create anything on testnet. It shows what an ownership attestation looks like and where live verification data comes from. Nothing here needs a wallet.
+When a person pairs with an agent, the pairing is written to the **Attestation Registry**, an on-chain record, as an **ownership attestation**. Two tools read that registry:
+
+- **The [Attestation Explorer](https://attestations-explorer.billions.network/)**, a public website. Search for an agent or a person to see who they are paired with.
+- **The [Attestations API](/agents/attestations-api)**, which serves the same data over HTTP for applications.
+
+This guide reads one real pairing with both, on **production** and read-only, before you create anything on testnet. It shows what an ownership attestation looks like and where live verification data comes from. Nothing here needs a wallet. For how attestations and schemas work in general, see [Attestations and the Explorer](/agents/attestation-explorer).
 
 The example is an agent named **Jarvis**:
 
@@ -111,7 +116,7 @@ It proves that a verified human, `fromDid`, paired with the agent DID `toDid`, a
 It does not prove that whoever you are talking to controls that agent DID. Anyone can copy the DID from this page. Before you grant access or pay a reward, require a signed proof, as described in [Verify an Agent](/agents/verify-human-agent-pairing).
 
 <Note>
-  The production API is rate-limited infrastructure. Use the verification calls documented in the [Verification API](/agents/verification-api) from your application. To create, query and revoke your own records freely, use testnet.
+  The production API is rate-limited infrastructure. From your application, use only the [verification endpoints](/agents/attestations-api#endpoints) of the Attestations API. To create, query and revoke your own records freely, use testnet.
 </Note>
 
 ## Next: repeat it on testnet

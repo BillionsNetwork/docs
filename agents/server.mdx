@@ -288,6 +288,14 @@ One human can pair several agents. They all resolve to the same `humanId`, so `m
 
 With x402, the signed payload travels in the payment payload, under `extensions["human-proof"]`. Used on its own, it travels in the `HUMAN-PROOF` HTTP header.
 
+### Supported Signatures
+
+| Signature type | Wallets | Supported |
+|---|---|---|
+| `eip191` | Standard EVM keys (EOAs) | Yes |
+| `eip1271` | Smart-contract wallets | No. Rejected with `invalid_signature_type`. |
+| `ed25519` | Solana | No. The challenge lists only EVM chains, and the agent DID is derived from an Ethereum address. |
+
 ### Decentralized Identifiers (DID)
 
 A DID is derived from the agent's EVM address using the Billions method:
@@ -706,7 +714,7 @@ const verifier = createPoUVerifier({
 });
 ```
 
-Queries the attestations API for the DID, takes the most recent record, then resolves `record.fromId` via the nullifier API to return `{ humanId: nullifier, verifiedAt: ISO8601 }`.
+Queries the [Attestations API](/agents/attestations-api) for the DID, takes the most recent ownership attestation, then resolves its `fromId` through the nullifier API to return `{ humanId: nullifier, verifiedAt, attestationId, humanDid, humanAddress, agentDid, agentAddress }`. The API leaves revoked attestations out. Expiry is not checked. The defaults point at production; see [Environments](/agents/environments) for the testnet URLs.
 
 | Option | Type | Default | Description |
 |---|---|---|---|
@@ -753,7 +761,7 @@ These values appear in the `reason` field when the hook aborts, and in the `erro
 
 | Reason | When it occurs |
 |---|---|
-| `missing_header` | The payment payload has no `extensions["human-proof"]` field |
+| `missing_header` | No proof was sent: no `extensions["human-proof"]` in the payment payload with x402, or no `HUMAN-PROOF` header when used on its own |
 | `invalid_header` | The proof is not valid JSON or is missing required fields (`address`, `signature`, `chainId`, `type`) |
 | `invalid_message` | A required CAIP-122 field is missing: `domain`, `version`, `nonce` or `issuedAt` |
 | `resource_mismatch` | The signed `uri` is missing or does not match the resource URL being requested |

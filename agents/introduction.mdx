@@ -7,34 +7,26 @@ icon: "compass"
 
 Billions links an AI agent to the verified human behind it, and gives services a way to check that link before they trust the agent.
 
-## Pick a task
+## The building blocks
 
-<CardGroup cols={2}>
-  <Card title="Pair an agent" icon="link" href="/agents/identity-skill">
-    Give your agent a DID and pair it with you. Two chat messages.
-  </Card>
-  <Card title="Verify an agent in my app" icon="user-shield" href="/agents/verify-human-agent-pairing">
-    Check that a caller controls an agent DID and that a verified human is paired with it.
-  </Card>
-  <Card title="Protect an x402 endpoint" icon="server" href="/agents/protect-x402-endpoint">
-    Offer paired agents a different price or limit on a paid API.
-  </Card>
-  <Card title="Inspect attestations" icon="eye" href="/agents/attestation-production-lookup">
-    Read a real pairing in the Explorer and the API, field by field.
-  </Card>
-</CardGroup>
-
-Each guide has its prerequisites, the exact commands, the response you should see, and the page to read next.
-
-## What's involved
-
-Three parts work together. You don't need to know them to start a task above, but the guides refer to them.
-
-| Part | What it does |
+| Product | What it is |
 |---|---|
-| **Verified Agent Identity skill** | Runs on the agent. Creates the agent's DID from a key pair the agent holds, then pairs that DID with a person who has a Proof of Uniqueness credential. |
-| **Attestation Registry and Explorer** | Records each pairing on-chain as an ownership attestation. Anyone can look it up in a browser or over an API. |
-| **x402 Human Proof SDKs** | Let a paid API check the pairing on each request and offer paired agents a different price or limit. |
+| [Verified Agent Identity skill](/agents/identity-overview) | Runs on the agent. Creates the agent's DID from a key pair the agent holds, then pairs that DID with a person who has a Proof of Uniqueness credential. |
+| [Attestation Registry](/agents/attestation-explorer) | The on-chain record. Each pairing is stored in it as an **ownership attestation**. |
+| [Attestation Explorer](/agents/attestation-explorer) | A public website for reading the registry. Search for an agent or a person and see who they are paired with. The [Attestations API](/agents/attestations-api) serves the same data over HTTP. |
+| [x402 Human Proof SDKs](/agents/overview) | Let a server check the pairing on each request, with or without x402. With x402, a paid API can also charge paired agents a different price. |
+
+## Start from your goal
+
+| Your goal | Read | What you'll have at the end |
+|---|---|---|
+| Give your agent a verifiable identity and pair it with you | [Pair an Agent](/agents/identity-skill) | An agent DID, and an ownership attestation on production that links it to you |
+| Check, in your own app, that a caller is a paired agent | [Verify an Agent in Your App](/agents/verify-human-agent-pairing) | A route that accepts only signed requests from paired agents. No x402 needed. |
+| Charge paired agents a different price on a paid API | [Protect an x402 Endpoint](/agents/protect-x402-endpoint) | An x402 server with a discounted tier for paired agents |
+| See who an agent is paired with | [Inspect Attestations](/agents/attestation-production-lookup) | A real ownership attestation, read in the Attestation Explorer and through the Attestations API |
+| Practice creating and revoking attestations | [Create Test Attestations](/agents/attestation-testnet-explorer) | Your own schema and attestations on testnet |
+
+Each guide lists its prerequisites, the exact commands, the result you should see, and where to go next.
 
 ## What a pairing proves
 

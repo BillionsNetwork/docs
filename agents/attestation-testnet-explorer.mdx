@@ -5,13 +5,13 @@ description: "Hands-on walkthrough of the testnet Attestation Explorer: connect 
 icon: "flask"
 ---
 
-Everything on this page happens on the **Billions testnet**, so you can try it freely. Records you create here never appear in the production registry. If you haven't yet, read a real production record first in [Inspect Attestations](/agents/attestation-production-lookup).
+The [Attestation Explorer](/agents/attestation-explorer) is the public website for the Attestation Registry. Anyone can read it. With a connected wallet, it can also write: register schemas, make attestations and revoke them. This guide does that on the **Billions testnet**, so you can try it freely. Records you create here never appear in the production registry. If you haven't yet, read a real production record first in [Inspect Attestations](/agents/attestation-production-lookup).
 
 | | |
 |---|---|
 | Explorer | [attestations-explorer-testnet.billions.network](https://attestations-explorer-testnet.billions.network) |
 | API | `https://attestations-api-testnet.billions.network/api/v1` |
-| Block explorer | [billions-testnet-blockscout.eu-north-2.gateway.fm](https://billions-testnet-blockscout.eu-north-2.gateway.fm) |
+| Block explorer | [explorer-testnet.billions.network](https://explorer-testnet.billions.network/) |
 | Network | Billions Testnet, chain ID `6913` |
 | Attestation Registry | `0x6dd6Ad465E93bcb345010ECEf3cFC9144e87b6cC` |
 | Schema Registry | `0x3ADee532C2018b3fa66B2B4384d11959830a7E6F` |
@@ -141,14 +141,14 @@ This example leaves a review for an agent. The `Review` schema has no resolver, 
 
 Open the attestation's detail page and click **Revoke**, then confirm the transaction. When the attestation was created as non-revocable, the button is inactive and its tooltip reads "Attestations created with this schema cannot be revoked."
 
-A revoked attestation stays visible with its revocation time. Anything that checks validity, including the `revoked` field in the [API](/agents/attestation-testnet-api#get-one-attestation), will show it as revoked.
+A revoked attestation stays visible with its revocation time. Anything that checks validity, including the `revoked` field in the [Attestations API](/agents/attestations-api#get-one-attestation), will show it as revoked.
 
 ## Confirm it worked
 
 Look your attestation up three ways to see that they agree:
 
 1. In the Explorer, search for the attestation ID.
-2. In the [API](/agents/attestation-testnet-api), `GET /attestations/<id>`.
+2. In the [Attestations API](/agents/attestations-api#get-one-attestation), with the testnet base URL: `GET /attestations/<id>`.
 3. In the block explorer, open the transaction hash from the attestation detail page.
 
 ## Try the example scripts
@@ -157,6 +157,6 @@ To test the same operations from code, clone [BillionsNetwork/attestations-examp
 
 ## Next
 
-<Card title="Attestations API (Testnet)" icon="code" href="/agents/attestation-testnet-api">
-  Query what you just created over HTTP.
+<Card title="Attestations API" icon="code" href="/agents/attestations-api">
+  Query what you just created over HTTP, using the testnet base URL.
 </Card>

@@ -350,17 +350,132 @@ console.log(res.status, await res.text());
 
 **Run it** the same way as Path A: the setup block with these routes in `server.mjs`, the agent code in `agent.mjs`, then `node server.mjs` and the same `node agent.mjs` command. A fresh key prints `403 {"error":"not_registered"}`. A paired key prints `200` with the agent DID, the human DID and the human's nullifier.
 
-The attestation list already leaves out revoked attestations. It does not filter on expiration. See [missing, revoked and failed lookups](/agents/verification-api#missing-revoked-and-failed-lookups).
+The attestation list already leaves out revoked attestations. It does not filter on expiration. See [missing, revoked and failed lookups](/agents/attestations-api#missing-revoked-and-failed-lookups).
 
 <Note>
   In Path B, the signature proves control of an address, and the API ties that address to a DID and a human. The recovered address is the only identity input: nothing the agent sends, other than the signature, is trusted. The `HUMAN-PROOF` header format from Path A is not required here.
 </Note>
 
+## SDK function details
+
+Open one when you need the exact arguments, return values or errors of an SDK function.
+
+<AccordionGroup>
+  <Accordion title="verifyHumanProofRequest (server)" icon="server">
+    From `@billionsnetwork/x402-human-proof-server`. Verifies one signed human proof, derives the agent DID from the signer, and looks up the DID's ownership attestation and the human's nullifier through the [Attestations API](/agents/attestations-api). Path A calls it in Step 3. The x402 integration calls it for you.
+
+    ```javascript
+    import { verifyHumanProofRequest, createPoUVerifier } from "@billionsnetwork/x402-human-proof-server";
+
+    const verifier = createPoUVerifier();
+    const result = await verifyHumanProofRequest(verifier, {
+      resource: "https://rewards.example.com/claim",
+      humanProofHeader,
+    });
+    ```
+
+    | Argument | Type | Description |
+    |---|---|---|
+    | `verifier` | `PoUVerifier` | From [`createPoUVerifier`](/agents/server#createpouverifier). Its defaults point at production. |
+    | `resource` | `string` | The resource the proof must be signed for. The signed `uri` must equal it. |
+    | `humanProofHeader` | `string \| null` | The JSON proof, from the `HUMAN-PROOF` header. |
+    | `onEvent` | `(event) => void` | Optional. Called with `human_verified` or `human_not_registered`. |
+
+    **Returns** when the proof is valid and the DID is paired:
+
+    ```javascript
+    {
+      allowed: true,
+      did: "did:iden3:billions:main:…",   // agent DID, derived from the signer
+      chainId: "eip155:84532",             // from the signed proof
+      resolution: {
+        humanId: "3217…3818",              // the human's nullifier
+        verifiedAt: "2026-03-05T05:24:23.000Z",
+        attestationId: "0xe22e…ab8b",
+        humanDid: "did:iden3:billions:main:…",
+        humanAddress: "0x…",
+        agentDid: "did:iden3:billions:main:…",
+        agentAddress: "0x…",
+      },
+    }
+    ```
+
+    `humanAddress` is the attestation's `fromEthereumAddress`. For pairings made with the Verified Agent Identity skill, that is the relay that submitted the transaction, not the person's wallet. Identify the person by `humanDid` or `humanId`.
+
+    **Returns** otherwise `{ allowed: false, reason, did? }`. `did` is present for `not_registered`. Treat every `reason` as "not verified":
+
+    | `reason` | Meaning |
+    |---|---|
+    | `missing_header` | No proof was passed |
+    | `invalid_header` | The proof isn't valid JSON, or is missing `address`, `signature`, `chainId` or `type` |
+    | `invalid_message` | Missing `domain`, `version`, `nonce` or `issuedAt` |
+    | `resource_mismatch` | The signed `uri` is missing or doesn't match `resource` |
+    | `invalid_issued_at` | `issuedAt` isn't a parseable date |
+    | `invalid_expiration_time` | `expirationTime` isn't a parseable date |
+    | `message_expired` | `expirationTime` has passed |
+    | `invalid_signature_type` | `type` is neither `eip191` nor `ed25519`. Smart-contract wallet proofs (`eip1271`) end up here. See [supported signatures](/agents/server#supported-signatures). |
+    | `invalid_signature` | Signature recovery failed, or the recovered address doesn't match the claimed one |
+    | `not_registered` | The derived DID has no ownership attestation, or no nullifier resolves for its human |
+
+    **Throws** when the Attestations or nullifier API returns an error status or can't be reached. Catch it and treat it as "not verified", or retry later.
+
+    **Does not check** whether the nonce was issued by you or used before, or the signed `domain`. Path A, Step 3 does both before calling it.
+  </Accordion>
+
+  <Accordion title="signHumanProofChallengeEVM (client)" icon="signature">
+    From `@billionsnetwork/x402-human-proof-client`. Signs a human-proof challenge with an EVM key and returns the proof as a JSON string, ready to send as the `HUMAN-PROOF` header. The agent calls it in Path A, Step 2.
+
+    ```javascript
+    import { signHumanProofChallengeEVM } from "@billionsnetwork/x402-human-proof-client";
+
+    const header = await signHumanProofChallengeEVM(challenge, signer, "eip155:84532");
+    ```
+
+    | Argument | Type | Description |
+    |---|---|---|
+    | `challenge` | `{ info, supportedChains }` | The challenge your application issues, as in Step 1. With x402, the `extensions["human-proof"]` object from the `402` response. |
+    | `signer` | `{ address, signMessage(message: string) }` | The agent's key. Wrap a viem account as shown in Step 2. |
+    | `chainId` | `string` | A CAIP-2 chain ID, such as `"eip155:84532"`. It must appear in `challenge.supportedChains` with type `eip191`. |
+
+    **Returns** `Promise<string>`: JSON with every challenge field, plus `address`, `signature`, `chainId` and `type`.
+
+    **Throws** when `chainId` isn't listed in `challenge.supportedChains` with type `eip191`. Only standard EVM keys can sign. Smart-contract wallets are not supported.
+  </Accordion>
+
+  <Accordion title="checkAttestation (client)" icon="magnifying-glass">
+    From `@billionsnetwork/x402-human-proof-client`. Returns whether a DID holds at least one attestation for a schema. Neither path needs it. It is a lookup, not a verification.
+
+    ```javascript
+    import { checkAttestation, DEFAULT_AGENT_OWNERSHIP_SCHEMA } from "@billionsnetwork/x402-human-proof-client";
+
+    const paired = await checkAttestation(agentDid, DEFAULT_AGENT_OWNERSHIP_SCHEMA);
+    ```
+
+    | Argument | Type | Description |
+    |---|---|---|
+    | `did` | `string` | The DID to look up. |
+    | `schemaId` | `string` | The schema ID. Use `DEFAULT_AGENT_OWNERSHIP_SCHEMA` for pairings. |
+    | `options.attestationsApiBaseUrl` | `string` | Optional. Defaults to production. |
+
+    **Returns** `Promise<boolean>`. Revoked attestations are not counted. It also returns `false` when the API responds with an error status, so `false` can mean "not paired" or "API unavailable".
+
+    <Warning>
+      It does not show that the caller controls the DID. Only call it with a DID you already trust, such as `result.did` from `verifyHumanProofRequest`. Never call it with a DID an agent reported about itself.
+    </Warning>
+  </Accordion>
+</AccordionGroup>
+
 ## Reference
 
 <CardGroup cols={2}>
-  <Card title="Verification API" icon="code" href="/agents/verification-api">
-    `verifyHumanProofRequest` return values and errors, `checkAttestation`, the REST endpoints with full responses, and how to handle missing or revoked pairings.
+  <Card title="Attestations API" icon="code" href="/agents/attestations-api">
+    The endpoints both paths call, with full responses, and how to handle missing or revoked pairings.
+  </Card>
+  <Card title="Server SDK" icon="server" href="/agents/server">
+    `createPoUVerifier`, the x402 integration, events, usage caps, the full error reference and supported signatures.
+  </Card>
+  <Card title="Client SDK" icon="browser" href="/agents/client">
+    `signHumanProofChallengeEVM` and `checkAttestation`.
   </Card>
   <Card title="Environments" icon="globe" href="/agents/environments">
     Production and testnet URLs, chain IDs, contract addresses and SDK defaults.

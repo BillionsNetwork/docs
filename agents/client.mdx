@@ -280,7 +280,7 @@ console.log(held); // true or false
 | `schemaId` | `string` | — | The attestation schema ID. |
 | `options.attestationsApiBaseUrl` | `string` | `DEFAULT_ATTESTATIONS_API_BASE_URL` | Override the API base URL. |
 
-Returns: `Promise<boolean>` — `true` if at least one matching attestation record exists. Revoked attestations are not counted.
+Returns: `Promise<boolean>` — `true` if at least one matching attestation record exists. Revoked attestations are not counted. It also returns `false` when the API responds with an error status, so `false` can mean "not paired" or "API unavailable". To tell them apart, call the [Attestations API](/agents/attestations-api#look-up-an-ownership-attestation) directly.
 
 <Warning>
   `checkAttestation` is a lookup, not proof of control. It answers whether a DID holds an attestation, not whether the caller controls that DID. On the client that's fine, because you pass your own DID. A server must not call it with a DID an agent reported about itself: see [Verify an Agent](/agents/verify-human-agent-pairing#choose-a-verification-path).
