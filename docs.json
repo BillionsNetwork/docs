@@ -23,17 +23,34 @@
         "tab": "Billions Wallet",
         "groups": [
           {
-            "group": "Wallet",
+            "group": "Get Started",
             "pages": [
-              "billions-wallet/overview",
-              "billions-wallet/web-wallet",
-              "billions-wallet/mobile-wallet"
+              "billions-wallet/overview"
             ]
           },
           {
-            "group": "Integration",
+            "group": "Use the Wallet",
             "pages": [
-              "billions-wallet/login-with-billions"
+              "billions-wallet/web-wallet",
+              "billions-wallet/mobile-wallet",
+              "billions-wallet/proof-of-uniqueness",
+              "billions-wallet/verified-human"
+            ]
+          },
+          {
+            "group": "Integrate",
+            "pages": [
+              "billions-wallet/login-with-billions",
+              "billions-wallet/verify-proof-of-uniqueness",
+              "billions-wallet/verify-verified-human"
+            ]
+          },
+          {
+            "group": "Concepts",
+            "pages": [
+              "billions-wallet/how-the-wallet-works",
+              "billions-wallet/credentials",
+              "billions-wallet/how-verification-works"
             ]
           }
         ]
@@ -42,19 +59,38 @@
         "tab": "Agents",
         "groups": [
           {
-            "group": "Verified Agent Identity Skill",
+            "group": "Get Started",
             "pages": [
-              "agents/identity-overview",
-              "agents/identity-architecture",
-              "agents/identity-skill"
+              "agents/introduction"
             ]
           },
           {
-            "group": "x402 Human Proof",
+            "group": "Guides",
             "pages": [
-              "agents/overview",
-              "agents/client",
-              "agents/server"
+              "agents/identity-skill",
+              "agents/verify-human-agent-pairing",
+              "agents/protect-x402-endpoint",
+              "agents/attestation-production-lookup",
+              "agents/attestation-testnet-explorer"
+            ]
+          },
+          {
+            "group": "Concepts",
+            "pages": [
+              "agents/identity-overview",
+              "agents/identity-architecture",
+              "agents/attestation-explorer",
+              "agents/overview"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              "agents/environments",
+              "agents/attestations-api",
+              "agents/attestation-schemas",
+              "agents/server",
+              "agents/client"
             ]
           }
         ]
@@ -82,5 +118,15 @@
       "x": "https://x.com/billions_ntwk",
       "linkedin": "https://www.linkedin.com/company/billions-ntwk"
     }
-  }
+  },
+  "redirects": [
+    {
+      "source": "/agents/verification-api",
+      "destination": "/agents/attestations-api"
+    },
+    {
+      "source": "/agents/attestation-testnet-api",
+      "destination": "/agents/attestations-api"
+    }
+  ]
 }

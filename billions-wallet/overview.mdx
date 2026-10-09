@@ -1,116 +1,52 @@
 ---
 title: "Billions Wallet"
-sidebarTitle: "Overview"
-description: "Self-sovereign identity wallets for managing and verifying credentials on the Billions Network."
+sidebarTitle: "Introduction"
+description: "A self-sovereign identity wallet: hold credentials about yourself and prove things to apps without handing over your data."
 icon: "book-open"
 ---
 
-The Billions Wallet is a self-sovereign identity wallet for the Billions Network. Signing in derives a decentralized identifier (DID) from a cryptographic key pair, and every credential you claim is encrypted and stored under keys only you control. When a service asks you to prove something about yourself, the wallet generates a zero-knowledge proof on the spot: you decide what to share, and the proof confirms it without exposing the underlying data.
+The Billions Wallet holds your identity on the Billions Network. When you sign in, it creates a decentralized identifier (DID) from a key pair that only you control. Every credential you claim, such as proof that you're a unique human or that you hold a government ID, is stored in the wallet, encrypted under your keys.
 
-You can access the Billions Wallet from the **web** at [wallet.billions.network](https://wallet.billions.network) or through the [**mobile app**](/billions-wallet/mobile-wallet) on iOS and Android.
-
-<Info>
-  When the Web Wallet and the Mobile Wallet are signed in with the same account, credentials are synced — enabling effortless access across multiple devices.
-</Info>
+When an app asks you to prove something, the wallet answers with a zero-knowledge proof. The app learns that the claim is true, for example "this person holds a Verified Human credential", without seeing the data behind it.
 
 <CardGroup cols={2}>
   <Card title="Web Wallet" icon="globe" href="/billions-wallet/web-wallet">
-    Browser-based identity wallet for credential issuance, management, and verification.
+    Runs in the browser at wallet.billions.network. Nothing to install.
   </Card>
   <Card title="Mobile Wallet" icon="mobile" href="/billions-wallet/mobile-wallet">
-    iOS and Android wallet for managing credentials and generating zero-knowledge proofs on the go.
+    iOS and Android apps, with proofs generated on the phone.
   </Card>
 </CardGroup>
 
----
+Sign in with the same account on both and your credentials sync between them.
 
-## Features
+## What you can do with it
 
-<CardGroup cols={2}>
-  <Card title="Seamless Authentication" icon="shield-halved">
-    Sign in with Google, Apple ID, or a crypto wallet. An identity wallet is automatically derived and credentials are encrypted and stored for effortless multi-device access.
-  </Card>
-  <Card title="Privacy by Design" icon="lock">
-    Users retain full control of their identity data. Credentials are exchanged directly between parties with no intermediaries and no centralized authority.
-  </Card>
-  <Card title="Credential Dashboard" icon="table-columns">
-    View and manage all credentials from a unified dashboard — with full visibility into active, revoked, and expired credentials.
-  </Card>
-  <Card title="Zero-Knowledge Proofs" icon="shield-check">
-    Generate cost-optimized ZK proofs for credential verification, enabling privacy-preserving authentication without exposing personal data.
-  </Card>
-  <Card title="Query Verification" icon="circle-check">
-    Approve verification requests instantly by validating them against credentials stored in your wallet — on-chain or off-chain.
-  </Card>
-  <Card title="Credential Marketplace" icon="store">
-    Proactively claim credentials in advance through the marketplace, making future verifications quicker.
-  </Card>
-</CardGroup>
+**Claim credentials about yourself.** Each one is claimed once and reused in every later request:
 
----
+- [Proof of Uniqueness](/billions-wallet/proof-of-uniqueness): a one-time face scan that proves you're a real, unique human.
+- [Verified Human](/billions-wallet/verified-human): proof of identity from a government document, such as an NFC passport or Aadhaar.
+- Email and social accounts: proof that you own an email address, or a Discord, X or Telegram account.
 
-## Credential Management
+**Prove things to apps.** Sign in to an app with your DID instead of a password, or show an app that you hold a credential. You approve each request in the wallet and see exactly what's being asked.
 
-Credential management is the systematic process of creating, storing, protecting, rotating, and revoking digital credentials. The Billions Wallet handles this end-to-end — letting you claim, store, and present verifiable credentials that are privacy-preserving proofs about who you are, issued by trusted parties and verified on-chain or off-chain without exposing your underlying data.
+**Pair an AI agent with yourself.** Your Proof of Uniqueness credential is also what links an AI agent to you. See [Agents](/agents/introduction).
 
-### Available Credentials
+## How it protects your data
 
-<CardGroup cols={2}>
-  <Card title="Proof of Uniqueness" icon="fingerprint">
-    Proves you are a real, unique human using a one-time face scan. The foundation for human verification across the Billions Network.
-  </Card>
-  <Card title="Verified Human" icon="user-check">
-    Combines uniqueness with identity document verification for a higher level of trust.
-  </Card>
-  <Card title="Email" icon="envelope">
-    Verifies ownership of an email address and links it to your decentralized identity.
-  </Card>
-  <Card title="Social Accounts" icon="share-nodes">
-    Verify and link your Discord, Twitter (X), and Telegram accounts to your identity — provable without revealing account credentials.
-  </Card>
-</CardGroup>
+Your keys never leave your control. Credentials are stored encrypted, and proofs are generated in your browser or on your phone, so your personal data isn't sent anywhere to create them. An app receives a proof, not the credential. [How the Wallet Works](/billions-wallet/how-the-wallet-works) has the details.
 
----
+## For developers
 
-## How to Claim Credentials
+Apps can use the wallet in two ways:
 
-<Steps>
-  <Step title="Open the Wallet">
-    Visit [wallet.billions.network](https://wallet.billions.network) or open the Billions Mobile Wallet. Sign in with Google, Apple ID, or a crypto wallet.
-  </Step>
-  <Step title="Identity Loads">
-    An identity wallet is derived from your account and any existing credentials are retrieved from encrypted cloud storage.
-  </Step>
-  <Step title="Browse Available Credentials">
-    View the credentials available to claim.
-  </Step>
-  <Step title="Initiate Claiming">
-    Select a credential and start the issuance flow. Depending on the credential type, this may involve a face scan (Proof of Uniqueness), document upload (Verified Human), or an OAuth connection (Email, Social Accounts).
-  </Step>
-  <Step title="Credential Issued and Stored">
-    The issuer verifies the information and issues a signed credential directly to your wallet. It is encrypted and stored in cloud storage — ready to use in any verification flow without needing to be claimed again.
-  </Step>
-</Steps>
+- **Sign users in** with their DID, like a social login without a central provider. See [Login with Billions](/billions-wallet/login-with-billions).
+- **Verify a credential** on your backend before granting access or a reward. See [Verify Proof of Uniqueness](/billions-wallet/verify-proof-of-uniqueness) and [Verify Verified Human](/billions-wallet/verify-verified-human).
 
----
+To see both from the user's side, try the live demo at [demo.billions.network](https://demo.billions.network).
 
-## Demo Application
+## Next steps
 
-Experience the full verification flow through the live demo at [demo.billions.network](https://demo.billions.network), which showcases **Human**, **Verified Human**, and **Uniqueness** verification flows end-to-end.
-
----
-
-## Credential Storage
-
-All credentials are encrypted and stored in cloud storage — accessible across multiple devices and serving as a reliable backup. Upon sign-in, an identity is derived and storage keys are generated from the authenticated account.
-
-<Info>
-  **End-to-End Encrypted Cloud Storage**
-
-  - **Signature scheme:** ed25519
-  - **Encryption:** AES256-GCM
-  - **Access:** Only the user holding the storage keys can decrypt and access their credentials
-
-  No credentials are stored in plaintext at any point. The cloud storage acts solely as a secure, encrypted repository — the decryption keys never leave the user's control.
-</Info>
-
+- New to the wallet? [Claim your Proof of Uniqueness credential](/billions-wallet/proof-of-uniqueness).
+- Building an app? [Add Login with Billions](/billions-wallet/login-with-billions).
+- Need to check a credential? [Verify Proof of Uniqueness](/billions-wallet/verify-proof-of-uniqueness) or [Verify Verified Human](/billions-wallet/verify-verified-human) in your app.

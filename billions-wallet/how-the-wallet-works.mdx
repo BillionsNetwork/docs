@@ -1,0 +1,42 @@
+---
+title: "How the Wallet Works"
+sidebarTitle: "How the Wallet Works"
+description: "How the Billions Wallet creates your identity, generates zero-knowledge proofs, stores credentials, and syncs them across devices."
+icon: "gears"
+---
+
+## Your identity
+
+You sign in with Google, Apple ID or a crypto wallet. From that account, the wallet derives an identity: a key pair and the decentralized identifier (DID) built from it. The DID is how apps and issuers refer to you. The private key never leaves your control.
+
+## Zero-knowledge proofs
+
+When an app asks you to prove something, the wallet doesn't send the credential. It builds a zero-knowledge proof that the credential satisfies the app's request, and sends only that. The app can check the proof, but learns nothing else about the credential or the data behind it. Proofs are verified on-chain or off-chain, depending on the request.
+
+Where the proof is generated depends on the wallet:
+
+| Wallet | Proof generation |
+|---|---|
+| [Web Wallet](/billions-wallet/web-wallet) | In the browser, with a WebAssembly-compiled circuit client. |
+| [Mobile Wallet](/billions-wallet/mobile-wallet) | On the phone. The circuit files are downloaded to the device first. |
+
+In both cases, no personal data or cryptographic material leaves your device while the proof is generated.
+
+## Credential storage
+
+Every credential is encrypted and stored in cloud storage, which acts as a backup and lets you use the same credentials on several devices. When you sign in, the wallet derives your storage keys from your account.
+
+- **Signature scheme:** ed25519
+- **Encryption:** AES-256-GCM
+- **Access:** only the person holding the storage keys can decrypt the credentials
+
+No credential is stored in plaintext at any point. The decryption keys never leave your control.
+
+## Sync across devices
+
+Sign in with the same account (Google, Apple ID or crypto wallet) on the web and on your phone, and every credential you've claimed on one is available on the other. You never need to claim a credential twice.
+
+## Related
+
+- [Credentials](/billions-wallet/credentials): what each credential proves.
+- [How Verification Works](/billions-wallet/how-verification-works): what happens when an app asks for a proof.

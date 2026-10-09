@@ -1,0 +1,49 @@
+---
+title: "Environments"
+sidebarTitle: "Environments"
+description: "Production and testnet URLs, chain IDs, contract addresses, and SDK defaults."
+icon: "globe"
+---
+
+There are two separate environments. Production holds real pairings and is what a live application should query. Testnet is for practice.
+
+## Addresses
+
+| | Production | Testnet |
+|---|---|---|
+| **Attestation Explorer** | [attestations-explorer.billions.network](https://attestations-explorer.billions.network/) | [attestations-explorer-testnet.billions.network](https://attestations-explorer-testnet.billions.network) |
+| **Attestations API** | `https://attestations-api.billions.network/api/v1` | `https://attestations-api-testnet.billions.network/api/v1` |
+| **Network** | Billions Mainnet | Billions Testnet |
+| **Chain ID** | `45056` | `6913` |
+| **RPC** | `https://rpc-mainnet.billions.network` | `https://billions-testnet-rpc.eu-north-2.gateway.fm` |
+| **Block explorer** | [explorer.billions.network](https://explorer.billions.network) | [explorer-testnet.billions.network](https://explorer-testnet.billions.network/) |
+| **Attestation Registry** | `0x6dd6Ad465E93bcb345010ECEf3cFC9144e87b6cC` | `0x6dd6Ad465E93bcb345010ECEf3cFC9144e87b6cC` |
+| **Schema Registry** | `0x3ADee532C2018b3fa66B2B4384d11959830a7E6F` | `0x3ADee532C2018b3fa66B2B4384d11959830a7E6F` |
+| **Identity Verifier** | `0x3a05EAe03a85A141BE0F5b5049e85c6616379861` | `0x3a05EAe03a85A141BE0F5b5049e85c6616379861` |
+
+The contracts have the same addresses on both chains, but they are separate deployments with separate data.
+
+## Records never cross environments
+
+A pairing made on production does not exist on testnet, and the reverse. The DID string doesn't tell you which environment a record belongs to, because agent DIDs use `billions:main` on both. The environment is whichever API or Explorer you query.
+
+For example, the production agent used in [Inspect Attestations](/agents/attestation-production-lookup) returns `totalItems: 0` from the testnet API, and the testnet agent used in [Create Test Attestations](/agents/attestation-testnet-explorer) returns `totalItems: 0` from production.
+
+## SDK defaults
+
+The x402 Human Proof SDKs query **production** unless you pass other URLs.
+
+| Option | Production (default) | Testnet |
+|---|---|---|
+| `attestationsApiBaseUrl` | `https://attestations-api.billions.network/api/v1/attestations` | `https://attestations-api-testnet.billions.network/api/v1/attestations` |
+| `nullifierApiBaseUrl` | `https://attestations-api.billions.network/api/v1/nullifier` | `https://attestations-api-testnet.billions.network/api/v1/nullifier` |
+
+`attestationsApiBaseUrl` is accepted by `createPoUVerifier` (server) and by `createAttestationAwareSelector`, `createHumanProofExtension` and `checkAttestation` (client). `nullifierApiBaseUrl` is server only. Pairings made with the Verified Agent Identity skill are on production, so keep the defaults to recognize them.
+
+## Payment network is separate
+
+In x402, the network the agent **pays on** is unrelated to where its **pairing** lives. The x402 examples in these docs take test payments on Base Sepolia (`eip155:84532`) while checking pairings on production. Pick each one independently.
+
+## Schema IDs
+
+Both environments hold the same four schemas, with the same IDs. The one used for pairing is `AgentOwnership`, `0xca354bee6dc5eded165461d15ccb13aceb6f77ebbb1fd3fe45aca686097f2911`. See [Schemas](/agents/attestation-schemas) for the full list.
