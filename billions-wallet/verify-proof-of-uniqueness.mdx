@@ -1,6 +1,6 @@
 ---
-title: "Proof of Uniqueness Verification"
-sidebarTitle: "PoU Verification"
+title: "Verify Proof of Uniqueness"
+sidebarTitle: "Verify Proof of Uniqueness"
 description: "Add server-side Proof of Uniqueness verification to your application, confirming a user is a real, unique human before granting access."
 icon: "circle-check"
 ---
@@ -9,7 +9,7 @@ icon: "circle-check"
 
 [Proof of Uniqueness](/billions-wallet/proof-of-uniqueness) is the credential the Billions Wallet issues after a user completes their one-time face scan. Any backend can request proof of this credential from a user who holds it, then confirm the proof on its own servers before granting access, distributing a reward, or unlocking a feature.
 
-This guide covers the full verification flow: requesting the credential, the user completing it in the Billions Wallet, and confirming the resulting proof on your backend.
+This guide covers the full verification flow: requesting the credential, the user completing it in the Billions Wallet, and confirming the resulting proof on your backend. It confirms that the user holds a valid Proof of Uniqueness credential from an issuer you accept. It does not check any field inside the credential. See [what this example verifies](#verification-query-structure).
 
 <Info>
   This is a reference example to get you running locally and to show the shape of the integration. For a production rollout, reach out to the Billions integration team — they'll provide the issuer and schema values your verifier needs, and can walk you through rate limits and the persistent storage your deployment requires.
@@ -70,6 +70,19 @@ This is the structure of the verification query used to make a verification requ
   `allowedIssuers` and `context` are specific to your integration. Reach out to the Billions integration team to get these values.
 </Note>
 
+## Session ID and nullifier session ID
+
+Each verification uses two different IDs. Don't mix them up:
+
+| | `sessionId` | `nullifierSessionId` |
+|---|---|---|
+| **Covers** | One verification request | One campaign or action, such as "spring airdrop" |
+| **Changes** | On every request | Never, once you start accepting proofs |
+| **What it does** | Ties the wallet's answer to the request you stored | Determines the nullifier. The same person always gets the same nullifier for the same value |
+| **Where it goes** | `proofRequest.id` and the callback URL | `proofRequest.params.nullifierSessionId` |
+
+Pick one `nullifierSessionId` per campaign, as a positive integer, and keep it fixed. The same person then always produces the same nullifier, so a second attempt is caught. A different value gives different nullifiers, so one person can't be linked across your campaigns. Changing it mid-campaign lets everyone verify again.
+
 ## Setup Instructions
 
 ### Prerequisites
@@ -84,7 +97,7 @@ The steps below walk through the [POU verifier example](https://github.com/Priva
 
 ### 1. Server and Request Handler
 
-Sets up the server and the endpoint that builds a scoped verification request for each new session. `HOST_URL`, `AUDIENCE_DID`, `ALLOWED_ISSUER`, and the schema context are read from configuration, using the values provided during onboarding.
+Sets up the server and the endpoint that builds a scoped verification request for each new session. `HOST_URL`, `AUDIENCE_DID`, `ALLOWED_ISSUER`, the schema context, and `NULLIFIER_SESSION_ID` are read from configuration. The first four come from onboarding. You choose `NULLIFIER_SESSION_ID`, once per campaign.
 
 ```javascript
 require('dotenv').config();
@@ -110,7 +123,6 @@ const statusMap = new Map();    // requestId -> status
 app.get("/api/verification-request", async (req, res) => {
   const sessionId = randomInt(10000);
   const uri = `${process.env.HOST_URL}/api/callback?sessionId=${sessionId}`;
-  const nullifier = BigInt('0x' + uuidv4().replace(/-/g, '').slice(0, 16));
 
   const request = auth.createAuthorizationRequest(
     "Verification of Uniqueness",
@@ -121,7 +133,7 @@ app.get("/api/verification-request", async (req, res) => {
   const proofRequest = {
     circuitId: "credentialAtomicQueryV3",
     id: sessionId,
-    params: { nullifierSessionId: nullifier.toString() },
+    params: { nullifierSessionId: process.env.NULLIFIER_SESSION_ID }, // fixed per campaign
     query: {
       allowedIssuers: [process.env.ALLOWED_ISSUER],
       context: process.env.POU_SCHEMA_CONTEXT,
@@ -149,7 +161,7 @@ app.listen(port, () => console.log(`Verifier backend running on port ${port}`));
 </Info>
 
 <Note>
-  Generate `nullifierSessionId` fresh for every request, as shown here. Computing it once at server startup and reusing it across sessions breaks the anti-replay check every subsequent verification depends on.
+  Set `NULLIFIER_SESSION_ID` once per campaign, as a positive integer, and don't change it after the first verification. If it changes, every user gets a new nullifier, and people who already verified can verify again. See [Session ID and nullifier session ID](#session-id-and-nullifier-session-id).
 </Note>
 
 ### 2. Verification Callback
@@ -223,6 +235,8 @@ The nullifier is what makes this Sybil-resistant at the application layer: a sta
 
 <Warning>
   `requestMap`, `statusMap`, and `userVerificationMap` are all in-memory here and reset on every restart. Replace them with a persistent store (Postgres, Redis) before going to production, or every in-flight session and past verification is lost the moment the process restarts.
+
+  For nullifiers, use a database table with a unique constraint and insert atomically, for example `INSERT ... ON CONFLICT DO NOTHING`. A new row means a first-time verification, and no new row means the person already verified. A lock inside one process isn't enough once you run more than one server.
 </Warning>
 
 ### Testing Steps
@@ -244,7 +258,7 @@ The nullifier is what makes this Sybil-resistant at the application layer: a sta
     The wallet returned a proof, but not one matching the `circuitId` and `id` your backend is looking for. This usually means the `id` on the `proofRequest` doesn't match the `sessionId` used to build the callback URI. They must be the same value.
   </Accordion>
   <Accordion title="'This person has already verified'">
-    The nullifier from this proof already has a `verified: true` record, meaning this same human has completed verification through a different session already. This is the anti-Sybil check working as intended. If you see this unexpectedly during testing, it likely means you're reusing the same PoU credential across test sessions, which is expected behavior, not a bug.
+    The nullifier from this proof already has a `verified: true` record, meaning this same human has completed verification through a different session already. This is the anti-Sybil check working as intended. If you see this during testing, the same person verified twice under the same `NULLIFIER_SESSION_ID`, because their nullifier doesn't change between sessions. To test again, use a separate `NULLIFIER_SESSION_ID` for testing, or clear your stored nullifiers.
   </Accordion>
   <Accordion title="Verification fails with a state resolution error">
     The `resolvers` map only knows about the networks it's configured for (`billions:main`, `privado:main`). Confirm your RPC and contract configuration is correct, and that the RPC endpoint is reachable from your server.
@@ -254,6 +268,15 @@ The nullifier is what makes this Sybil-resistant at the application layer: a sta
 ---
 
 ## Learn More
+
+<CardGroup cols={2}>
+  <Card title="How Verification Works" icon="diagram-project" href="/billions-wallet/how-verification-works">
+    The request, the wallet, the signed token, and the nullifier check, in plain terms.
+  </Card>
+  <Card title="Credentials" icon="id-badge" href="/billions-wallet/credentials">
+    What each credential proves, and how users claim it.
+  </Card>
+</CardGroup>
 
 <Card title="Proof of Uniqueness" icon="fingerprint" href="/billions-wallet/proof-of-uniqueness">
   What the credential is, and how users claim it.

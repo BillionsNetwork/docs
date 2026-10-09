@@ -23,26 +23,34 @@
         "tab": "Billions Wallet",
         "groups": [
           {
-            "group": "Wallet",
+            "group": "Get Started",
             "pages": [
-              "billions-wallet/overview",
-              "billions-wallet/web-wallet",
-              "billions-wallet/mobile-wallet"
+              "billions-wallet/overview"
             ]
           },
           {
-            "group": "Credentials",
+            "group": "Use the Wallet",
             "pages": [
+              "billions-wallet/web-wallet",
+              "billions-wallet/mobile-wallet",
               "billions-wallet/proof-of-uniqueness",
               "billions-wallet/verified-human"
             ]
           },
           {
-            "group": "Integration",
+            "group": "Integrate",
             "pages": [
               "billions-wallet/login-with-billions",
               "billions-wallet/verify-proof-of-uniqueness",
               "billions-wallet/verify-verified-human"
+            ]
+          },
+          {
+            "group": "Concepts",
+            "pages": [
+              "billions-wallet/how-the-wallet-works",
+              "billions-wallet/credentials",
+              "billions-wallet/how-verification-works"
             ]
           }
         ]
