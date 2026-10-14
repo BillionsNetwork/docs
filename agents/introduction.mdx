@@ -1,0 +1,43 @@
+---
+title: "Agents"
+sidebarTitle: "Introduction"
+description: "Pair AI agents with verified humans, check that pairing in your app, and use it to price or gate paid APIs."
+icon: "compass"
+---
+
+Billions links an AI agent to the verified human behind it, and gives services a way to check that link before they trust the agent.
+
+## The building blocks
+
+| Product | What it is |
+|---|---|
+| [Verified Agent Identity skill](/agents/identity-overview) | Runs on the agent. Creates the agent's DID from a key pair the agent holds, then pairs that DID with a person who has a Proof of Uniqueness credential. |
+| [Attestation Registry](/agents/attestation-explorer) | The on-chain record. Each pairing is stored in it as an **ownership attestation**. |
+| [Attestation Explorer](/agents/attestation-explorer) | A public website for reading the registry. Search for an agent or a person and see who they are paired with. The [Attestations API](/agents/attestations-api) serves the same data over HTTP. |
+| [x402 Human Proof SDKs](/agents/overview) | Let a server check the pairing on each request, with or without x402. With x402, a paid API can also charge paired agents a different price. |
+
+## Start from your goal
+
+| Your goal | Read | What you'll have at the end |
+|---|---|---|
+| Give your agent a verifiable identity and pair it with you | [Pair an Agent](/agents/identity-skill) | An agent DID, and an ownership attestation on production that links it to you |
+| Check, in your own app, that a caller is a paired agent | [Verify an Agent in Your App](/agents/verify-human-agent-pairing) | A route that accepts only signed requests from paired agents. No x402 needed. |
+| Charge paired agents a different price on a paid API | [Protect an x402 Endpoint](/agents/protect-x402-endpoint) | An x402 server with a discounted tier for paired agents |
+| See who an agent is paired with | [Inspect Attestations](/agents/attestation-production-lookup) | A real ownership attestation, read in the Attestation Explorer and through the Attestations API |
+| Practice creating and revoking attestations | [Create Test Attestations](/agents/attestation-testnet-explorer) | Your own schema and attestations on testnet |
+
+Each guide lists its prerequisites, the exact commands, the result you should see, and where to go next.
+
+## What a pairing proves
+
+A pairing proves that a person with a Proof of Uniqueness credential paired with a specific agent DID, and the ownership attestation records it on-chain.
+
+It does **not** prove:
+
+- **That the caller is that agent.** DIDs and attestations are public, so anyone can quote one. Your application has to check a signature from the agent, which is called proof of control.
+- **That the agent behaves well.** A paired agent can still send spam. Pairing lets you set limits per person.
+- **Which agent did something**, unless that request was signed with the agent's key.
+
+## Production and testnet
+
+Production holds real pairings and is what a live application should query. Testnet is for practice: creating and revoking your own records. Records never move between them. See [Environments](/agents/environments) for every URL and address.

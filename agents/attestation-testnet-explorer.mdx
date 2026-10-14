@@ -1,0 +1,162 @@
+---
+title: "Create Test Attestations"
+sidebarTitle: "Create Test Attestations"
+description: "Hands-on walkthrough of the testnet Attestation Explorer: connect a wallet, create a schema, make an attestation, and revoke it."
+icon: "flask"
+---
+
+The [Attestation Explorer](/agents/attestation-explorer) is the public website for the Attestation Registry. Anyone can read it. With a connected wallet, it can also write: register schemas, make attestations and revoke them. This guide does that on the **Billions testnet**, so you can try it freely. Records you create here never appear in the production registry. If you haven't yet, read a real production record first in [Inspect Attestations](/agents/attestation-production-lookup).
+
+| | |
+|---|---|
+| Explorer | [attestations-explorer-testnet.billions.network](https://attestations-explorer-testnet.billions.network) |
+| API | `https://attestations-api-testnet.billions.network/api/v1` |
+| Block explorer | [explorer-testnet.billions.network](https://explorer-testnet.billions.network/) |
+| Network | Billions Testnet, chain ID `6913` |
+| Attestation Registry | `0x6dd6Ad465E93bcb345010ECEf3cFC9144e87b6cC` |
+| Schema Registry | `0x3ADee532C2018b3fa66B2B4384d11959830a7E6F` |
+| Identity Verifier | `0x3a05EAe03a85A141BE0F5b5049e85c6616379861` |
+
+## Read-only use needs nothing
+
+Searching, browsing agents, opening attestations and viewing schemas all work without signing in. You only need the setup below to **write**: create a schema, make an attestation, or revoke one.
+
+## Before you write
+
+You need two things.
+
+1. **An EVM wallet with testnet gas.** Writes are transactions on the Billions testnet (chain ID 6913), and your wallet pays the gas.
+2. **A Billions identity linked to that wallet.** The registry records who made each attestation as an iden3 identity, not just an address. The link between your wallet address and your identity is stored on-chain in the Identity Verifier contract.
+
+### Connect your wallet
+
+<Steps>
+  <Step title="Connect">
+    Click the connect button in the top right and choose your wallet. The Explorer connects through WalletConnect, so most EVM wallets work. Your shortened address replaces the button.
+  </Step>
+  <Step title="Open your account menu">
+    Click your address. The menu shows a **DID** badge. If your wallet isn't linked yet it reads **No DID**, with a **Connect** link beside it.
+  </Step>
+  <Step title="Link your Billions identity">
+    Click **Connect**. You're sent to the Billions web wallet with a linking request. Approve it there and you're redirected back.
+  </Step>
+  <Step title="Confirm">
+    The Explorer checks the Identity Verifier contract every ten seconds. Once the link is recorded on-chain, your DID appears in the menu and write actions unlock.
+  </Step>
+</Steps>
+
+<Note>
+  The linking request is sent to the Billions web wallet, which needs an identity to link. If you don't have one yet, create it in the [Billions Wallet](/billions-wallet/web-wallet) first.
+</Note>
+
+## Repeat the lookup on testnet
+
+Run the same read you did on production, against a testnet pairing. The agent here is named **V**:
+
+| | |
+|---|---|
+| Agent DID | `did:iden3:billions:main:2VmAkXrihYaLNiczcAJUkYUytANoVMR8vsLT6urNmN` |
+| Ownership attestation ID | `0x8e76a5ec0ba5ef5f00c87e90251447a343949f108b4ce3ac7bd5c901e32f3fdf` |
+
+Open it in the [testnet Explorer](https://attestations-explorer-testnet.billions.network/attestation/0x8e76a5ec0ba5ef5f00c87e90251447a343949f108b4ce3ac7bd5c901e32f3fdf), or ask the testnet API:
+
+```bash
+curl "https://attestations-api-testnet.billions.network/api/v1/attestations?schemaId=0xca354bee6dc5eded165461d15ccb13aceb6f77ebbb1fd3fe45aca686097f2911&recipientDid=did:iden3:billions:main:2VmAkXrihYaLNiczcAJUkYUytANoVMR8vsLT6urNmN"
+```
+
+The fields mean the same as in [Inspect Attestations](/agents/attestation-production-lookup#3-read-the-result). Two things to notice:
+
+- The agent DID starts with `billions:main` even though this is testnet.
+- The same request against the production API returns `totalItems: 0`. Jarvis, the production example, returns nothing here. Each pairing exists only in the environment where it was made.
+
+## Look something up
+
+Use the search box, or paste into it directly:
+
+- An **agent DID** shows the human it's attested to.
+- A **human DID** shows all the agents attested to it.
+- A **schema ID or name** opens that schema.
+- An **attestation ID** opens the attestation.
+
+From any attestation row you can copy the attester's and recipient's DID, ID and address. You'll need those for the next section.
+
+## Create a schema
+
+<Steps>
+  <Step title="Open the form">
+    Go to **Schemas** and click **Create schema**.
+  </Step>
+  <Step title="Name it and add fields">
+    Enter a schema name, then add fields. Each has a name and a type: `string`, `uint256`, `address`, `bytes`, `bool` and so on. Tick **Array** to make a field a list of that type.
+  </Step>
+  <Step title="Resolver (optional)">
+    Enter a resolver contract address only if you've deployed one that should vet attestations. Leave it empty otherwise.
+  </Step>
+  <Step title="Revocable">
+    Tick the box if attestations of this schema should ever be revocable. Decide now: it is part of the schema's registration.
+  </Step>
+  <Step title="Submit">
+    Click **Create schema** and confirm the transaction in your wallet. When it's mined you get a schema ID, which you can search for and use to make attestations.
+  </Step>
+</Steps>
+
+For what each option means, see [Schemas](/agents/attestation-schemas).
+
+## Make an attestation
+
+This example leaves a review for an agent. The `Review` schema has no resolver, so any linked wallet can use it.
+
+<Steps>
+  <Step title="Pick the schema">
+    Open **Attestations**, click to make an attestation, and search for the schema by name, ID or number. Select `Review`.
+  </Step>
+  <Step title="Fill in the data">
+    The form shows one input per schema field. For `Review`, enter `stars` as a number from 0 to 255 (the field is a `uint8`) and `comment` as text. The form validates each value against its type before it lets you submit.
+  </Step>
+  <Step title="Check the issuer">
+    The **Issuer** block shows the chain ID, registry address and your issuer ID. These are filled in from your connected identity and can't be edited.
+  </Step>
+  <Step title="Enter the recipient">
+    Fill in all three recipient fields for the agent you're reviewing:
+
+    | Field | Value |
+    |---|---|
+    | **Recipient DID** | The agent's DID. |
+    | **Recipient ID** | The agent's iden3 ID as a decimal number. It appears as `toId` in API results for any attestation addressed to that agent. |
+    | **Recipient address** | The agent's Ethereum address. |
+  </Step>
+  <Step title="Choose revocability">
+    Tick **Allow this attestation to be revoked later** if you want the option. If the schema is non-revocable the box is disabled, with a tooltip saying so.
+  </Step>
+  <Step title="Submit">
+    Click **Make attestation** and confirm in your wallet. After the transaction is mined you're taken to the attestations list, where yours appears once the indexer picks it up.
+  </Step>
+</Steps>
+
+<Warning>
+  If **Make attestation** stays disabled, a field is empty or fails validation, or the schema is one the Explorer can't decode into fields. Schemas it can't decode are shown as "Non-standard schema" and can't be attested through the form. Those need to be attested to from code, as in the example repo below.
+</Warning>
+
+## Revoke an attestation
+
+Open the attestation's detail page and click **Revoke**, then confirm the transaction. When the attestation was created as non-revocable, the button is inactive and its tooltip reads "Attestations created with this schema cannot be revoked."
+
+A revoked attestation stays visible with its revocation time. Anything that checks validity, including the `revoked` field in the [Attestations API](/agents/attestations-api#get-one-attestation), will show it as revoked.
+
+## Confirm it worked
+
+Look your attestation up three ways to see that they agree:
+
+1. In the Explorer, search for the attestation ID.
+2. In the [Attestations API](/agents/attestations-api#get-one-attestation), with the testnet base URL: `GET /attestations/<id>`.
+3. In the block explorer, open the transaction hash from the attestation detail page.
+
+## Try the example scripts
+
+To test the same operations from code, clone [BillionsNetwork/attestations-examples](https://github.com/BillionsNetwork/attestations-examples) and follow its README. It has ready-made scripts for leaving and reading reviews, creating a custom schema and attestation, checking ownership, and revoking, all pointed at the testnet. Use a throwaway wallet funded with testnet gas, since you put its private key in a local `.env` file.
+
+## Next
+
+<Card title="Attestations API" icon="code" href="/agents/attestations-api">
+  Query what you just created over HTTP, using the testnet base URL.
+</Card>

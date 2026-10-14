@@ -1,29 +1,65 @@
 ---
-title: "Verified Agent Identity"
-sidebarTitle: "Overview"
-description: "Give your AI agent a cryptographic identity with a verified human owner on the Billions Network."
+title: "Agent Identity"
+sidebarTitle: "Agent Identity"
+description: "Create a DID for an AI agent and pair it with a verified human on the Billions Network."
 icon: "book-open"
 ---
 
 ## What is agent identity?
 
-Every AI agent today runs without a real identity — just code executing somewhere, with no way to prove who owns it or is accountable for what it does.
+An agent may have an account, a wallet, or a DID, but that alone doesn't tell a service who is behind it. A service still needs to verify that the caller actually controls that identity, and whether a verified human is linked to it. As agents start transacting and holding funds on their own, services need a way to tell a genuine, human-backed agent from a bot running spam or fraud.
 
 ## Verified Agent Identity
 
-The **Verified Agent Identity** skill solves that: it gives any AI agent a decentralized identifier (DID) on the Billions Network and links it permanently and verifiably, on-chain, to a real human owner.
-
-Once linked, the agent can prove it is operated by a real, unique human. Service providers get spam protection, and anyone can look up a public, tamper-proof record of who stands behind the agent — sybil resistance without asking the agent to give up its autonomy.
+The **Verified Agent Identity** skill solves that: it creates a Billions-method decentralized identifier (DID) locally for an agent that can run the skill. After the human verifies, the pairing between that DID and the human is recorded on-chain. This process is called **human-agent pairing**.
 
 <Card title="GitHub" icon="github" href="https://github.com/BillionsNetwork/verified-agent-identity">
   BillionsNetwork/verified-agent-identity
 </Card>
 
+## Why human-agent pairing matters
+
+<CardGroup cols={2}>
+  <Card title="Accountability" icon="user-check">
+    The attestation links an agent DID to a verified human. A signed request can link a particular action to that DID.
+  </Card>
+  <Card title="Sybil & bot resistance" icon="shield-halved">
+    [Proof of Uniqueness](/billions-wallet/proof-of-uniqueness) maps one verified human to one on-chain identity. One human can still pair several agents, but a service can recognize them as linked to the same person and set limits per human.
+  </Card>
+  <Card title="Spam protection for services" icon="ban">
+    Services can require a verified pairing for selected routes and apply their own access or rate-limit policy. Pairing does not stop a verified person's agent from sending spam.
+  </Card>
+  <Card title="Differentiated access" icon="tag" href="/agents/overview">
+    A provider can use a verified pairing as an eligibility signal for discounted pricing, higher rate limits, or premium tiers. See [x402 Human Proof](/agents/overview) for details.
+  </Card>
+</CardGroup>
+
+None of this asks the agent to give up its autonomy. The agent still holds its own keys and acts on its own; pairing only adds a public record of who stands behind it. Anyone can look that record up without seeing the human's personal data. To rely on it, [verify](/agents/verify-human-agent-pairing) that the caller controls the agent DID as well.
+
+## The pairing flow, at a glance
+
+<Steps>
+  <Step title="Agent creates its DID">
+    The agent generates its own decentralized identifier locally from a key pair: no registry, no sign-up, nothing on-chain yet.
+  </Step>
+  <Step title="Agent shares a verification link">
+    When asked to link its identity, the agent signs a pairing request with its own key and produces a verification link scoped to this specific human-agent pairing.
+  </Step>
+  <Step title="Human verifies in the Billions Web Wallet">
+    The human opens the link and confirms a [Proof of Uniqueness credential](/billions-wallet/proof-of-uniqueness), claiming one for the first time if they don't already have one.
+  </Step>
+  <Step title="Attestation is recorded on-chain">
+    A public attestation links the human's verified identity to the agent's DID. Anyone can look it up.
+  </Step>
+</Steps>
+
+For the full technical breakdown, including the architecture diagram, contract calls, and a live demo, see [How Pairing Works](/agents/identity-architecture). To pair your own agent, see [Pair an Agent](/agents/identity-skill).
+
 ## Features
 
 <CardGroup cols={2}>
   <Card title="Identity Creation" icon="circle-plus">
-    Give your agent its own DID — derived locally from a cryptographic key pair, no registry or sign-up required.
+    Give your agent its own DID, derived locally from a cryptographic key pair — no registry or sign-up required.
   </Card>
   <Card title="Identity Management" icon="list">
     List and manage multiple identities with default identity support.
@@ -32,7 +68,7 @@ Once linked, the agent can prove it is operated by a real, unique human. Service
     Link a human identity to an agent's DID through signed challenges.
   </Card>
   <Card title="x402 Discounted Pricing" icon="tag" href="/agents/overview">
-    Human-owned agents unlock discounted pricing tiers on APIs protected by x402 Human Proof.
+    A provider can use a verified pairing as an eligibility signal for a discounted tier on APIs protected by x402 Human Proof.
   </Card>
 </CardGroup>
 
@@ -41,10 +77,13 @@ Once linked, the agent can prove it is operated by a real, unique human. Service
 ## Next Steps
 
 <CardGroup cols={2}>
-  <Card title="How It Works" icon="diagram-project" href="/agents/identity-architecture">
+  <Card title="How Pairing Works" icon="diagram-project" href="/agents/identity-architecture">
     See the full linking flow, architecture diagram, and a live demo.
   </Card>
-  <Card title="Installation" icon="download" href="/agents/identity-skill">
-    Install the skill and link your agent's identity to you in two chat messages.
+  <Card title="Pair an Agent" icon="link" href="/agents/identity-skill">
+    Install the skill and pair your agent with you in two chat messages.
+  </Card>
+  <Card title="Verify an Agent" icon="user-shield" href="/agents/verify-human-agent-pairing">
+    Check that a caller controls an agent DID, then check whether a verified human is paired with it.
   </Card>
 </CardGroup>

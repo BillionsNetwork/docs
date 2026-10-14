@@ -1,0 +1,131 @@
+---
+title: "Inspect Attestations"
+sidebarTitle: "Inspect Attestations"
+description: "Read one real ownership attestation in the production Explorer and API, and learn what every field means."
+icon: "eye"
+---
+
+When a person pairs with an agent, the pairing is written to the **Attestation Registry**, an on-chain record, as an **ownership attestation**. Two tools read that registry:
+
+- **The [Attestation Explorer](https://attestations-explorer.billions.network/)**, a public website. Search for an agent or a person to see who they are paired with.
+- **The [Attestations API](/agents/attestations-api)**, which serves the same data over HTTP for applications.
+
+This guide reads one real pairing with both, on **production** and read-only, before you create anything on testnet. It shows what an ownership attestation looks like and where live verification data comes from. Nothing here needs a wallet. For how attestations and schemas work in general, see [Attestations and the Explorer](/agents/attestation-explorer).
+
+The example is an agent named **Jarvis**:
+
+| | |
+|---|---|
+| Agent DID | `did:iden3:billions:main:2VmAkXrihYaLjks4i8XQYu98VLgbUUoeobmDUJp4ZM` |
+| Ownership attestation ID | `0xe22e0c8bdd9ed997d62f4dd8ed547a2e9e6f2a7e4416b6f303e3a7273207ab8b` |
+
+## 1. Open it in the Explorer
+
+Open the attestation in the production Explorer:
+
+<Card title="Jarvis's ownership attestation" icon="arrow-up-right-from-square" href="https://attestations-explorer.billions.network/attestation/0xe22e0c8bdd9ed997d62f4dd8ed547a2e9e6f2a7e4416b6f303e3a7273207ab8b">
+  attestations-explorer.billions.network/attestation/0xe22e…ab8b
+</Card>
+
+You can also paste the agent DID into the Explorer's search box and open the attestation from there. The detail page shows the same fields as the API response below.
+
+## 2. Make the same request to the API
+
+An application usually starts from the agent's DID and asks for its ownership attestation:
+
+```bash
+curl "https://attestations-api.billions.network/api/v1/attestations?schemaId=0xca354bee6dc5eded165461d15ccb13aceb6f77ebbb1fd3fe45aca686097f2911&recipientDid=did:iden3:billions:main:2VmAkXrihYaLjks4i8XQYu98VLgbUUoeobmDUJp4ZM"
+```
+
+That returns `totalItems: 1` and the attestation inside `data`. To get every field, including status and transaction, request it by ID:
+
+```bash
+curl "https://attestations-api.billions.network/api/v1/attestations/0xe22e0c8bdd9ed997d62f4dd8ed547a2e9e6f2a7e4416b6f303e3a7273207ab8b"
+```
+
+```json
+{
+  "id": "0xe22e0c8bdd9ed997d62f4dd8ed547a2e9e6f2a7e4416b6f303e3a7273207ab8b",
+  "txid": "0xbc2d39fa6afce7ee38e5a418be1e5bac99b97ebb30df41cd27c3f93f93b73cb9",
+  "expirationTime": 0,
+  "creationTime": 1772688263,
+  "revoked": false,
+  "fromName": "",
+  "fromDid": "did:iden3:billions:main:2VsocCwupnsqT3xHyPTYrdkwjMBYiWuvwe2mRK8HK3",
+  "fromId": "25418487188279101345594527843687782240092919663607313438873907510818025729",
+  "fromEthereumAddress": "0xB3F5d3DD47F6ca17468898291491eBDA69a67797",
+  "toName": "Jarvis",
+  "toDid": "did:iden3:billions:main:2VmAkXrihYaLjks4i8XQYu98VLgbUUoeobmDUJp4ZM",
+  "toId": "14336761652768509472823833665155878975354096967746601418028400374727094529",
+  "toEthereumAddress": "0x9D90Ce9f1E4633576001Dc1A2406Fe3757870b44",
+  "decodedDataJson": "[{\"name\":\"data\",\"type\":\"bytes\",\"signature\":\"bytes data\",\"value\":{\"name\":\"data\",\"type\":\"bytes\",\"value\":\"0x\"}}]",
+  "revocable": false,
+  "schemaInfo": {
+    "index": "1",
+    "id": "0xca354bee6dc5eded165461d15ccb13aceb6f77ebbb1fd3fe45aca686097f2911",
+    "name": "AgentOwnership",
+    "schemaSignatures": [{ "name": "data", "type": "bytes" }]
+  },
+  "revocationTime": 0,
+  "rawData": "0x"
+}
+```
+
+## 3. Read the result
+
+### The DIDs
+
+| Field | Value here | Meaning |
+|---|---|---|
+| `toDid` | `…2VmAkXrihYaLjks4i8XQYu98VLgbUUoeobmDUJp4ZM` | The **agent DID**: who the attestation is about. |
+| `toName` | `Jarvis` | The agent's registered name, when it has one. Display only. |
+| `toEthereumAddress` | `0x9D90…0b44` | The agent's Ethereum address. The agent DID is derived from it, which is why [Verify an Agent](/agents/verify-human-agent-pairing) can look a pairing up by recovered signer address. |
+| `fromDid` | `…2VsocCwupnsqT3xHyPTYrdkwjMBYiWuvwe2mRK8HK3` | The **human DID**: the verified person who paired with the agent. |
+| `fromId` | `2541…5729` | The human's iden3 ID as a decimal number. Pass it to `/nullifier` to get the person's privacy-preserving ID for per-human limits. |
+
+### The schema
+
+`schemaInfo` says this was written against `AgentOwnership`, schema ID `0xca354bee…2911`. That schema has one field, `bytes data`, and here it is empty (`0x`). The attestation itself, human DID to agent DID, is the record. See [Schemas](/agents/attestation-schemas).
+
+### The status
+
+| Field | Value here | Meaning |
+|---|---|---|
+| `revoked` / `revocationTime` | `false` / `0` | It has not been revoked. |
+| `revocable` | `false` | It can never be revoked. |
+| `expirationTime` | `0` | It never expires. |
+
+The attestation list endpoint leaves out revoked attestations, but it does not filter on expiry. If you rely on a schema whose attestations can expire, check `expirationTime`.
+
+### The network
+
+You queried `attestations-api.billions.network`, so this record is on **production**: Billions Mainnet, chain ID `45056`. The `txid` is a mainnet transaction you can open in the block explorer:
+
+<Card title="Creation transaction" icon="cube" href="https://explorer.billions.network/tx/0xbc2d39fa6afce7ee38e5a418be1e5bac99b97ebb30df41cd27c3f93f93b73cb9">
+  explorer.billions.network/tx/0xbc2d…3cb9
+</Card>
+
+<Warning>
+  The `billions:main` part of a DID does not tell you the environment. Agent DIDs derived from an Ethereum address use `billions:main` on testnet as well. The registry you are reading is decided by the API host or Explorer you query. Run the first request above against `attestations-api-testnet.billions.network` and it returns `totalItems: 0`, because this pairing exists only on production.
+</Warning>
+
+## 4. What this proves, and what it doesn't
+
+It proves that a verified human, `fromDid`, paired with the agent DID `toDid`, and that the pairing has not been revoked.
+
+It does not prove that whoever you are talking to controls that agent DID. Anyone can copy the DID from this page. Before you grant access or pay a reward, require a signed proof, as described in [Verify an Agent](/agents/verify-human-agent-pairing).
+
+<Note>
+  The production API is rate-limited infrastructure. From your application, use only the [verification endpoints](/agents/attestations-api#endpoints) of the Attestations API. To create, query and revoke your own records freely, use testnet.
+</Note>
+
+## Next: repeat it on testnet
+
+<CardGroup cols={2}>
+  <Card title="Create Test Attestations" icon="flask" href="/agents/attestation-testnet-explorer">
+    Run the same lookup on testnet, then create and revoke your own attestations.
+  </Card>
+  <Card title="Verify an Agent in Your App" icon="user-shield" href="/agents/verify-human-agent-pairing">
+    Check that a caller controls a DID before trusting its attestation.
+  </Card>
+</CardGroup>

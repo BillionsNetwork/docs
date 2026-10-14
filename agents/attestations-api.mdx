@@ -1,0 +1,273 @@
+---
+title: "Attestations API"
+sidebarTitle: "Attestations API"
+description: "HTTP reference for the Attestations API on production and testnet: ownership attestations, identities, nullifiers, schemas and search, with full responses and error handling."
+icon: "code"
+---
+
+The Attestations API indexes the Attestation Registry and Schema Registry contracts and serves them as JSON. The [Attestation Explorer](/agents/attestation-explorer) is built on it, and the x402 Human Proof SDKs call it to check pairings.
+
+<Warning>
+  The API is internal infrastructure, not a general-purpose public API, and every endpoint is rate-limited. A production integration should depend only on the endpoints marked **Yes** under "Used to verify an agent" below. If you need a higher limit, contact the Billions integration team.
+</Warning>
+
+## Endpoints
+
+| Endpoint | Returns | Used to verify an agent |
+|---|---|---|
+| `GET /attestations` | Attestations, filtered by schema, attester or recipient | **Yes**: find a DID's or address's ownership attestation |
+| `GET /attestations/{id}` | One attestation, with its status and transaction | **Yes**: check revocation or expiry |
+| `GET /nullifier?userId={iden3Id}` | The person's nullifier | **Yes**: count or limit per person |
+| `GET /identities/{identity}/attestations` | Every attestation where an identity is attester or recipient | Optional: look up both directions |
+| `GET /schemas`, `GET /schemas/{id}` | Registered schemas | No |
+| `GET /search/{query}` | Whatever the query matches | No |
+| `GET /healthCheck` | `Ok` when the service is up | No |
+
+## Base URLs
+
+| Environment | Base URL |
+|---|---|
+| Production | `https://attestations-api.billions.network/api/v1` |
+| Testnet | `https://attestations-api-testnet.billions.network/api/v1` |
+
+The examples on this page use production unless they say otherwise. Records never move between environments. See [Environments](/agents/environments).
+
+```bash
+export API=https://attestations-api.billions.network/api/v1
+```
+
+## Responses and pagination
+
+List endpoints take `page_number` and `page_size`, and wrap results in the same envelope:
+
+```json
+{
+  "totalItems": 47,
+  "uniqueItems": 17,
+  "totalPages": 47,
+  "pageNumber": 1,
+  "pageSize": 1,
+  "nextPage": 2,
+  "data": [ ... ]
+}
+```
+
+- `nextPage` is `null` on the last page.
+- `uniqueItems` on the attestations list is the number of distinct attesters.
+- `creationTime` and `expirationTime` are Unix timestamps in seconds.
+- iden3 IDs and nullifiers are strings, because they are too large for a JavaScript number.
+
+## Attestations
+
+### List and filter
+
+```bash
+curl "$API/attestations?page_number=1&page_size=10"
+```
+
+Add any of these query parameters to narrow the list. They combine.
+
+| Parameter | Filters by |
+|---|---|
+| `schemaId` | Schema the attestation was written against |
+| `attesterDid`, `attesterIden3Id`, `attesterEthereumAddress` | Who made it |
+| `recipientDid`, `recipientIden3Id`, `recipientEthereumAddress` | Who it is about |
+
+Revoked attestations are left out of this list. Expired ones are not.
+
+### Look up an ownership attestation
+
+This is the lookup behind every verification. Filter by the `AgentOwnership` schema and the agent's DID:
+
+```bash
+curl "$API/attestations?schemaId=0xca354bee6dc5eded165461d15ccb13aceb6f77ebbb1fd3fe45aca686097f2911&recipientDid=did:iden3:billions:main:2VmAkXrihYaLjks4i8XQYu98VLgbUUoeobmDUJp4ZM"
+```
+
+Start from a recovered signer address instead by using `recipientEthereumAddress=<0x…>`, as the [direct API path](/agents/verify-human-agent-pairing#path-b-direct-api) does. A paired agent returns one item:
+
+```json
+{
+  "totalItems": 1,
+  "uniqueItems": 1,
+  "totalPages": 1,
+  "pageNumber": 1,
+  "pageSize": 10,
+  "nextPage": null,
+  "data": [
+    {
+      "id": "0xe22e0c8bdd9ed997d62f4dd8ed547a2e9e6f2a7e4416b6f303e3a7273207ab8b",
+      "creationTime": 1772688263,
+      "schemaInfo": {
+        "index": "1",
+        "id": "0xca354bee6dc5eded165461d15ccb13aceb6f77ebbb1fd3fe45aca686097f2911",
+        "name": "AgentOwnership",
+        "schemaSignatures": [{ "name": "data", "type": "bytes" }]
+      },
+      "fromName": "",
+      "fromDid": "did:iden3:billions:main:2VsocCwupnsqT3xHyPTYrdkwjMBYiWuvwe2mRK8HK3",
+      "fromId": "25418487188279101345594527843687782240092919663607313438873907510818025729",
+      "fromEthereumAddress": "0xB3F5d3DD47F6ca17468898291491eBDA69a67797",
+      "toName": "Jarvis",
+      "toDid": "did:iden3:billions:main:2VmAkXrihYaLjks4i8XQYu98VLgbUUoeobmDUJp4ZM",
+      "toId": "14336761652768509472823833665155878975354096967746601418028400374727094529",
+      "toEthereumAddress": "0x9D90Ce9f1E4633576001Dc1A2406Fe3757870b44",
+      "decodedDataJson": "[{\"name\":\"data\",\"type\":\"bytes\",\"signature\":\"bytes data\",\"value\":{\"name\":\"data\",\"type\":\"bytes\",\"value\":\"0x\"}}]"
+    }
+  ]
+}
+```
+
+A DID with no pairing returns `200` with `"totalItems": 0` and `"data": []`. [Inspect Attestations](/agents/attestation-production-lookup#3-read-the-result) explains every field of this response.
+
+### Read decoded data
+
+`decodedDataJson` is a **string** containing JSON, so parse it a second time. Each field's value sits under `value.value`, and values come back as strings, numbers included. For example, a `Review` attestation on testnet:
+
+```json
+"decodedDataJson": "[{\"name\":\"stars\",...,\"value\":{\"name\":\"stars\",\"type\":\"uint8\",\"value\":\"4\"}}, ...]"
+```
+
+```javascript
+const fields = JSON.parse(attestation.decodedDataJson);
+const stars = fields.find((f) => f.value.name === "stars").value.value; // "4"
+const comment = fields.find((f) => f.value.name === "comment").value.value;
+```
+
+### Get one attestation
+
+```bash
+curl "$API/attestations/0xe22e0c8bdd9ed997d62f4dd8ed547a2e9e6f2a7e4416b6f303e3a7273207ab8b"
+```
+
+Returns everything in the list item, plus:
+
+| Field | Meaning |
+|---|---|
+| `txid` | Hash of the transaction that recorded it |
+| `expirationTime` | Unix time it expires, or `0` for never |
+| `revocable` | Whether it can be revoked |
+| `revoked` | Whether it has been |
+| `revocationTime` | When it was revoked, or `0` |
+| `rawData` | The ABI-encoded data before decoding |
+
+Unlike the list, this endpoint also returns revoked attestations. An unknown ID returns `404` with `{"message":"Attestation not found"}`.
+
+## Identities
+
+```bash
+curl "$API/identities/<did-or-0x-address-or-iden3-id>/attestations"
+```
+
+Every attestation where the identity is the attester or the recipient, in the same paginated envelope plus an `identity` field. The API tells a DID, an Ethereum address and an iden3 ID apart by their format. Pass an agent DID to find its human, or a human DID to find all of that person's agents. This is the lookup the Explorer runs.
+
+## Nullifier
+
+```bash
+curl "$API/nullifier?userId=25418487188279101345594527843687782240092919663607313438873907510818025729"
+```
+
+```json
+{
+  "userId": "25418487188279101345594527843687782240092919663607313438873907510818025729",
+  "nullifier": "3217936374450070950907367963005573940584526403461189936317035691903800703818"
+}
+```
+
+`userId` is the human's iden3 ID: the `fromId` of an ownership attestation. The nullifier is a stable, privacy-preserving identifier for that person, so you can count per person, for example one reward each, without learning who they are. A missing `userId` returns `400` with `{"message":"userId query parameter is required"}`, and a non-integer one returns `400` with `{"message":"userId must be a valid integer"}`.
+
+## Schemas
+
+```bash
+curl "$API/schemas?page_size=10"
+curl "$API/schemas/0x3ff27d25d9a49e12c43465525fb4da6fa572edc013d23caa1ce96f3d8b649442"
+```
+
+Each schema in the list:
+
+```json
+{
+  "index": "3",
+  "id": "0x3ff27d25d9a49e12c43465525fb4da6fa572edc013d23caa1ce96f3d8b649442",
+  "name": "Review",
+  "resolver": "0x0000000000000000000000000000000000000000",
+  "attestationsCount": 6,
+  "schemaSignatures": [
+    { "name": "stars", "type": "uint8" },
+    { "name": "comment", "type": "string" }
+  ]
+}
+```
+
+The single-schema endpoint adds the creator (`creator`, `creatorDid`, `creatorId`), the creation transaction (`txid`), `revocable`, the raw definition (`schemaRaw`, for example `uint8 stars,string comment`), and a page of attestations written against it. See [Schemas](/agents/attestation-schemas) for what each schema records.
+
+## Search
+
+```bash
+curl "$API/search/<schema-id | attestation-id | did | name | 0x-address>"
+```
+
+The response has a `type` field saying what matched. A schema ID returns:
+
+```json
+{
+  "type": "schema",
+  "id": "0xca354bee6dc5eded165461d15ccb13aceb6f77ebbb1fd3fe45aca686097f2911",
+  "schemaInfo": { "name": "AgentOwnership", "schemaSignatures": [ ... ] }
+}
+```
+
+A DID returns `attesterDid` or `recipientDid`, depending on which side it appears on.
+
+## Health check
+
+```bash
+curl "$API/healthCheck"
+```
+
+Returns `Ok` when the service is up.
+
+## Missing, revoked and failed lookups
+
+| Situation | What the API returns | What to do |
+|---|---|---|
+| The DID was never paired | `200`, `totalItems: 0` | Not verified. Point the agent's owner to [Pair an Agent](/agents/identity-skill). |
+| The pairing was revoked | Left out of the list, so the same as never paired. `GET /attestations/{id}` still returns it, with `revoked: true`. | Not verified. |
+| The attestation has expired | Still listed. The API does not filter on `expirationTime`. | Check `expirationTime` yourself if your schema sets one. `0` means it never expires. |
+| The API is down or rate-limited | An error status. `503` and `504` have both been seen in practice. | Not verified. Retry with backoff. Never fall back to "verified". |
+
+## Example: average rating for an agent
+
+The `Review` schema holds star ratings. Reviews exist on testnet, so this example uses the testnet base URL. It pages through every review of one agent and averages the stars:
+
+```javascript
+const API = "https://attestations-api-testnet.billions.network/api/v1";
+const REVIEW_SCHEMA = "0x3ff27d25d9a49e12c43465525fb4da6fa572edc013d23caa1ce96f3d8b649442";
+
+async function getReviews(agentDid) {
+  const reviews = [];
+  let page = 1;
+
+  while (page) {
+    const url = `${API}/attestations?schemaId=${REVIEW_SCHEMA}&recipientDid=${agentDid}&page_number=${page}&page_size=20`;
+    const body = await fetch(url).then((r) => r.json());
+    reviews.push(...body.data);
+    page = body.nextPage;
+  }
+  return reviews;
+}
+
+const reviews = await getReviews(process.argv[2]);
+const stars = reviews.map((r) => {
+  const fields = JSON.parse(r.decodedDataJson);
+  return Number(fields.find((f) => f.value.name === "stars").value.value);
+});
+
+const average = stars.length ? stars.reduce((a, b) => a + b, 0) / stars.length : 0;
+console.log(`${average.toFixed(2)} stars from ${stars.length} reviews`);
+```
+
+```bash
+node reviews.mjs did:iden3:billions:test:2VxnoiNqdMPxfJYmZScDoFGLYNYLrKowqFUPHy5X8W
+```
+
+Against that DID it currently prints `4.00 stars from 1 reviews`. Testnet data changes, so your numbers may differ.

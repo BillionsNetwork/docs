@@ -1,0 +1,50 @@
+---
+title: "Protect an x402 Endpoint"
+sidebarTitle: "Protect an x402 Endpoint"
+description: "Set up an x402 server with a discounted price tier that only agents paired with a verified human can use."
+icon: "server"
+---
+
+You'll build a paid `/weather` endpoint with two prices. Any payer can use the standard `$0.01` tier. An agent can use the `$0.006` tier only if it signs a human proof and its DID holds an ownership attestation.
+
+## Before you start
+
+- Node.js 20.11.0 or later.
+- An EVM address to receive payments.
+- An x402 facilitator URL that supports Base Sepolia (`eip155:84532`). The example uses `https://x402.org/facilitator`. See the [x402 facilitator docs](https://docs.x402.org/core-concepts/facilitator) for others.
+
+Tested with `@billionsnetwork/x402-human-proof-server` 0.1.9, `@x402/express` 2.28 and Node.js 24. Payments are test payments on Base Sepolia. Pairings are checked on production, where the Verified Agent Identity skill records them. See [Environments](/agents/environments).
+
+## 1. Create the project
+
+```bash
+mkdir weather-api && cd weather-api
+npm init -y
+npm install express dotenv @x402/express @x402/evm @x402/core @billionsnetwork/x402-human-proof-server
+npm install -D tsx typescript
+```
+
+Create a `.env` file:
+
+```bash
+FACILITATOR_URL=https://x402.org/facilitator
+EVM_ADDRESS=0xYourReceivingAddress
+```
+
+## 2. Write and run the server
+
+The server code lives in the Server SDK reference:
+
+1. [Setup](/agents/server#setup) makes the server x402-compatible (Step 1), then adds human proof (Step 2). Already running x402? Go straight to [Step 2](/agents/server#step-2-add-human-proof-verification).
+2. [Complete Example](/agents/server#complete-example) has both steps in one `server.ts`, with the command to run it and the `402` response you should see.
+
+## Learn more
+
+<CardGroup cols={2}>
+  <Card title="x402 Human Proof" icon="book-open" href="/agents/overview">
+    How human proof fits into the x402 payment flow, and a live demo.
+  </Card>
+  <Card title="Server SDK" icon="book" href="/agents/server">
+    Usage caps with `maxUse`, events, storage, rollback hooks, replay protection, testing with an agent, and every option.
+  </Card>
+</CardGroup>

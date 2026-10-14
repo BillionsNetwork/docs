@@ -1,0 +1,53 @@
+---
+title: "How Verification Works"
+sidebarTitle: "How Verification Works"
+description: "What happens when an app signs a user in with Billions or asks for a credential: the request, the wallet, the signed token, and the backend check."
+icon: "diagram-project"
+---
+
+Login with Billions and credential verification run on the same protocol. Your app asks, the user's wallet answers with a signed token, and your backend checks it.
+
+## The parties
+
+| Party | Role |
+|---|---|
+| **Your app** | The verifier. It creates the request and checks the answer. It is identified by a verifier DID. |
+| **The user's wallet** | Holds the user's identity and credentials, and answers the request. |
+| **The issuer** | Issued the credential the app asks for, such as Proof of Uniqueness. The app chooses which issuers it accepts. |
+
+## The flow
+
+<Steps>
+  <Step title="Your backend creates an authorization request">
+    It names your verifier DID, a reason shown to the user, and a callback URL that includes a session ID. Your backend stores the request so it can check the answer later.
+  </Step>
+  <Step title="The user opens it in the wallet">
+    Your frontend Base64-encodes the request into a Universal Link that opens the Billions Wallet. The wallet shows the user what's being asked.
+  </Step>
+  <Step title="The wallet answers with a signed token">
+    If the user approves, the wallet signs a JWZ (JSON Web Zero-knowledge) token. For a credential request, it also generates a zero-knowledge proof against the credential.
+  </Step>
+  <Step title="The wallet posts the token to your callback">
+    The token arrives at your callback URL, tagged with the session ID.
+  </Step>
+  <Step title="Your backend verifies it">
+    It verifies the token against the stored request. The verified response gives you the user's DID and, for a credential request, the proof.
+  </Step>
+</Steps>
+
+## Login versus credential verification
+
+| | Login | Credential verification |
+|---|---|---|
+| **The request's `scope`** | Empty | A proof request naming the credential type, the accepted issuers and the schema |
+| **What the wallet proves** | The user controls their DID | The user holds a matching credential, without revealing it |
+| **What your backend gets** | The user's DID | The user's DID and a zero-knowledge proof |
+| **Guide** | [Login with Billions](/billions-wallet/login-with-billions) | [Verify Proof of Uniqueness](/billions-wallet/verify-proof-of-uniqueness), [Verify Verified Human](/billions-wallet/verify-verified-human) |
+
+## Stopping repeat claims
+
+A credential proof carries a **nullifier**: a privacy-preserving identifier derived from the person's identity and a `nullifierSessionId` that your app chooses for a campaign. Keep that value fixed and the same person always produces the same nullifier, so you can record the nullifiers you accept and refuse repeats, even from a different account. Use a different value for a different campaign and the same person's nullifiers can't be linked between them. Each request still gets its own session ID, which ties the wallet's answer to that request. This is what makes one-reward-per-person possible without learning who anyone is.
+
+## Related
+
+- [Credentials](/billions-wallet/credentials): what each credential proves.
