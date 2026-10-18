@@ -83,10 +83,10 @@
             "group": "Guides",
             "pages": [
               "agents/identity-skill",
-              "agents/verify-human-agent-pairing",
-              "agents/protect-x402-endpoint",
               "agents/attestation-production-lookup",
-              "agents/attestation-testnet-explorer"
+              "agents/attestation-testnet-explorer",
+              "agents/verify-human-agent-pairing",
+              "agents/protect-x402-endpoint"
             ]
           },
           {

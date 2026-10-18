@@ -5,28 +5,40 @@ description: "Pair AI agents with verified humans, check that pairing in your ap
 icon: "compass"
 ---
 
-Billions links an AI agent to the verified human behind it, and gives services a way to check that link before they trust the agent.
+An AI agent can have an account, a wallet or a DID, but none of these tells a service who is behind it. Billions links an agent to the verified human who runs it, and gives services a way to check that link before they trust the agent.
 
-## The building blocks
+The agent creates its own DID from a key pair it holds. A person with a [Proof of Uniqueness](/billions-wallet/proof-of-uniqueness) credential pairs with that DID, and the pairing is stored in the **Attestation Registry**, an on-chain record, as an **ownership attestation**. A service can then look up that attestation, and ask the agent to sign a challenge to show that it controls the DID.
 
-| Product | What it is |
-|---|---|
-| [Verified Agent Identity skill](/agents/identity-overview) | Runs on the agent. Creates the agent's DID from a key pair the agent holds, then pairs that DID with a person who has a Proof of Uniqueness credential. |
-| [Attestation Registry](/agents/attestation-explorer) | The on-chain record. Each pairing is stored in it as an **ownership attestation**. |
-| [Attestation Explorer](/agents/attestation-explorer) | A public website for reading the registry. Search for an agent or a person and see who they are paired with. The [Attestations API](/agents/attestations-api) serves the same data over HTTP. |
-| [x402 Human Proof SDKs](/agents/overview) | Let a server check the pairing on each request, with or without x402. With x402, a paid API can also charge paired agents a different price. |
+## Verified Agent Identity
 
-## Start from your goal
+For people who run an agent. The Verified Agent Identity skill runs on the agent. It creates the agent's DID from a key pair the agent holds, then pairs that DID with you through the Billions Wallet. When a service asks the agent for a human proof, the skill handles the agent's side.
 
-| Your goal | Read | What you'll have at the end |
-|---|---|---|
-| Give your agent a verifiable identity and pair it with you | [Pair an Agent](/agents/identity-skill) | An agent DID, and an ownership attestation on production that links it to you |
-| Check, in your own app, that a caller is a paired agent | [Verify an Agent in Your App](/agents/verify-human-agent-pairing) | A route that accepts only signed requests from paired agents. No x402 needed. |
-| Charge paired agents a different price on a paid API | [Protect an x402 Endpoint](/agents/protect-x402-endpoint) | An x402 server with a discounted tier for paired agents |
-| See who an agent is paired with | [Inspect Attestations](/agents/attestation-production-lookup) | A real ownership attestation, read in the Attestation Explorer and through the Attestations API |
-| Practice creating and revoking attestations | [Create Test Attestations](/agents/attestation-testnet-explorer) | Your own schema and attestations on testnet |
+- **Start with:** [Pair an Agent](/agents/identity-skill). By the end, your agent has its own DID and an ownership attestation on production that links it to you.
+- **How it works:** [Agent Identity](/agents/identity-overview) and [How Pairing Works](/agents/identity-architecture).
 
-Each guide lists its prerequisites, the exact commands, the result you should see, and where to go next.
+## Attestation Explorer
+
+For anyone who wants to see who an agent is paired with. The Attestation Explorer is a public website for reading the Attestation Registry. Search for an agent or a person and see who they are paired with. Looking things up needs no account or wallet. The [Attestations API](/agents/attestations-api) serves the same data over HTTP.
+
+- **Start with:** [Inspect Attestations](/agents/attestation-production-lookup). Read a real ownership attestation in the Explorer and through the Attestations API.
+- **Practice on testnet:** [Create Test Attestations](/agents/attestation-testnet-explorer). Create your own schema and attestations, then revoke them.
+- **How it works:** [Attestations and the Explorer](/agents/attestation-explorer).
+- **Reference:** [Attestations API](/agents/attestations-api) and [Schemas](/agents/attestation-schemas).
+
+## Verify agents in your app
+
+For developers whose app is called by agents. Any app can check that a caller is an agent paired with a verified human. The agent signs a challenge your app issued, which shows it controls its DID, and your app checks that DID for an ownership attestation. Use a server helper that does both checks, or call the Attestations API directly. No x402 or payment setup is involved.
+
+- **Start with:** [Verify an Agent in Your App](/agents/verify-human-agent-pairing). You end up with a route that accepts only signed requests from paired agents.
+- **Reference:** [Attestations API](/agents/attestations-api) and [Environments](/agents/environments).
+
+## x402 Human Proof
+
+For providers of paid APIs. x402 lets an API take a payment on each request, from humans and agents alike, but it can't tell the two apart. The x402 Human Proof extension adds that check. A provider can offer discounted tiers, free trials or premium access to agents paired with a verified human, and keep standard rates for other traffic or block it. It comes as a server SDK for the API provider and a client SDK for callers. Agents running the Verified Agent Identity skill don't need the client SDK.
+
+- **Start with:** [Protect an x402 Endpoint](/agents/protect-x402-endpoint). You end up with an x402 server that has a discounted tier for paired agents.
+- **How it works:** [x402 Human Proof](/agents/overview).
+- **Reference:** [Server SDK](/agents/server) and [Client SDK](/agents/client).
 
 ## What a pairing proves
 
@@ -41,3 +53,11 @@ It does **not** prove:
 ## Production and testnet
 
 Production holds real pairings and is what a live application should query. Testnet is for practice: creating and revoking your own records. Records never move between them. See [Environments](/agents/environments) for every URL and address.
+
+## Next steps
+
+- Run an agent? [Pair it with you](/agents/identity-skill).
+- Building an app that agents call? [Verify an Agent in Your App](/agents/verify-human-agent-pairing).
+- Running a paid API? [Protect an x402 Endpoint](/agents/protect-x402-endpoint).
+
+Each guide lists its prerequisites, the exact commands, the result you should see, and where to go next.

@@ -5,7 +5,7 @@ description: "A KYC-style credential issued after self-verification with a gover
 icon: "id-card"
 ---
 
-**Verified Human** is a basic KYC-style credential, issued after self-verification with a government-issued document, on top of your [Proof of Uniqueness](/billions-wallet/proof-of-uniqueness). Where PoU proves you're a real, unique individual with a face scan, Verified Human ties that uniqueness to a government-issued document, giving services a higher tier of trust for cases that need document-verified identity. See [Credentials](/billions-wallet/credentials) for how it compares with the other credentials.
+**Verified Human** is a basic KYC-style credential, issued after self-verification with a government-issued document. You don't need a [Proof of Uniqueness](/billions-wallet/proof-of-uniqueness) credential to claim it. Where PoU proves you're a real, unique individual with a face scan, Verified Human proves your identity with a government-issued document, giving services a higher tier of trust for cases that need document-verified identity. See [Credentials](/billions-wallet/credentials) for how it compares with the other credentials.
 
 ## Supported documents
 
@@ -41,7 +41,7 @@ The claim flow is the same for every document. Only the document you present dif
     - **Driving license or national ID card**: accepted when neither of the above is available.
   </Step>
   <Step title="Verify your document">
-    For an NFC-enabled passport, driving license, or national ID, follow the prompts to scan the document. For Aadhaar, scan the official digital QR code.
+    For an NFC-enabled passport, follow the prompts to scan the passport's NFC chip. For Aadhaar, scan the official digital QR code. For a driving license or national ID card, follow the prompts in the app.
   </Step>
   <Step title="Credential issued">
     Once verification succeeds, the credential is issued directly to your wallet, encrypted, and stored for reuse across every future request.
@@ -109,7 +109,7 @@ The claim flow is the same for every document. Only the document you present dif
 
 <CardGroup cols={2}>
   <Card title="Proof of Uniqueness" icon="fingerprint" href="/billions-wallet/proof-of-uniqueness">
-    The prerequisite credential, a one-time face scan proving you're a real, unique human.
+    A separate credential: a one-time face scan proving you're a real, unique human.
   </Card>
   <Card title="Verify Verified Human" icon="shield-check" href="/billions-wallet/verify-verified-human">
     Add server-side verification to your own app, so you can confirm a user holds this credential.
