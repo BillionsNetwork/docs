@@ -80,22 +80,33 @@
             ]
           },
           {
-            "group": "Guides",
+            "group": "Verified Agent Identity",
             "pages": [
+              "agents/identity-overview",
               "agents/identity-skill",
-              "agents/attestation-production-lookup",
-              "agents/attestation-testnet-explorer",
-              "agents/verify-human-agent-pairing",
-              "agents/protect-x402-endpoint"
+              "agents/identity-architecture"
             ]
           },
           {
-            "group": "Concepts",
+            "group": "Attestation Explorer",
             "pages": [
-              "agents/identity-overview",
-              "agents/identity-architecture",
               "agents/attestation-explorer",
-              "agents/overview"
+              "agents/attestation-production-lookup",
+              "agents/attestation-testnet-explorer"
+            ]
+          },
+          {
+            "group": "Agent Verification",
+            "pages": [
+              "agents/agent-verification",
+              "agents/verify-human-agent-pairing"
+            ]
+          },
+          {
+            "group": "x402 Human Proof",
+            "pages": [
+              "agents/overview",
+              "agents/protect-x402-endpoint"
             ]
           },
           {

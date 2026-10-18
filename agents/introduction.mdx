@@ -13,31 +13,33 @@ The agent creates its own DID from a key pair it holds. A person with a [Proof o
 
 For people who run an agent. The Verified Agent Identity skill runs on the agent. It creates the agent's DID from a key pair the agent holds, then pairs that DID with you through the Billions Wallet. When a service asks the agent for a human proof, the skill handles the agent's side.
 
-- **Start with:** [Pair an Agent](/agents/identity-skill). By the end, your agent has its own DID and an ownership attestation on production that links it to you.
-- **How it works:** [Agent Identity](/agents/identity-overview) and [How Pairing Works](/agents/identity-architecture).
+- **Overview:** [Verified Agent Identity](/agents/identity-overview). What the skill does and why pairing matters.
+- **Guide:** [Pair an Agent](/agents/identity-skill). By the end, your agent has its own DID and an ownership attestation on production that links it to you.
+- **How it works:** [How Pairing Works](/agents/identity-architecture).
 
 ## Attestation Explorer
 
 For anyone who wants to see who an agent is paired with. The Attestation Explorer is a public website for reading the Attestation Registry. Search for an agent or a person and see who they are paired with. Looking things up needs no account or wallet. The [Attestations API](/agents/attestations-api) serves the same data over HTTP.
 
-- **Start with:** [Inspect Attestations](/agents/attestation-production-lookup). Read a real ownership attestation in the Explorer and through the Attestations API.
+- **Overview:** [Attestation Explorer](/agents/attestation-explorer). What an attestation is and what the Explorer shows.
+- **Guide:** [Inspect Attestations](/agents/attestation-production-lookup). Read a real ownership attestation in the Explorer and through the Attestations API.
 - **Practice on testnet:** [Create Test Attestations](/agents/attestation-testnet-explorer). Create your own schema and attestations, then revoke them.
-- **How it works:** [Attestations and the Explorer](/agents/attestation-explorer).
 - **Reference:** [Attestations API](/agents/attestations-api) and [Schemas](/agents/attestation-schemas).
 
-## Verify agents in your app
+## Agent Verification
 
-For developers whose app is called by agents. Any app can check that a caller is an agent paired with a verified human. The agent signs a challenge your app issued, which shows it controls its DID, and your app checks that DID for an ownership attestation. Use a server helper that does both checks, or call the Attestations API directly. No x402 or payment setup is involved.
+For developers whose app is called by agents. Any app can check that a caller is an agent paired with a verified human. The agent signs a challenge your app issued, which shows it controls its DID, and your app checks that DID for an ownership attestation. Use a server helper that does both checks, or call the Attestations API directly.
 
-- **Start with:** [Verify an Agent in Your App](/agents/verify-human-agent-pairing). You end up with a route that accepts only signed requests from paired agents.
+- **Overview:** [Agent Verification](/agents/agent-verification). What a complete check covers, and the two ways to run it.
+- **Guide:** [Verify an Agent in Your App](/agents/verify-human-agent-pairing). You end up with a route that accepts only signed requests from paired agents.
 - **Reference:** [Attestations API](/agents/attestations-api) and [Environments](/agents/environments).
 
 ## x402 Human Proof
 
 For providers of paid APIs. x402 lets an API take a payment on each request, from humans and agents alike, but it can't tell the two apart. The x402 Human Proof extension adds that check. A provider can offer discounted tiers, free trials or premium access to agents paired with a verified human, and keep standard rates for other traffic or block it. It comes as a server SDK for the API provider and a client SDK for callers. Agents running the Verified Agent Identity skill don't need the client SDK.
 
-- **Start with:** [Protect an x402 Endpoint](/agents/protect-x402-endpoint). You end up with an x402 server that has a discounted tier for paired agents.
-- **How it works:** [x402 Human Proof](/agents/overview).
+- **Overview:** [x402 Human Proof](/agents/overview). How it fits into the x402 payment flow, with a live demo.
+- **Guide:** [Protect an x402 Endpoint](/agents/protect-x402-endpoint). You end up with an x402 server that has a discounted tier for paired agents.
 - **Reference:** [Server SDK](/agents/server) and [Client SDK](/agents/client).
 
 ## What a pairing proves
