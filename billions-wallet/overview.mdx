@@ -20,30 +20,26 @@ When an app asks you to prove something, the wallet answers with a zero-knowledg
 
 Sign in with the same account on both and your credentials sync between them.
 
-## What you can do with it
+## Credentials
 
-**Claim credentials about yourself.** Each one is claimed once and reused in every later request:
+Each credential is claimed once and reused in every later request. Your Proof of Uniqueness credential is also what links an AI agent to you. See [Agents](/agents/introduction).
 
-- [Proof of Uniqueness](/billions-wallet/proof-of-uniqueness): a one-time face scan that proves you're a real, unique human.
-- [Verified Human](/billions-wallet/verified-human): proof of identity from a government document, such as an NFC passport or Aadhaar.
-- Email and social accounts: proof that you own an email address, or a Discord, X or Telegram account.
+- **Overview:** [Credentials](/billions-wallet/credentials). What each credential proves and how it's claimed, including proof that you own an email address, or a Discord, X or Telegram account.
+- **Guide:** [Claim Proof of Uniqueness](/billions-wallet/proof-of-uniqueness). A one-time face scan that proves you're a real, unique human.
+- **Guide:** [Claim Verified Human](/billions-wallet/verified-human). Proof of identity from a government document, such as an NFC passport or Aadhaar.
 
-**Prove things to apps.** Sign in to an app with your DID instead of a password, or show an app that you hold a credential. You approve each request in the wallet and see exactly what's being asked.
+## Integrate
 
-**Pair an AI agent with yourself.** Your Proof of Uniqueness credential is also what links an AI agent to you. See [Agents](/agents/introduction).
+Apps can use the wallet in two ways. The user approves each request in the wallet and sees exactly what's being asked.
+
+- **Sign users in** with their DID instead of a password, like a social login without a central provider. See [Login with Billions](/billions-wallet/login-with-billions).
+- **Verify a credential** on your backend before granting access or a reward. See [Verify Proof of Uniqueness](/billions-wallet/verify-proof-of-uniqueness) and [Verify Verified Human](/billions-wallet/verify-verified-human).
+
+To see both from the user's side, try the live demo at [demo.billions.network](https://demo.billions.network). [How Verification Works](/billions-wallet/how-verification-works) explains what happens between the request and your backend's check.
 
 ## How it protects your data
 
 Your keys never leave your control. Credentials are stored encrypted, and proofs are generated in your browser or on your phone, so your personal data isn't sent anywhere to create them. An app receives a proof, not the credential. [How the Wallet Works](/billions-wallet/how-the-wallet-works) has the details.
-
-## For developers
-
-Apps can use the wallet in two ways:
-
-- **Sign users in** with their DID, like a social login without a central provider. See [Login with Billions](/billions-wallet/login-with-billions).
-- **Verify a credential** on your backend before granting access or a reward. See [Verify Proof of Uniqueness](/billions-wallet/verify-proof-of-uniqueness) and [Verify Verified Human](/billions-wallet/verify-verified-human).
-
-To see both from the user's side, try the live demo at [demo.billions.network](https://demo.billions.network).
 
 ## Next steps
 

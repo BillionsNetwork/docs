@@ -44,10 +44,16 @@
             ]
           },
           {
-            "group": "Use the Wallet",
+            "group": "Billions Wallet",
             "pages": [
               "billions-wallet/web-wallet",
-              "billions-wallet/mobile-wallet",
+              "billions-wallet/mobile-wallet"
+            ]
+          },
+          {
+            "group": "Credentials",
+            "pages": [
+              "billions-wallet/credentials",
               "billions-wallet/proof-of-uniqueness",
               "billions-wallet/verified-human"
             ]
@@ -64,7 +70,6 @@
             "group": "Concepts",
             "pages": [
               "billions-wallet/how-the-wallet-works",
-              "billions-wallet/credentials",
               "billions-wallet/how-verification-works"
             ]
           }
