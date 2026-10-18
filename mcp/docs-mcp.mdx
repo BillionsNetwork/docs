@@ -1,0 +1,82 @@
+---
+title: "Billions Docs MCP"
+sidebarTitle: "Billions Docs MCP"
+description: "Search Billions documentation from your AI coding assistant."
+icon: "plug"
+---
+
+The Billions Docs MCP gives your AI assistant direct access to Billions documentation through the [Model Context Protocol](https://modelcontextprotocol.io/).
+
+Use it when you want Claude, Codex, Cursor, VS Code or another MCP client to search the current Billions docs while you build.
+
+## Endpoint
+
+```text
+https://docs.billions.network/mcp
+```
+
+The docs MCP does not require authentication.
+
+## Connect your client
+
+<Tabs>
+  <Tab title="Claude Code">
+    ```bash
+    claude mcp add --transport http --scope project billions-docs https://docs.billions.network/mcp
+    ```
+  </Tab>
+  <Tab title="Codex">
+    ```bash
+    codex mcp add billions-docs --url https://docs.billions.network/mcp
+    ```
+  </Tab>
+  <Tab title="Cursor">
+    Add this to `.cursor/mcp.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "billions-docs": {
+          "url": "https://docs.billions.network/mcp"
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="VS Code">
+    Add this to `.vscode/mcp.json`:
+
+    ```json
+    {
+      "servers": {
+        "billions-docs": {
+          "type": "http",
+          "url": "https://docs.billions.network/mcp"
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Available tools
+
+| Tool | Purpose |
+| --- | --- |
+| `search_billions` | Search the Billions docs. Returns the matching sections, with titles and links to the pages. |
+| `query_docs_filesystem_billions` | Read a full page, or search the docs for an exact keyword, in a read-only copy of the documentation. |
+| `submit_feedback` | Report a page that is incorrect, outdated, confusing or incomplete, so the docs team can fix it. |
+
+## Suggested prompts
+
+```text wrap
+Use the Billions Docs MCP to find how to verify a Proof of Uniqueness credential on my backend, and add it to this project.
+```
+
+```text wrap
+Search the Billions docs for how to check that an agent is paired with a verified human, and explain which verification path this app should use.
+```
+
+## When to use it
+
+Use the docs MCP to look up documentation. It reads only the public docs on this site. For help with an integration, contact the [Billions integration team](mailto:support@billions.network).

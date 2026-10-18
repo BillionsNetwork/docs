@@ -13,6 +13,7 @@
       "view", 
       "chatgpt", 
       "claude",
+      "mcp",
       {
         "title": "Contact Integration team",
         "description": "Contact the Integration team to get help with your integration.",
@@ -122,6 +123,17 @@
               "agents/attestation-schemas",
               "agents/server",
               "agents/client"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "MCP",
+        "groups": [
+          {
+            "group": "Model Context Protocol",
+            "pages": [
+              "mcp/docs-mcp"
             ]
           }
         ]
