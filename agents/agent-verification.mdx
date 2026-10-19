@@ -1,7 +1,7 @@
 ---
-title: "Agent Verification"
+title: "How an App Checks an Agent"
 sidebarTitle: "Overview"
-description: "How an app checks that a caller is an agent paired with a verified human, and the two ways to run that check."
+description: "What a complete check covers, from proof of control to the pairing lookup, and the two ways to run it."
 icon: "user-shield"
 ---
 
@@ -22,7 +22,7 @@ A complete check has four parts:
 
 | Path | What you do | What the result means |
 |---|---|---|
-| **[Path A: Server helper](/agents/verify-human-agent-pairing#path-a-server-helper)** (`verifyHumanProofRequest`) | Receive the signed proof from the agent and call the helper. It validates the signature, derives the DID from the signer, and calls the Attestations and nullifier APIs internally. | The proof is tied to that agent DID, and the helper has checked the pairing through the API. Two caveats: the helper does not track nonces, so you do, and its lookup skips revoked attestations but not expired ones. |
+| **[Path A: Server helper](/agents/verify-human-agent-pairing#path-a-server-helper)** (`verifyHumanProofRequest`) | Receive the signed proof from the agent and call the helper. It validates the signature, derives the DID from the signer, and calls the Attestations and nullifier APIs internally. | The proof is tied to that agent DID, and the helper has checked the pairing through the API. Its lookup skips revoked attestations, and ownership attestations never expire. One caveat: the helper does not track nonces, so you do. |
 | **[Path B: Direct API](/agents/verify-human-agent-pairing#path-b-direct-api)** | Authenticate the agent yourself and establish which DID or address it controls, then query the API for that pairing. | The API answers the attestation question. Your own authentication answers the control question. An API response alone cannot establish both. |
 
 <Info>

@@ -95,7 +95,7 @@ curl "https://attestations-api.billions.network/api/v1/attestations/0xe22e0c8bdd
 | `revocable` | `false` | It can never be revoked. |
 | `expirationTime` | `0` | It never expires. |
 
-The attestation list endpoint leaves out revoked attestations, but it does not filter on expiry. If you rely on a schema whose attestations can expire, check `expirationTime`.
+The attestation list endpoint leaves out revoked attestations, but it does not filter on expiry. Ownership attestations never expire. If you rely on a schema whose attestations can expire, read `expirationTime` with `GET /attestations/{id}`, because list items don't include it.
 
 ### The network
 

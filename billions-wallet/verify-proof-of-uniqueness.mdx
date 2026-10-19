@@ -93,7 +93,7 @@ Pick one `nullifierSessionId` per campaign, as a positive integer, and keep it f
 
 ### Example Repository
 
-The steps below walk through the [POU verifier example](https://github.com/PrivadoID/Integration-examples/tree/main/POU-integration-for-verifiers%20(For%20Privado%20Wallet)) — clone it to follow along. It contains an Express backend (`js/`), the ZK circuit keys it depends on (`keys/`), and a static demo frontend (`static/`).
+The steps below follow the [Billions Wallet verifier example](https://github.com/PrivadoID/Integration-examples/tree/main/Integration-for-verifiers%20(Billions%20Wallet)). Clone it to follow along. It contains an Express backend (`js/`), the ZK circuit keys it depends on (`keys/`), and a static demo frontend (`static/`).
 
 ### 1. Server and Request Handler
 
@@ -170,7 +170,7 @@ Verifies the proof the wallet sends back, and enforces that a given nullifier, a
 
 ```javascript
 const getRawBody = require("raw-body");
-const { CircuitId, AtomicQueryV3PubSignals } = require('@0xpolygonid/js-sdk');
+const { CircuitId, AtomicQueryV3PubSignals, getGroupedCircuitIdsWithSubVersions } = require('@0xpolygonid/js-sdk');
 const byteEncoder = new TextEncoder();
 
 const userVerificationMap = new Map(); // nullifier -> { sessionId, verified }
@@ -205,11 +205,12 @@ app.post("/api/callback", async (req, res) => {
       AcceptedStateTransitionDelay: 5 * 60 * 1000,
     });
 
-    const proof = authResponse.body.scope.find(
-      (s) => s.circuitId === CircuitId.AtomicQueryV3 && s.id === sessionId,
+    const atomicQueryV3Family = getGroupedCircuitIdsWithSubVersions(CircuitId.AtomicQueryV3Stable);
+    const nullifierProof = authResponse.body.scope.find(
+      (s) => atomicQueryV3Family.includes(s.circuitId) && s.id === sessionId
     );
-    if (!proof) {
-      return res.status(400).json({ error: "No valid proof found in response." });
+    if (!nullifierProof) {
+      return res.status(400).json({ message: "No valid nullifier proof found in response." });
     }
 
     const pubSignals = new AtomicQueryV3PubSignals().pubSignalsUnmarshal(

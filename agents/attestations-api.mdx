@@ -73,7 +73,7 @@ Add any of these query parameters to narrow the list. They combine.
 | `attesterDid`, `attesterIden3Id`, `attesterEthereumAddress` | Who made it |
 | `recipientDid`, `recipientIden3Id`, `recipientEthereumAddress` | Who it is about |
 
-Revoked attestations are left out of this list. Expired ones are not.
+Revoked attestations are left out of this list. Expired ones are not, and list items don't include `expirationTime`. Ownership attestations never expire.
 
 ### Look up an ownership attestation
 
@@ -232,7 +232,7 @@ Returns `Ok` when the service is up.
 |---|---|---|
 | The DID was never paired | `200`, `totalItems: 0` | Not verified. Point the agent's owner to [Pair an Agent](/agents/identity-skill). |
 | The pairing was revoked | Left out of the list, so the same as never paired. `GET /attestations/{id}` still returns it, with `revoked: true`. | Not verified. |
-| The attestation has expired | Still listed. The API does not filter on `expirationTime`. | Check `expirationTime` yourself if your schema sets one. `0` means it never expires. |
+| The attestation has expired | Can't happen for ownership attestations, which never expire. For other schemas: still listed, and list items don't include `expirationTime`. | Read `expirationTime` with `GET /attestations/{id}`. `0` means it never expires. |
 | The API is down or rate-limited | An error status. `503` and `504` have both been seen in practice. | Not verified. Retry with backoff. Never fall back to "verified". |
 
 ## Example: average rating for an agent

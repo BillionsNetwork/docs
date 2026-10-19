@@ -31,7 +31,7 @@
         "groups": [
           {
             "group": "Get Started",
-            "pages": ["index"]
+            "pages": ["index", "mcp/docs-mcp"]
           }
         ]
       },
@@ -126,17 +126,6 @@
             ]
           }
         ]
-      },
-      {
-        "tab": "MCP",
-        "groups": [
-          {
-            "group": "Model Context Protocol",
-            "pages": [
-              "mcp/docs-mcp"
-            ]
-          }
-        ]
       }
     ],
     "global": {
@@ -149,6 +138,10 @@
   },
   "navbar": {
     "links": [
+      {
+        "label": "Docs MCP",
+        "href": "/mcp/docs-mcp"
+      },
       {
         "label": "Support",
         "href": "mailto:support@billions.network"

@@ -186,7 +186,7 @@ app.post("/api/v1/claim", async (req, res) => {
 
   // result.did: the agent's DID, recovered from the signature
   // result.resolution.humanId: the verified human behind it
-  res.json({ paid: true, agentDid: result.did });
+  res.json({ verified: true, agentDid: result.did });
 });
 ```
 
@@ -208,7 +208,11 @@ A fresh key has no pairing, so you should see:
 403 {"error":"not_registered"}
 ```
 
-That is the negative path working. If you send the same header a second time, it is refused with `403 {"error":"unknown_or_expired_nonce"}`, because the nonce was consumed. With the key of an agent you [paired](/agents/identity-skill), the response is `200` with `{"paid":true,"agentDid":"did:iden3:billions:main:…"}`.
+That is the negative path working. If you send the same header a second time, it is refused with `403 {"error":"unknown_or_expired_nonce"}`, because the nonce was consumed. With the key of an agent you [paired](/agents/identity-skill), the response is `200` with `{"verified":true,"agentDid":"did:iden3:billions:main:…"}`.
+
+<Note>
+  `verified: true` means the caller controls that agent DID and a verified human is paired with it. Nothing has been paid. Paying the reward is a separate step in your app, and so is allowing one claim per person: store `result.resolution.humanId` with a unique constraint and refuse repeats.
+</Note>
 
 <Warning>
   `verifyHumanProofRequest` checks the signature, the signed message's fields (including that the signed `uri` equals the `resource` you pass), and the pairing. It does not check that the nonce was issued by you or used before, and it does not check `domain`. `expirationTime` is optional and comes from the agent's own payload. Without the checks above, a captured header can be replayed until it expires, or indefinitely if it carries no expiry.
@@ -254,6 +258,13 @@ const OWNERSHIP_SCHEMA = "0xca354bee6dc5eded165461d15ccb13aceb6f77ebbb1fd3fe45ac
 const issued = new Map();
 const TTL_MS = 5 * 60 * 1000;
 
+// Throws on an error status, so an outage is never read as "not registered".
+async function getJson(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Attestations API returned ${res.status}`);
+  return res.json();
+}
+
 app.get("/api/v1/challenge", (req, res) => {
   const nonce = randomBytes(16).toString("hex");
   const message =
@@ -284,17 +295,30 @@ app.post("/api/v1/claim", async (req, res) => {
   }
 
   // Pairing: look up an ownership attestation addressed to that signer.
-  const url = `${API}/attestations?schemaId=${OWNERSHIP_SCHEMA}&recipientEthereumAddress=${address}`;
-  const { data = [] } = await fetch(url).then((r) => r.json());
+  // An API failure means "can't tell right now", never "not registered".
+  let data;
+  try {
+    const url = `${API}/attestations?schemaId=${OWNERSHIP_SCHEMA}&recipientEthereumAddress=${address}`;
+    ({ data } = await getJson(url));
+    if (!Array.isArray(data)) throw new Error("Unexpected response from the Attestations API");
+  } catch {
+    return res.status(503).json({ error: "verification_unavailable" });
+  }
   const pairing = data.find((a) => a.toEthereumAddress.toLowerCase() === address.toLowerCase());
   if (!pairing) {
     return res.status(403).json({ error: "not_registered" });
   }
 
   // Optional: the human's nullifier, for per-human limits.
-  const { nullifier } = await fetch(`${API}/nullifier?userId=${pairing.fromId}`).then((r) => r.json());
+  let humanId;
+  try {
+    ({ nullifier: humanId } = await getJson(`${API}/nullifier?userId=${pairing.fromId}`));
+  } catch {
+    return res.status(503).json({ error: "verification_unavailable" });
+  }
 
-  res.json({ paid: true, agentDid: pairing.toDid, humanDid: pairing.fromDid, humanId: nullifier });
+  // Verified, not paid: paying the reward and one claim per human are separate steps.
+  res.json({ verified: true, agentDid: pairing.toDid, humanDid: pairing.fromDid, humanId });
 });
 ```
 
@@ -318,9 +342,9 @@ const res = await fetch(`${APP}/api/v1/claim`, {
 console.log(res.status, await res.text());
 ```
 
-**Run it** the same way as Path A: the setup block with these routes in `server.mjs`, the agent code in `agent.mjs`, then `node server.mjs` and the same `node agent.mjs` command. A fresh key prints `403 {"error":"not_registered"}`. A paired key prints `200` with the agent DID, the human DID and the human's nullifier.
+**Run it** the same way as Path A: the setup block with these routes in `server.mjs`, the agent code in `agent.mjs`, then `node server.mjs` and the same `node agent.mjs` command. A fresh key prints `403 {"error":"not_registered"}`. A paired key prints `200` with `verified: true`, the agent DID, the human DID and the human's nullifier. If the API fails or returns something unexpected, the route answers `503` with `verification_unavailable`: retry later, and never treat that as verified.
 
-The attestation list already leaves out revoked attestations. It does not filter on expiration. See [missing, revoked and failed lookups](/agents/attestations-api#missing-revoked-and-failed-lookups).
+The attestation list leaves out revoked attestations, and ownership attestations never expire, so any match in the list is a current pairing. See [missing, revoked and failed lookups](/agents/attestations-api#missing-revoked-and-failed-lookups).
 
 <Note>
   In Path B, the signature proves control of an address, and the API ties that address to a DID and a human. The recovered address is the only identity input: nothing the agent sends, other than the signature, is trusted. The `HUMAN-PROOF` header format from Path A is not required here.
