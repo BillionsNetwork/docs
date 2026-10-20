@@ -30,35 +30,24 @@ description: "Build with Billions — a network for humans and AI agents, powere
         justify-content: center;
         background: #ffffff;
         pointer-events: none;
-        animation: bOverlayOut 0.3s ease 1.9s forwards;
+        animation: bOverlayOut 0.3s ease 1.4s forwards;
       }
       @media (prefers-color-scheme: dark) {
         #b-intro-overlay { background: #0a0a0a; }
       }
       #b-logo-anim {
-        animation: bLogoIntro 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        animation: bLogoIntro 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         transform-origin: center;
-      }
-      #b-eye-right {
-        transform-box: fill-box;
-        transform-origin: center;
-        animation: bWink 2s ease forwards;
       }
       #b-page-content {
-        animation: bPageReveal 0.4s ease 1.8s both;
+        animation: bPageReveal 0.4s ease 1.3s both;
       }
       @keyframes bLogoIntro {
         0%   { transform: translateX(280px) scale(0.8); opacity: 0; }
-        28%  { transform: translateX(0) scale(1);       opacity: 1; }
-        60%  { transform: translateX(0) scale(1);       opacity: 1; }
-        92%  { transform: translateX(0) scale(4);       opacity: 0; }
+        30%  { transform: translateX(0) scale(1);       opacity: 1; }
+        45%  { transform: translateX(0) scale(1);       opacity: 1; }
+        85%  { transform: translateX(0) scale(4);       opacity: 0; }
         100% { transform: translateX(0) scale(4);       opacity: 0; }
-      }
-      @keyframes bWink {
-        0%,  30% { transform: scaleY(1);    }
-        41%      { transform: scaleY(0.04); }
-        54%      { transform: scaleY(1);    }
-        100%     { transform: scaleY(1);    }
       }
       @keyframes bOverlayOut {
         to { opacity: 0; visibility: hidden; }
@@ -69,7 +58,7 @@ description: "Build with Billions — a network for humans and AI agents, powere
       }
     `;
     document.head.appendChild(s);
-    setTimeout(() => { window.__bAnimPlayed = true; }, 2300);
+    setTimeout(() => { window.__bAnimPlayed = true; }, 1800);
   }}
 >
   <div id="b-logo-anim" style={{ opacity: 0 }}>
@@ -95,29 +84,51 @@ description: "Build with Billions — a network for humans and AI agents, powere
   A network for humans and AI agents. Build with privacy-preserving identity, verifiable credentials, and agentic trust infrastructure.
 </div>
 
-<CardGroup cols={3}>
-  <Card
-    title="Billions Wallet"
-    icon="wallet"
-    href="/billions-wallet/overview"
-  >
-    Web and mobile wallet for managing your verifiable identity credentials.
-  </Card>
+<div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", justifyContent: "space-between", gap: "8px 16px", marginBottom: "4px" }}>
+  <div style={{ fontSize: "24px", lineHeight: 1.3, letterSpacing: "-0.4px", fontWeight: 400 }}>Billions Wallet</div>
+  <a href="/billions-wallet/overview" style={{ fontSize: "15px", textDecoration: "underline", textUnderlineOffset: "4px" }}>Introduction →</a>
+</div>
 
-  <Card
-    title="Login with Billions"
-    icon="key"
-    href="/billions-wallet/login-with-billions"
-  >
-    Enable secure and decentralized authentication by leveraging the Billions Network.
-  </Card>
+<div style={{ fontSize: "16px", lineHeight: 1.6, fontWeight: 300, marginBottom: "20px", opacity: 0.7 }}>
+  Hold credentials about yourself and prove things to apps without handing over your data.
+</div>
 
-  <Card
-    title="Agents"
-    icon="robot"
-    href="/agents/identity-overview"
-  >
-    Give AI agents verifiable identities and build trust in the agentic economy.
+<CardGroup cols={2}>
+  <Card title="Credentials" icon="id-badge" href="/billions-wallet/credentials">
+    Proof of Uniqueness and Verified Human: what each one proves and how users claim it.
+  </Card>
+  <Card title="Login with Billions" icon="key" href="/billions-wallet/login-with-billions">
+    Sign users in with their DID, like a social login without a central provider.
+  </Card>
+  <Card title="Verify Proof of Uniqueness" icon="fingerprint" href="/billions-wallet/verify-proof-of-uniqueness">
+    Confirm on your backend that a user is a real, unique human before granting access.
+  </Card>
+  <Card title="Verify Verified Human Credential" icon="id-card" href="/billions-wallet/verify-verified-human">
+    Confirm on your backend that a user has completed document-based identity verification.
+  </Card>
+</CardGroup>
+
+<div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", justifyContent: "space-between", gap: "8px 16px", marginTop: "48px", marginBottom: "4px" }}>
+  <div style={{ fontSize: "24px", lineHeight: 1.3, letterSpacing: "-0.4px", fontWeight: 400 }}>Agents</div>
+  <a href="/agents/introduction" style={{ fontSize: "15px", textDecoration: "underline", textUnderlineOffset: "4px" }}>Introduction →</a>
+</div>
+
+<div style={{ fontSize: "16px", lineHeight: 1.6, fontWeight: 300, marginBottom: "20px", opacity: 0.7 }}>
+  Pair AI agents with verified humans, check that pairing in your app, and use it to price or gate paid APIs.
+</div>
+
+<CardGroup cols={2}>
+  <Card title="Verified Agent Identity" icon="robot" href="/agents/identity-overview">
+    Give an AI agent its own DID and pair it with the verified human who runs it.
+  </Card>
+  <Card title="Attestation Explorer" icon="magnifying-glass" href="/agents/attestation-explorer">
+    See who an agent is paired with, on the public Explorer or through the Attestations API.
+  </Card>
+  <Card title="Agent Verification" icon="user-shield" href="/agents/agent-verification">
+    Check in your app that a caller is an agent paired with a verified human.
+  </Card>
+  <Card title="x402 Human Proof" icon="coins" href="/agents/overview">
+    Give agents paired with a verified human a different price on a paid x402 API.
   </Card>
 </CardGroup>
 

@@ -1,0 +1,51 @@
+---
+title: "How an App Checks an Agent"
+sidebarTitle: "Overview"
+description: "What a complete check covers, from proof of control to the pairing lookup, and the two ways to run it."
+icon: "user-shield"
+---
+
+For developers whose app is called by agents. Any app can check that a caller is an agent paired with a verified human before it grants access or a reward. This page explains what that check covers and the two ways to run it. [Verify an Agent in Your App](/agents/verify-human-agent-pairing) builds it step by step.
+
+## What a complete check covers
+
+To verify an agent, establish that the agent making the request controls its DID, then check that DID for a valid ownership attestation, the on-chain record of its human pairing. An attestation lookup alone does not establish who is making the request: DIDs and attestations are public, so another agent could submit someone else's DID. Require a signed proof tied to the request before granting access or a reward.
+
+A complete check has four parts:
+
+1. **Proof of control.** The agent signs a challenge you issued. You recover the signer from the signature and derive the DID from it.
+2. **Freshness and binding.** The challenge's nonce was issued by you and is used once, it is recent, and it was signed for your domain and resource.
+3. **Pairing lookup.** A current ownership attestation exists for that DID.
+4. **Per-human limits (optional).** The human's nullifier, if you cap or deduplicate per person.
+
+## Choose a verification path
+
+| Path | What you do | What the result means |
+|---|---|---|
+| **[Path A: Server helper](/agents/verify-human-agent-pairing#path-a-server-helper)** (`verifyHumanProofRequest`) | Receive the signed proof from the agent and call the helper. It validates the signature, derives the DID from the signer, and calls the Attestations and nullifier APIs internally. | The proof is tied to that agent DID, and the helper has checked the pairing through the API. Its lookup skips revoked attestations, and ownership attestations never expire. One caveat: the helper does not track nonces, so you do. |
+| **[Path B: Direct API](/agents/verify-human-agent-pairing#path-b-direct-api)** | Authenticate the agent yourself and establish which DID or address it controls, then query the API for that pairing. | The API answers the attestation question. Your own authentication answers the control question. An API response alone cannot establish both. |
+
+<Info>
+  Path A uses the `x402-human-proof` packages, but your application does not need to be x402-compatible. No payment or x402 setup is involved.
+</Info>
+
+## Does the server helper use the API?
+
+Yes. After the signature checks pass, it:
+
+1. Derives the agent DID from the recovered signer address.
+2. Queries the Attestations API for that DID's most recent ownership attestation. Revoked attestations are not returned.
+3. Takes the human's iden3 ID (`fromId`) from that attestation and queries the nullifier API for the human's nullifier. That value is returned as `resolution.humanId`.
+
+These are the same endpoints Path B calls directly. Both default to production. If either API returns an error status, the helper throws instead of returning a result.
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="Verify an Agent in Your App" icon="user-shield" href="/agents/verify-human-agent-pairing">
+    Build both paths against an example app, with the agent side and the error cases.
+  </Card>
+  <Card title="Attestations API" icon="code" href="/agents/attestations-api">
+    The endpoints behind the pairing lookup, with full responses.
+  </Card>
+</CardGroup>

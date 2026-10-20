@@ -7,6 +7,22 @@
     "light": "#07C983",
     "dark": "#15803D"
   },
+  "contextual": {
+    "options": [
+      "copy", 
+      "view", 
+      "chatgpt", 
+      "claude",
+      "mcp",
+      {
+        "title": "Contact Integration team",
+        "description": "Contact the Integration team to get help with your integration.",
+        "icon": "envelope",
+        "href": "mailto:support@billions.network"
+      }
+    ],
+    "display": "toc"
+  },
   "favicon": "/logo/Billions_logo.svg",
   "navigation": {
     "tabs": [
@@ -15,7 +31,7 @@
         "groups": [
           {
             "group": "Get Started",
-            "pages": ["index"]
+            "pages": ["index", "mcp/docs-mcp"]
           }
         ]
       },
@@ -23,17 +39,39 @@
         "tab": "Billions Wallet",
         "groups": [
           {
-            "group": "Wallet",
+            "group": "Get Started",
             "pages": [
-              "billions-wallet/overview",
+              "billions-wallet/overview"
+            ]
+          },
+          {
+            "group": "Billions Wallet",
+            "pages": [
               "billions-wallet/web-wallet",
               "billions-wallet/mobile-wallet"
             ]
           },
           {
-            "group": "Integration",
+            "group": "Credentials",
             "pages": [
-              "billions-wallet/login-with-billions"
+              "billions-wallet/credentials",
+              "billions-wallet/proof-of-uniqueness",
+              "billions-wallet/verified-human"
+            ]
+          },
+          {
+            "group": "Integrate",
+            "pages": [
+              "billions-wallet/login-with-billions",
+              "billions-wallet/verify-proof-of-uniqueness",
+              "billions-wallet/verify-verified-human"
+            ]
+          },
+          {
+            "group": "Concepts",
+            "pages": [
+              "billions-wallet/how-the-wallet-works",
+              "billions-wallet/how-verification-works"
             ]
           }
         ]
@@ -42,19 +80,49 @@
         "tab": "Agents",
         "groups": [
           {
-            "group": "Verified Agent Identity Skill",
+            "group": "Get Started",
+            "pages": [
+              "agents/introduction"
+            ]
+          },
+          {
+            "group": "Verified Agent Identity",
             "pages": [
               "agents/identity-overview",
-              "agents/identity-architecture",
-              "agents/identity-skill"
+              "agents/identity-skill",
+              "agents/identity-architecture"
+            ]
+          },
+          {
+            "group": "Attestation Explorer",
+            "pages": [
+              "agents/attestation-explorer",
+              "agents/attestation-production-lookup",
+              "agents/attestation-testnet-explorer"
+            ]
+          },
+          {
+            "group": "Agent Verification",
+            "pages": [
+              "agents/agent-verification",
+              "agents/verify-human-agent-pairing"
             ]
           },
           {
             "group": "x402 Human Proof",
             "pages": [
               "agents/overview",
-              "agents/client",
-              "agents/server"
+              "agents/protect-x402-endpoint"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              "agents/environments",
+              "agents/attestations-api",
+              "agents/attestation-schemas",
+              "agents/server",
+              "agents/client"
             ]
           }
         ]
@@ -71,6 +139,10 @@
   "navbar": {
     "links": [
       {
+        "label": "Docs MCP",
+        "href": "/mcp/docs-mcp"
+      },
+      {
         "label": "Support",
         "href": "mailto:support@billions.network"
       }
@@ -82,5 +154,15 @@
       "x": "https://x.com/billions_ntwk",
       "linkedin": "https://www.linkedin.com/company/billions-ntwk"
     }
-  }
+  },
+  "redirects": [
+    {
+      "source": "/agents/verification-api",
+      "destination": "/agents/attestations-api"
+    },
+    {
+      "source": "/agents/attestation-testnet-api",
+      "destination": "/agents/attestations-api"
+    }
+  ]
 }
